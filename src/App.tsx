@@ -1,47 +1,60 @@
-import ItemsRouting from "./components/item/ItemsRouting";
+import { ItemsRouting } from "./components/item";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useMemo, useState } from "react";
 import {
   AppBar,
+  Avatar,
   Box,
   CssBaseline,
   IconButton,
+  Link,
   Switch,
   Toolbar,
   Typography,
 } from "@mui/material";
 import MyDrawer, { DrawerItem } from "./components/drawer";
-import { Route, Routes } from "react-router-dom";
-import Login from "./components/auth/Login";
+import { Navigate, Route, Routes } from "react-router-dom";
 import React from "react";
-import AuthRoutes from "./components/auth/AuthRoutes";
+import { AuthRoutes } from "./components/auth";
+import axios from "axios";
+import { Constants } from "./shared/Constants";
+import { User } from "./shared/models/user";
 
 function App() {
+  axios.defaults.baseURL = Constants.baseUrl;
+  axios.defaults.headers["Content-Type"] = "application/json";
+
+  axios.interceptors.request.use(
+    (success) => success,
+    (error) => console.warn(error)
+  );
+
+  const [drawerState, setDrawerState] = useState(false);
   const [darkMode, setDarkMode] = React.useState<boolean>(false);
 
-  const drawerItems = useMemo(() => {
-    const drawerItems: DrawerItem[] = [
-      {
-        icon: "",
-        path: "/auth/signup",
-        text: "Home",
-      },
-      {
-        icon: "",
-        path: "/items",
-        text: "Items",
-      },
-    ];
-    return drawerItems;
-  }, []);
-
+  const drawerItems = [];
+  if (!User.getInstance()) {
+    drawerItems[0] = {
+      icon: "",
+      path: "/",
+      text: "Auth",
+    };
+  } else {
+    drawerItems[0] = {
+      icon: "",
+      path: "/items",
+      text: "Items",
+    };
+  }
   // Update the theme only if the mode changes
   const theme = React.useMemo(
     () => createTheme({ palette: { mode: darkMode ? "dark" : "light" } }),
     [darkMode]
   );
 
-  const [drawerState, setDrawerState] = useState(false);
+  const handleProfileImageClick = () => {
+    User.logout();
+  };
 
   return (
     <>
@@ -69,18 +82,24 @@ function App() {
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 {import.meta.env.VITE_APP_NAME}
               </Typography>
-              <div>
-                <Switch
-                  value={darkMode}
-                  onChange={() => setDarkMode((v) => !v)}
-                />
-              </div>
+
+              <Link onClick={handleProfileImageClick}>
+                <Avatar
+                  src={`https://ui-avatars.com/api/?name=${
+                    User.getInstance()?.person?.name ?? ""
+                  }`}
+                ></Avatar>
+              </Link>
+
+              <Switch
+                value={darkMode}
+                onChange={() => setDarkMode((v) => !v)}
+              />
             </Toolbar>
           </AppBar>
         </Box>
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="auth/*" element={<AuthRoutes />} />
+          <Route path="/*" element={<AuthRoutes />} />
           <Route path="items/*" element={<ItemsRouting />} />
         </Routes>
       </ThemeProvider>

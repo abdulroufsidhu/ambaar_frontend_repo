@@ -7,12 +7,10 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
-  Zoom,
 } from "@mui/material";
-import { InventoryItem } from "../../shared/InventoryItem";
 import { useNavigate } from "react-router-dom";
 
-const items: InventoryItem[] = [
+const items = [
   {
     item: {
       name: "yo",
@@ -76,17 +74,20 @@ function ListItems() {
 
   return (
     <Box>
-      <List>
+      <List key="items-list">
         {items.map((inventoryItem, index) => (
           <>
-            <ListItem key={index} secondaryAction={inventoryItem.quantity}>
+            <ListItem
+              key={`${index}-item-list-item`}
+              secondaryAction={inventoryItem.quantity}
+            >
               <ListItemButton
-                key={`${index}-list-item-button`}
+                key={`${index}-item-list-item-list-item-button`}
                 onClick={() => navigateTo(`/items/${index}`)}
               >
                 <ListItemText
+                  key={`${index}-item-list-item-list-item-text`}
                   primary={inventoryItem.item.name}
-                  key={`${index}-list-item-text`}
                 />
               </ListItemButton>
             </ListItem>

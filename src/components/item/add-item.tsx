@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import { Item } from "../../shared/Item";
+import { Item } from "../../shared/item";
 import { Button, Container, Stack, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
