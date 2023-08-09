@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Business } from "../../shared/models/business";
 import React from "react";
-import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { MyFab } from "../../shared/components/fab";
 import { routes } from "./router";
 import { Add, Save, ViewAgenda } from "@mui/icons-material";
@@ -24,7 +24,7 @@ export const BusinessList = ({ list }: BusinessListProp) => {
   return (
     <>
       <List>
-        {list?.map((business, index) => {
+        {list?.map((business) => {
           return (
             <>
               <ListItem
