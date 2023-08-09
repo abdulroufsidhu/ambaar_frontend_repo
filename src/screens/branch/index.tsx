@@ -1,11 +1,4 @@
-import { routes, BranchRoutes } from "./router";
-import { BranchAdd, BranchList, BranchMain, BranchView } from "./views"
+import { routes } from "./router";
+import { BranchAdd, BranchList, BranchMain, BranchView } from "./views";
 
-export {
-  routes,
-  BranchRoutes,
-  BranchAdd,
-  BranchList,
-  BranchMain,
-  BranchView,
-}
+export { routes, BranchAdd, BranchList, BranchMain, BranchView };

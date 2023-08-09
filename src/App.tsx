@@ -28,7 +28,6 @@ import {
   Menu,
   SecurityOutlined,
 } from "@mui/icons-material";
-import { BranchRoutes } from "./screens/branch";
 
 function App() {
   axios.defaults.baseURL = ServerUrls.baseUrl;
@@ -102,7 +101,7 @@ function App() {
                 variant="h6"
                 component="div"
                 sx={{ flexGrow: 1 }}
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/", { replace: true })}
                 className="unselectable"
               >
                 {import.meta.env.VITE_APP_NAME}
@@ -135,7 +134,6 @@ function App() {
           <Route path="/*" element={<AuthRoutes />} />
           <Route path="items/*" element={<ItemsRouting />} />
           <Route path="businesses/*" element={<BusinessRoutes />} />
-          <Route path="branches/*" element={<BranchRoutes />} />
         </Routes>
       </ThemeProvider>
     </>

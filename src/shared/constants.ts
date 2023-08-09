@@ -8,4 +8,8 @@ export const ServerUrls = {
     get: "/businesses/get",
     add: "/businesses/create",
   },
+  branch: {
+    get: "/branches/get",
+    add: "/branches/create",
+  },
 };

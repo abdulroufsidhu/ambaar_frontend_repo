@@ -15,6 +15,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { MyFab } from "../../shared/components/fab";
 import { routes } from "./router";
 import { Add, Save, VisibilityOutlined } from "@mui/icons-material";
+import { BranchList } from "../branch";
 
 interface BusinessListProp {
   list?: Array<IBusiness>;
@@ -73,11 +74,14 @@ export const BusinessView = () => {
 
   return (
     <>
-      <Stack>
-        <Typography variant="h5">{business.name}</Typography>
-        <Typography variant="subtitle1">{business.contact}</Typography>
-        <Typography variant="subtitle1">{business.email}</Typography>
-        <Typography variant="subtitle1">{business.licence}</Typography>
+      <Stack direction="row" flexWrap="wrap" spacing={2}>
+        <Stack padding={4}>
+          <Typography variant="h5">{business.name}</Typography>
+          <Typography variant="subtitle1">{business.contact}</Typography>
+          <Typography variant="subtitle1">{business.email}</Typography>
+          <Typography variant="subtitle1">{business.licence}</Typography>
+        </Stack>
+        <BranchList business={business} />
       </Stack>
     </>
   );
@@ -172,7 +176,6 @@ export const BusinessMain = () => {
   return (
     <>
       <Stack justifyContent="center" alignItems="center" margin={2}>
-        <Typography variant="h4">IBusiness</Typography>
         <Outlet />
       </Stack>
     </>
