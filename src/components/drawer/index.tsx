@@ -38,7 +38,7 @@ const MyDrawer = ({
   return (
     <SwipeableDrawer
       variant="temporary"
-      anchor="left"
+      anchor="right"
       open={drawerState}
       onClose={() => setDrawerState(false)}
       onOpen={() => setDrawerState(true)}

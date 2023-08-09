@@ -1,7 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import Login from "./login";
-import Signup from "./signup";
-import AuthScreen from "./screen";
+import { AuthScreen, Login, Signup } from "./";
 
 export const AuthRoutes = () => {
   return (
@@ -16,6 +14,6 @@ export const AuthRoutes = () => {
 };
 
 export const routes = {
-  LOGIN: "/login",
-  SIGNUP: "/signup",
+  LOGIN: "login/",
+  SIGNUP: "signup/",
 };

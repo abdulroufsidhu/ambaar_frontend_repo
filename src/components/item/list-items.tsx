@@ -95,24 +95,6 @@ function ListItems() {
           </>
         ))}
       </List>
-      <Container
-        sx={{
-          position: "sticky",
-          bottom: "1rem",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          margin: "1rem",
-        }}
-      >
-        <Fab
-          aria-label="add"
-          variant="extended"
-          onClick={() => navigateTo("/items/add")}
-        >
-          Add Item
-        </Fab>
-      </Container>
     </Box>
   );
 }

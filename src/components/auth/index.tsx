@@ -1,5 +1,3 @@
-import Login from "./login";
-import Signup from "./signup";
+import { Login, Signup, AuthMain } from "./views";
 import { routes, AuthRoutes } from "./router";
-import AuthScreen from "./screen";
-export { Login, Signup, AuthScreen, routes, AuthRoutes };
+export { Login, Signup, AuthMain as AuthScreen, routes, AuthRoutes };
