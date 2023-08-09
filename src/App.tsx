@@ -1,5 +1,5 @@
 import "./index.css";
-import { ItemsRouting } from "./components/item";
+import { ItemsRouting } from "./screens/item";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useState } from "react";
 import {
@@ -13,14 +13,14 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import MyDrawer, { DrawerItem } from "./components/drawer";
+import MyDrawer, { DrawerItem } from "./screens/drawer";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import React from "react";
-import { AuthRoutes } from "./components/auth";
+import { AuthRoutes } from "./screens/auth";
 import axios from "axios";
 import { Constants } from "./shared/Constants";
 import { User } from "./shared/models/user";
-import { BusinessRoutes } from "./components/business/router";
+import { BusinessRoutes } from "./screens/business/router";
 import {
   BusinessCenterOutlined,
   ChevronLeftOutlined,
@@ -28,6 +28,8 @@ import {
   Menu,
   SecurityOutlined,
 } from "@mui/icons-material";
+import { BranchRoutes } from "./screens/branch";
+
 
 function App() {
   axios.defaults.baseURL = Constants.baseUrl;
@@ -57,6 +59,11 @@ function App() {
       icon: <BusinessCenterOutlined />,
       path: "/businesses",
       text: "Businesses",
+    },
+    {
+      icon: <BusinessCenterOutlined />,
+      path: "/branches",
+      text: "Branches",
     },
   ];
   // Update the theme only if the mode changes
@@ -103,9 +110,8 @@ function App() {
               </Typography>
               <Link onClick={handleProfileImageClick}>
                 <Avatar
-                  src={`https://ui-avatars.com/api/?name=${
-                    User.getInstance()?.person?.name ?? ""
-                  }`}
+                  src={`https://ui-avatars.com/api/?name=${User.getInstance()?.person?.name ?? ""
+                    }`}
                 ></Avatar>
               </Link>
 
@@ -129,8 +135,9 @@ function App() {
           <Route path="/*" element={<AuthRoutes />} />
           <Route path="items/*" element={<ItemsRouting />} />
           <Route path="businesses/*" element={<BusinessRoutes />} />
+          <Route path="branches/*" element={<BranchRoutes />} />
         </Routes>
-      </ThemeProvider>
+      </ThemeProvider >
     </>
   );
 }
