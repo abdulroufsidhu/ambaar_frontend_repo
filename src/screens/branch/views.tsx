@@ -34,7 +34,7 @@ export const BranchList = ({ list }: BranchListProp) => {
                 <ListItemText
                   key={`${branch.name ?? ""}-${branch.email ?? ""}`}
                   primary={branch.name}
-                  secondary={`${branch.location} - ${branch.email ?? ""}`}
+                  secondary={`${branch.location ?? ""} - ${branch.email ?? ""}`}
                 />
               </ListItem>
               <ListItemSecondaryAction>
