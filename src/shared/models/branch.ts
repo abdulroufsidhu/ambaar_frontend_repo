@@ -1,4 +1,4 @@
-import { Business } from "./business";
+import { IBusiness } from "./business";
 
 export interface Branch {
   _id?: string;
@@ -6,5 +6,5 @@ export interface Branch {
   contact?: string;
   email?: string;
   location?: string;
-  business?: Business;
+  business?: IBusiness;
 }

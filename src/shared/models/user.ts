@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Person } from "./person";
+import { ServerUrls } from "../constants";
 
 interface IUser {
   _id?: string;
@@ -17,13 +18,21 @@ export class User {
   }
 
   static login = (email: string, password: string) =>
-    axios
-      .get<IUser>(`/users/get?email=${email}&password=${password}`,)
-      .then((resposne) => (User.instance = resposne.data));
+    axios<IUser>({
+      method: "get",
+      url: ServerUrls.auth.login,
+      params: {
+        email,
+        password,
+      },
+    }).then((resposne) => (User.instance = resposne.data));
 
   static signup = (person: Person, password: string) =>
     axios
-      .post<IUser>(`/users/create`, { person: person, password: password })
+      .post<IUser>(ServerUrls.auth.signup, {
+        person: person,
+        password: password,
+      })
       .then((respose) => (User.instance = respose.data));
 
   static logout = () => (User.instance = undefined);

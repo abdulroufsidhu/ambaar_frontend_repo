@@ -1,5 +1,6 @@
 import {
   Button,
+  IconButton,
   List,
   ListItem,
   ListItemSecondaryAction,
@@ -8,19 +9,20 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Business } from "../../shared/models/business";
+import { Business, IBusiness } from "../../shared/models/business";
 import React from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { MyFab } from "../../shared/components/fab";
 import { routes } from "./router";
-import { Add, Save, ViewAgenda } from "@mui/icons-material";
+import { Add, Save, VisibilityOutlined } from "@mui/icons-material";
 
 interface BusinessListProp {
-  list?: Array<Business>;
+  list?: Array<IBusiness>;
 }
 
 export const BusinessList = ({ list }: BusinessListProp) => {
   const navigate = useNavigate();
+  console.log(list);
   return (
     <>
       <List>
@@ -34,19 +36,29 @@ export const BusinessList = ({ list }: BusinessListProp) => {
                 <ListItemText
                   key={`${business.name ?? ""}-${business.email ?? ""}`}
                   primary={business.name}
-                  secondary={`${business.email ?? ""}\n${business.licence ?? ""
-                    }`}
+                  secondary={
+                    <>
+                      <Typography variant="body1">
+                        ${business.email ?? ""}
+                      </Typography>
+                      {business.licence ?? ""}
+                    </>
+                  }
                 />
+                <ListItemSecondaryAction>
+                  <IconButton
+                    onClick={() => navigate(routes.VIEW, { state: business })}
+                  >
+                    <VisibilityOutlined />
+                  </IconButton>
+                </ListItemSecondaryAction>
               </ListItem>
-              <ListItemSecondaryAction>
-                <ViewAgenda />
-              </ListItemSecondaryAction>
             </>
           );
         })}
       </List>
       <MyFab
-        label="Add Business"
+        label="Add IBusiness"
         startIcon={<Add />}
         onClick={() => {
           navigate(routes.ADD);
@@ -57,11 +69,11 @@ export const BusinessList = ({ list }: BusinessListProp) => {
 };
 
 export const BusinessView = () => {
-  const business = useLocation().state as Business;
+  const business = useLocation().state as IBusiness;
 
   return (
     <>
-      <Stack spacing={2}>
+      <Stack>
         <Typography variant="h5">{business.name}</Typography>
         <Typography variant="subtitle1">{business.contact}</Typography>
         <Typography variant="subtitle1">{business.email}</Typography>
@@ -71,20 +83,24 @@ export const BusinessView = () => {
   );
 };
 
-const businessReducer = (state: Business, action: { payload?: Business }) => {
+const businessReducer = (state: IBusiness, action: { payload?: IBusiness }) => {
   if (action.payload) {
     return { ...state, ...action.payload };
   }
   return state;
 };
 
-const businessReducerInitialValue: Business = {};
+const businessReducerInitialValue: IBusiness = {};
 
 export const BusinessAdd = () => {
-  const [state, dispatch] = React.useReducer(
+  const [business, dispatch] = React.useReducer(
     businessReducer,
     businessReducerInitialValue
   );
+
+  const handleSaveButtonClick = () => {
+    Business.add(business).catch((error) => console.error(error));
+  };
 
   return (
     <>
@@ -94,33 +110,57 @@ export const BusinessAdd = () => {
           onChange={(e) => {
             dispatch({ payload: { name: e.target.value } });
           }}
-          value={state.name}
+          value={business.name}
         />
         <TextField
           label="Contact"
           onChange={(e) => {
             dispatch({ payload: { contact: e.target.value } });
           }}
-          value={state.contact}
+          value={business.contact}
         />
         <TextField
           label="Email*"
           onChange={(e) => {
             dispatch({ payload: { email: e.target.value } });
           }}
-          value={state.email}
+          value={business.email}
         />
         <TextField
           label="Licence"
           onChange={(e) => {
             dispatch({ payload: { licence: e.target.value } });
           }}
-          value={state.licence}
+          value={business.licence}
         />
         <Typography variant="subtitle2">Founder Information</Typography>
-        <TextField label="Founder Name" />
-        <TextField label="Founder Contact" />
-        <Button variant="outlined" endIcon={<Save />}>
+        <TextField
+          label="Founder Name"
+          // onChange={(e) => {
+          //   dispatch({
+          //     payload: {
+          //       founder: { ...business.founder, name: e.target.value },
+          //     },
+          //   });
+          // }}
+          // value={business.founder?.name}
+        />
+        <TextField
+          label="Founder Contact"
+          // onChange={(e) => {
+          //   dispatch({
+          //     payload: {
+          //       founder: { ...business.founder, contact: e.target.value },
+          //     },
+          //   });
+          // }}
+          // value={business.founder?.contact}
+        />
+        <Button
+          variant="outlined"
+          endIcon={<Save />}
+          onClick={handleSaveButtonClick}
+        >
           Save
         </Button>
       </Stack>
@@ -132,7 +172,7 @@ export const BusinessMain = () => {
   return (
     <>
       <Stack justifyContent="center" alignItems="center" margin={2}>
-        <Typography variant="h4" >Business</Typography>
+        <Typography variant="h4">IBusiness</Typography>
         <Outlet />
       </Stack>
     </>

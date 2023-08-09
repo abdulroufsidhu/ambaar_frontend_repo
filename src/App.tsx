@@ -18,7 +18,7 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import React from "react";
 import { AuthRoutes } from "./screens/auth";
 import axios from "axios";
-import { Constants } from "./shared/Constants";
+import { ServerUrls } from "./shared/constants";
 import { User } from "./shared/models/user";
 import { BusinessRoutes } from "./screens/business/router";
 import {
@@ -30,9 +30,8 @@ import {
 } from "@mui/icons-material";
 import { BranchRoutes } from "./screens/branch";
 
-
 function App() {
-  axios.defaults.baseURL = Constants.baseUrl;
+  axios.defaults.baseURL = ServerUrls.baseUrl;
   axios.defaults.headers["Content-Type"] = "application/json";
 
   axios.interceptors.request.use(
@@ -110,8 +109,9 @@ function App() {
               </Typography>
               <Link onClick={handleProfileImageClick}>
                 <Avatar
-                  src={`https://ui-avatars.com/api/?name=${User.getInstance()?.person?.name ?? ""
-                    }`}
+                  src={`https://ui-avatars.com/api/?name=${
+                    User.getInstance()?.person?.name ?? ""
+                  }`}
                 ></Avatar>
               </Link>
 
@@ -137,7 +137,7 @@ function App() {
           <Route path="businesses/*" element={<BusinessRoutes />} />
           <Route path="branches/*" element={<BranchRoutes />} />
         </Routes>
-      </ThemeProvider >
+      </ThemeProvider>
     </>
   );
 }

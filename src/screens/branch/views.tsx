@@ -6,7 +6,7 @@ import {
   ListItemText,
   Stack,
   TextField,
-  Typography
+  Typography,
 } from "@mui/material";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Branch } from "../../shared/models/branch";
@@ -55,13 +55,12 @@ export const BranchList = ({ list }: BranchListProp) => {
   );
 };
 
-
 export const BranchView = () => {
   const branch = useLocation().state as Branch;
 
   return (
     <>
-      <Stack spacing={2}>
+      <Stack>
         <Typography variant="h5">{branch.name}</Typography>
         <Typography variant="subtitle1">{branch.contact}</Typography>
         <Typography variant="subtitle1">{branch.email}</Typography>
@@ -71,14 +70,12 @@ export const BranchView = () => {
   );
 };
 
-
 const branchReducer = (state: Branch, action: { payload?: Branch }) => {
   if (action.payload) {
     return { ...state, ...action.payload };
   }
   return state;
 };
-
 
 const branchReducerInitialValue: Branch = {};
 
@@ -129,10 +126,8 @@ export const BranchAdd = () => {
 
 export const BranchMain = () => {
   return (
-    <Stack justifyContent="center" alignItems="center" margin={2} >
+    <Stack justifyContent="center" alignItems="center" margin={2}>
       <Outlet />
     </Stack>
   );
-}
-
-
+};
