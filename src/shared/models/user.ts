@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Constants } from "../Constants";
 import { Person } from "./person";
 
 interface IUser {
@@ -19,9 +18,7 @@ export class User {
 
   static login = (email: string, password: string) =>
     axios
-      .get<IUser>(`/users/get?email=${email}&password=${password}`, {
-        baseURL: Constants.baseUrl,
-      })
+      .get<IUser>(`/users/get?email=${email}&password=${password}`,)
       .then((resposne) => (User.instance = resposne.data));
 
   static signup = (person: Person, password: string) =>
