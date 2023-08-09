@@ -129,7 +129,7 @@ export const BranchAdd = () => {
 
 export const BranchMain = () => {
   return (
-    <Stack justifyContent="center" alignItems="center">
+    <Stack justifyContent="center" alignItems="center" margin={2} >
       <Outlet />
     </Stack>
   );

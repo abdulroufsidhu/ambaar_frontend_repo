@@ -34,9 +34,8 @@ export const BusinessList = ({ list }: BusinessListProp) => {
                 <ListItemText
                   key={`${business.name ?? ""}-${business.email ?? ""}`}
                   primary={business.name}
-                  secondary={`${business.email ?? ""}\n${
-                    business.licence ?? ""
-                  }`}
+                  secondary={`${business.email ?? ""}\n${business.licence ?? ""
+                    }`}
                 />
               </ListItem>
               <ListItemSecondaryAction>
@@ -118,7 +117,7 @@ export const BusinessAdd = () => {
           }}
           value={state.licence}
         />
-        <Typography variant="caption">Founder Information</Typography>
+        <Typography variant="subtitle2">Founder Information</Typography>
         <TextField label="Founder Name" />
         <TextField label="Founder Contact" />
         <Button variant="outlined" endIcon={<Save />}>
@@ -132,7 +131,8 @@ export const BusinessAdd = () => {
 export const BusinessMain = () => {
   return (
     <>
-      <Stack justifyContent="center" alignItems="center">
+      <Stack justifyContent="center" alignItems="center" margin={2}>
+        <Typography variant="h4" >Business</Typography>
         <Outlet />
       </Stack>
     </>
