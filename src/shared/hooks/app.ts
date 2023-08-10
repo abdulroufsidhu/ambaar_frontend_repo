@@ -1,4 +1,4 @@
-import { JSXElementConstructor, ReactNode, createContext, useContext, useReducer } from 'react';
+import { ReactNode, createContext, useContext, useReducer } from 'react';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 
@@ -15,14 +15,6 @@ interface ApplicationContextAction {
   action?: string;
   payload: ApplicationContext;
 }
-
-const initialState: ApplicationContext = {
-  navigate: undefined,
-  popupState: false,
-  popupChild: null,
-  drawerState: false,
-  darkMode: false,
-};
 
 function appContextReducer(state: ApplicationContext, action: ApplicationContextAction): ApplicationContext {
   switch (action.action) {
@@ -52,7 +44,14 @@ function useAppContext() {
 }
 
 export function AppContextProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(appContextReducer, initialState);
+  const nav = useNavigate()
+  const [state, dispatch] = useReducer(appContextReducer, {
+    navigate: nav,
+    popupState: false,
+    popupChild: null,
+    drawerState: false,
+    darkMode: false,
+  });
   return <AppContext.Provider value={ [state, dispatch] }> { children } < /AppContext.Provider>;
 }
 
