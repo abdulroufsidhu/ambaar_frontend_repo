@@ -1,9 +1,10 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import { BusinessAdd, BusinessList, BusinessMain, BusinessView } from "./";
 import { useState, useEffect } from "react";
 import { Business, IBusiness } from "../../shared/models/business";
 
 export const BusinessRoutes = () => {
+  const navigate = useNavigate();
   const [businesses, setBusinesses] = useState<IBusiness[]>(() => []);
 
   useEffect(() => {
@@ -11,7 +12,8 @@ export const BusinessRoutes = () => {
       .then((list) => setBusinesses(list ?? []))
       .catch((error) => console.error(error));
     return () => setBusinesses([]);
-  }, []);
+  }, [navigate]);
+
 
   return (
     <Routes>

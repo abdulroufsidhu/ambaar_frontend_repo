@@ -6,8 +6,8 @@ import {
   ListItemButton,
   ListItemIcon,
 } from "@mui/material";
-import { Dispatch, ReactNode, SetStateAction } from "react";
-import { useNavigate } from "react-router-dom";
+import { ReactNode } from "react";
+import useAppContext from "../../shared/hooks/app";
 
 export interface DrawerItem {
   path: string;
@@ -16,22 +16,19 @@ export interface DrawerItem {
 }
 
 interface DrawerProps {
-  drawerState: boolean;
-  setDrawerState: Dispatch<SetStateAction<boolean>>;
   drawerItems: DrawerItem[];
 }
 
 const MyDrawer = ({
-  drawerState,
-  setDrawerState,
   drawerItems,
 }: DrawerProps) => {
-  const navigate = useNavigate();
+  const [context, dispatch] = useAppContext()
 
-  const closeDrawer = () => setDrawerState(false);
+  const closeDrawer = () => dispatch({ payload: { drawerState: false } });
+  const openDrawer = () => dispatch({ payload: { drawerState: true } });
 
   const navigateTo = (path: string) => {
-    navigate(path);
+    (!!context.navigate) && context.navigate(path);
     closeDrawer();
   };
 
@@ -39,10 +36,10 @@ const MyDrawer = ({
     <SwipeableDrawer
       variant="temporary"
       anchor="right"
-      open={drawerState}
-      onClose={() => setDrawerState(false)}
-      onOpen={() => setDrawerState(true)}
-      sx={{ width: drawerState ? 240 : 60 }}
+      open={context.drawerState}
+      onClose={closeDrawer}
+      onOpen={openDrawer}
+      sx={{ width: context.drawerState ? 240 : 60 }}
     >
       <List>
         {drawerItems.map((item, index) => (

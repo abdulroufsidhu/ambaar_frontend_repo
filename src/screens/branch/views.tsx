@@ -1,21 +1,18 @@
 import {
   Box,
   Button,
-  IconButton,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-  Popover,
+  Chip,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import Modal from "@mui/material/Modal";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { Branch, IBranch } from "../../shared/models/branch";
 import { Add, Save, VisibilityOutlined } from "@mui/icons-material";
-import { MyFab } from "../../shared/components/fab";
 import { useEffect, useReducer, useState } from "react";
 import { IBusiness } from "../../shared/models/business";
 
@@ -25,115 +22,59 @@ interface BranchListProp {
 
 export const BranchList = ({ business }: BranchListProp) => {
   const [branches, setBranches] = useState<Array<IBranch>>(() => []);
-  const [addBranchModalVisibility, setAddBranchModalVisibility] =
-    useState(false);
-  const [inViewBranch, setInViewBranch] = useState<IBranch | undefined>(
-    undefined
-  );
+  const [activeBranch, setActiveBranch] = useState<IBranch>();
 
   useEffect(() => {
     Branch.list(business._id ?? "")
       .then((list) => {
         console.info(list);
-        list && setBranches(list);
+        setBranches(list ?? []);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => { console.error(error); setBranches([]) });
     return () => setBranches([]);
-  }, []);
-
-  const handleAddBranchButtonClick: () => undefined = () => {
-    setAddBranchModalVisibility(true);
-    console.info(addBranchModalVisibility);
-  };
-
-  const handleViewBranchButtonClick: (branch: IBranch) => undefined = (
-    branch
-  ) => {
-    setInViewBranch(branch);
-  };
-
-  console.info(branches);
+  }, [business]);
 
   return (
-    <Box
-      sx={{ display: "flex", flexDirection: "column", padding: 0, margin: 0 }}
-    >
-      <List>
-        {branches?.map((branch) => {
-          return (
-            <>
-              <ListItem
-                key={`${branch.name ?? ""}-${branch.email ?? ""}-list-item`}
-                sx={{ marginBlock: 2 }}
-              >
-                <ListItemText
-                  key={`${branch.name ?? ""}-${branch.email ?? ""}`}
-                  primary={branch.name}
-                  secondary={`${branch.location ?? ""} - ${branch.email ?? ""}`}
-                />
-                <ListItemSecondaryAction
-                  key={`${branch.name ?? ""}-${
-                    branch.email ?? ""
-                  }-list-item-secondary-action`}
-                >
-                  <IconButton
-                    key={`${branch.name ?? ""}-${
-                      branch.email ?? ""
-                    }-list-item-secondary-action-icon-button`}
-                    onClick={() => {
-                      handleViewBranchButtonClick(branch);
-                    }}
-                  >
-                    <VisibilityOutlined
-                      key={`${branch.name ?? ""}-${
-                        branch.email ?? ""
-                      }-list-item-secondary-action-icon-button-icon`}
-                    />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            </>
-          );
-        })}
-      </List>
-      <MyFab
-        label="Add Branch"
-        startIcon={<Add />}
-        onClick={handleAddBranchButtonClick}
-      />
-      <Popover
-        open={addBranchModalVisibility}
-        onClose={() => setAddBranchModalVisibility(false)}
-        aria-labelledby="Add New Branch"
-        aria-describedby="Add new branch in the selected business"
-        anchorOrigin={{
-          vertical: "center",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          horizontal: "center",
-          vertical: "center",
-        }}
+    <FormControl sx={{ m: 1, minWidth: 120 }} required>
+      <InputLabel id="business-select-label">Business</InputLabel>
+      <Select
+        labelId="business-select-label"
+        id="business-select"
+        value={activeBranch?._id}
+        label="Business"
+        onChange={(e) => setActiveBranch(branches.filter(b => b._id === e.target.value)[0])}
+        renderValue={() => (<>
+          {
+            (
+              (!!activeBranch) && (<>
+                <Typography variant="body1">
+                  {activeBranch.name}
+                </Typography>
+                <Typography variant="caption">
+                  {activeBranch.email}
+                </Typography>
+              </>)
+            )
+          }
+        </>)}
       >
-        {!!business._id && <BranchAdd businessId={business._id} />}
-      </Popover>
-      <Popover
-        open={!!inViewBranch}
-        onClose={() => setInViewBranch(undefined)}
-        aria-labelledby="View Branch"
-        aria-describedby="View Selected Branch"
-        anchorOrigin={{
-          vertical: "center",
-          horizontal: "center",
-        }}
-        transformOrigin={{
-          horizontal: "center",
-          vertical: "center",
-        }}
-      >
-        {!!inViewBranch && <BranchView branch={inViewBranch} />}
-      </Popover>
-    </Box>
+        {branches?.map(branch => (<MenuItem sx={{ display: "flex", flexDirection: "column" }} key={`${branch._id ?? ""}-menu name`} value={branch._id}>
+          <Typography variant="body1">
+            {branch.name}
+          </Typography>
+          <Typography variant="subtitle2">
+            {branch.location}
+          </Typography>
+          <Typography variant="caption">
+            {branch.contact}
+          </Typography>
+          <Typography variant="caption">
+            {branch.email}
+          </Typography>
+        </MenuItem>))}
+        <Button fullWidth ><Add /> Add Branch</Button>
+      </Select>
+    </FormControl>
   );
 };
 

@@ -28,6 +28,8 @@ import {
   Menu,
   SecurityOutlined,
 } from "@mui/icons-material";
+import useAppContext from "./shared/hooks/app";
+import { ThemeSwitch } from "./shared/components/buttons";
 
 function App() {
   axios.defaults.baseURL = ServerUrls.baseUrl;
@@ -38,9 +40,7 @@ function App() {
     (error) => console.warn(error)
   );
 
-  const navigate = useNavigate();
-  const [drawerState, setDrawerState] = useState(false);
-  const [darkMode, setDarkMode] = React.useState<boolean>(false);
+  const [context, contextDispatch] = useAppContext()
 
   const drawerItems: Array<DrawerItem> = [
     {
@@ -58,16 +58,11 @@ function App() {
       path: "/businesses",
       text: "Businesses",
     },
-    {
-      icon: <BusinessCenterOutlined />,
-      path: "/branches",
-      text: "Branches",
-    },
   ];
   // Update the theme only if the mode changes
   const theme = React.useMemo(
-    () => createTheme({ palette: { mode: darkMode ? "dark" : "light" } }),
-    [darkMode]
+    () => createTheme({ palette: { mode: context.darkMode ? "dark" : "light" } }),
+    [context.darkMode]
   );
 
   const handleProfileImageClick = () => {
@@ -79,8 +74,6 @@ function App() {
       <ThemeProvider theme={theme}>
         <MyDrawer
           drawerItems={drawerItems}
-          drawerState={drawerState}
-          setDrawerState={setDrawerState}
         />
 
         <CssBaseline />
@@ -93,7 +86,7 @@ function App() {
                 color="inherit"
                 aria-label="back"
                 sx={{ mr: 2 }}
-                onClick={() => navigate(-1)}
+                onClick={() => (!!context.navigate) && context.navigate(-1)}
               >
                 <ChevronLeftOutlined />
               </IconButton>
@@ -101,29 +94,28 @@ function App() {
                 variant="h6"
                 component="div"
                 sx={{ flexGrow: 1 }}
-                onClick={() => navigate("/", { replace: true })}
+                onClick={() => (!!context.navigate) && context.navigate("/", { replace: true })}
                 className="unselectable"
               >
                 {import.meta.env.VITE_APP_NAME}
               </Typography>
               <Link onClick={handleProfileImageClick}>
                 <Avatar
-                  src={`https://ui-avatars.com/api/?name=${
-                    User.getInstance()?.person?.name ?? ""
-                  }`}
+                  src={`https://ui-avatars.com/api/?name=${User.getInstance()?.person?.name ?? ""}`}
                 ></Avatar>
               </Link>
 
-              <Switch
-                value={darkMode}
-                onChange={() => setDarkMode((v) => !v)}
+              <ThemeSwitch
+                value={context.darkMode}
+                onChange={() => contextDispatch({ payload: { darkMode: !context.darkMode } })}
+
               />
               <IconButton
                 edge="start"
                 color="inherit"
                 aria-label="menu"
                 sx={{ mr: 2 }}
-                onClick={() => setDrawerState((state) => !state)}
+                onClick={() => contextDispatch({ payload: { drawerState: true } })}
               >
                 <Menu />
               </IconButton>

@@ -1,10 +1,10 @@
 import axios from "axios";
-import { Person } from "./person";
+import { IPerson } from "./person";
 import { ServerUrls } from "../constants";
 
-interface IUser {
+export interface IUser {
   _id?: string;
-  person?: Person;
+  person?: IPerson;
   password?: string;
 }
 
@@ -27,7 +27,7 @@ export class User {
       },
     }).then((resposne) => (User.instance = resposne.data));
 
-  static signup = (person: Person, password: string) =>
+  static signup = (person: IPerson, password: string) =>
     axios
       .post<IUser>(ServerUrls.auth.signup, {
         person: person,

@@ -12,4 +12,16 @@ export const ServerUrls = {
     get: "/branches/get",
     add: "/branches/create",
   },
+  person: {
+    get: "/persons/get",
+    add: "/persons/create",
+  },
+  employee: {
+    get: "/employees/get",
+    add: "/employees/create",
+  },
+  permissions: {
+    get: "/permissions/get",
+    add: "/permissions/create"
+  }
 };

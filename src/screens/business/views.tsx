@@ -1,20 +1,18 @@
 import {
   Button,
-  IconButton,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { Business, IBusiness } from "../../shared/models/business";
-import React from "react";
+import React, { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { MyFab } from "../../shared/components/fab";
 import { routes } from "./router";
-import { Add, Save, VisibilityOutlined } from "@mui/icons-material";
+import { Add, Save } from "@mui/icons-material";
 import { BranchList } from "../branch";
 
 interface BusinessListProp {
@@ -23,48 +21,56 @@ interface BusinessListProp {
 
 export const BusinessList = ({ list }: BusinessListProp) => {
   const navigate = useNavigate();
-  console.log(list);
+  const [activeBusiness, setActiveBusiness] = useState<IBusiness>()
+
+  const handleChange = (businessId: string) => setActiveBusiness(list?.filter(b => b._id === businessId)[0])
+
   return (
     <>
-      <List>
-        {list?.map((business) => {
-          return (
-            <>
-              <ListItem
-                key={`${business.name ?? ""}-${business.email ?? ""}-list-item`}
-                sx={{ marginBlock: 2 }}
-              >
-                <ListItemText
-                  key={`${business.name ?? ""}-${business.email ?? ""}`}
-                  primary={business.name}
-                  secondary={
-                    <>
-                      <Typography variant="body1">
-                        ${business.email ?? ""}
-                      </Typography>
-                      {business.licence ?? ""}
-                    </>
-                  }
-                />
-                <ListItemSecondaryAction>
-                  <IconButton
-                    onClick={() => navigate(routes.VIEW, { state: business })}
-                  >
-                    <VisibilityOutlined />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            </>
-          );
-        })}
-      </List>
-      <MyFab
-        label="Add IBusiness"
-        startIcon={<Add />}
-        onClick={() => {
-          navigate(routes.ADD);
-        }}
-      />
+      <FormControl sx={{ m: 1, minWidth: 120 }} required>
+        <InputLabel id="business-select-label">Business</InputLabel>
+        <Select
+          labelId="business-select-label"
+          id="business-select"
+          value={activeBusiness?._id}
+          label="Business"
+          onChange={(e) => handleChange(e.target.value)}
+          renderValue={() => (<>
+            {
+              (
+                (!!activeBusiness) && (<>
+                  <Typography variant="body1">
+                    {activeBusiness.name}
+                  </Typography>
+                  <Typography variant="caption">
+                    {activeBusiness.email}
+                  </Typography>
+                </>)
+              )
+            }
+          </>)}
+        >
+          {list?.map(business => (<MenuItem sx={{ display: "flex", flexDirection: "column" }} key={`${business._id ?? ""}-menu name`} value={business._id}>
+            <Typography variant="body1">
+              {business.name}
+            </Typography>
+            <Typography variant="caption">
+              {business.contact}
+            </Typography>
+            <Typography variant="caption">
+              {business.email}
+            </Typography>
+          </MenuItem>))}
+          <Button fullWidth onClick={() => {
+            navigate(routes.ADD);
+          }} >
+            <Add /> "Add IBusiness"
+          </Button>
+        </Select>
+      </FormControl>
+
+      {(!!activeBusiness && <BranchList business={activeBusiness} />)}
+
     </>
   );
 };
@@ -140,25 +146,25 @@ export const BusinessAdd = () => {
         <Typography variant="subtitle2">Founder Information</Typography>
         <TextField
           label="Founder Name"
-          // onChange={(e) => {
-          //   dispatch({
-          //     payload: {
-          //       founder: { ...business.founder, name: e.target.value },
-          //     },
-          //   });
-          // }}
-          // value={business.founder?.name}
+        // onChange={(e) => {
+        //   dispatch({
+        //     payload: {
+        //       founder: { ...business.founder, name: e.target.value },
+        //     },
+        //   });
+        // }}
+        // value={business.founder?.name}
         />
         <TextField
           label="Founder Contact"
-          // onChange={(e) => {
-          //   dispatch({
-          //     payload: {
-          //       founder: { ...business.founder, contact: e.target.value },
-          //     },
-          //   });
-          // }}
-          // value={business.founder?.contact}
+        // onChange={(e) => {
+        //   dispatch({
+        //     payload: {
+        //       founder: { ...business.founder, contact: e.target.value },
+        //     },
+        //   });
+        // }}
+        // value={business.founder?.contact}
         />
         <Button
           variant="outlined"
@@ -175,7 +181,7 @@ export const BusinessAdd = () => {
 export const BusinessMain = () => {
   return (
     <>
-      <Stack justifyContent="center" alignItems="center" margin={2}>
+      <Stack direction="row" flexWrap="wrap" justifyContent="center" alignItems="center" margin={2}>
         <Outlet />
       </Stack>
     </>

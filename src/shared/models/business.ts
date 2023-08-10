@@ -1,4 +1,4 @@
-import { Person } from "./person";
+import { IPerson } from "./person";
 import axios from "axios";
 import { ServerUrls } from "../constants";
 
@@ -8,7 +8,7 @@ export interface IBusiness {
   email?: string;
   contact?: string;
   licence?: string;
-  founder?: Person;
+  founder?: IPerson;
 }
 
 export class Business {
