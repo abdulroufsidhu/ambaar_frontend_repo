@@ -4,6 +4,7 @@ import { ThemeProvider, styled } from "@mui/material/styles";
 import {
   CssBaseline,
   IconButton,
+  Popover,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -14,12 +15,13 @@ import { BusinessRoutes } from "./screens/business/router";
 import {
   BusinessCenterOutlined,
   LocalGroceryStoreOutlined,
-  Menu,
   SecurityOutlined,
 } from "@mui/icons-material";
 import useAppContext from "./shared/hooks/app-context";
 import { ThemeSwitch } from "./shared/components/buttons";
 import { MyAppBar } from "./shared/components/appbar";
+import { useEffect } from "react";
+import { MyPopup } from "./shared/components/my-popup";
 
 const drawerItems: Array<DrawerItem> = [
   {
@@ -43,6 +45,7 @@ const drawerItems: Array<DrawerItem> = [
 function App() {
 
   const [context, dispatch] = useAppContext()
+  useEffect(() => { (!context.popupState) && dispatch({ action: "SET_POPUP_STATE", payload: { popupState: false } }) }, [context.popupState])
 
 
   return (
@@ -75,6 +78,9 @@ function App() {
           <Route path="items/*" element={<ItemsRouting />} />
           <Route path="businesses/*" element={<BusinessRoutes />} />
         </Routes>
+
+        <MyPopup />
+
       </ThemeProvider >
     </>
   );

@@ -24,6 +24,18 @@ export const BusinessList = ({ list }: BusinessListProp) => {
   const [context, dispatch] = useAppContext()
 
   const handleChange = (businessId: string) => dispatch({ action: "SET_BUSINESS", payload: { business: (list?.filter(b => b._id === businessId)[0]) } })
+  const handleAdd = () => {
+    dispatch({
+      action: "SET_POPUP_CHILD", payload: {
+        popupChild: <BusinessAdd />
+      }
+    })
+    dispatch({
+      action: "SET_POPUP_STATE", payload: {
+        popupState: true
+      }
+    })
+  }
 
   return (
     <>
@@ -61,9 +73,7 @@ export const BusinessList = ({ list }: BusinessListProp) => {
               {business.email}
             </Typography>
           </MenuItem>))}
-          <Button fullWidth onClick={() => {
-            context.navigate!(routes.ADD);
-          }} >
+          <Button fullWidth onClick={handleAdd} >
             <Add /> "Add IBusiness"
           </Button>
         </Select>

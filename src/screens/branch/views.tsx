@@ -29,6 +29,20 @@ export const BranchList = () => {
     return () => setBranches([]);
   }, [context.business]);
 
+
+  const handleAdd = () => {
+    dispatch({
+      action: "SET_POPUP_CHILD", payload: {
+        popupChild: <BranchAdd />
+      }
+    })
+    dispatch({
+      action: "SET_POPUP_STATE", payload: {
+        popupState: true
+      }
+    })
+  }
+
   return (<>
 
     <FormControl sx={{ m: 1, minWidth: 120 }} required>
@@ -68,7 +82,7 @@ export const BranchList = () => {
             {branch.email}
           </Typography>
         </MenuItem>))}
-        <Button fullWidth ><Add /> Add Branch</Button>
+        <Button fullWidth onClick={handleAdd} ><Add /> Add Branch</Button>
       </Select>
     </FormControl>
   </>
@@ -104,11 +118,14 @@ const branchReducer = (state: IBranch, action: { payload?: IBranch }) => {
 
 const branchReducerInitialValue: IBranch = {};
 
-interface BranchAddProps {
-  businessId: string;
-}
-
-export const BranchAdd = ({ businessId }: BranchAddProps) => {
+export const BranchAdd = () => {
+  const [context, contextDisptach] = useAppContext()
+  if (!context.business) {
+    contextDisptach({
+      action: "SET_POPUP_STATE",
+      payload: { popupState: false }
+    })
+  }
   const [branch, dispatch] = useReducer(
     branchReducer,
     branchReducerInitialValue
@@ -118,7 +135,7 @@ export const BranchAdd = ({ businessId }: BranchAddProps) => {
     dispatch({
       payload: {
         ...branch,
-        business: businessId,
+        business: context.business?._id,
       },
     });
   }, []);
