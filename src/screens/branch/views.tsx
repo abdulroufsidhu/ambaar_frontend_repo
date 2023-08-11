@@ -1,7 +1,5 @@
 import {
-  Box,
   Button,
-  Chip,
   FormControl,
   InputLabel,
   MenuItem,
@@ -12,48 +10,46 @@ import {
 } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { Branch, IBranch } from "../../shared/models/branch";
-import { Add, Save, VisibilityOutlined } from "@mui/icons-material";
+import { Add, Save } from "@mui/icons-material";
 import { useEffect, useReducer, useState } from "react";
-import { IBusiness } from "../../shared/models/business";
+import useAppContext from "../../shared/hooks/app-context";
 
-interface BranchListProp {
-  business: IBusiness;
-}
 
-export const BranchList = ({ business }: BranchListProp) => {
+export const BranchList = () => {
   const [branches, setBranches] = useState<Array<IBranch>>(() => []);
-  const [activeBranch, setActiveBranch] = useState<IBranch>();
+  const [context, dispatch] = useAppContext();
 
   useEffect(() => {
-    Branch.list(business._id ?? "")
+    dispatch({ action: "CLEAR_BRANCH" })
+    Branch.list(context.business?._id ?? "")
       .then((list) => {
-        console.info(list);
         setBranches(list ?? []);
       })
       .catch((error) => { console.error(error); setBranches([]) });
     return () => setBranches([]);
-  }, [business]);
+  }, [context.business]);
 
-  return (
+  return (<>
+
     <FormControl sx={{ m: 1, minWidth: 120 }} required>
       <InputLabel id="business-select-label">Business</InputLabel>
       <Select
         labelId="business-select-label"
         id="business-select"
-        value={activeBranch?._id}
+        value={context.branch?._id}
         label="Business"
-        onChange={(e) => setActiveBranch(branches.filter(b => b._id === e.target.value)[0])}
+        onChange={(e) => dispatch({ action: "SET_BRANCH", payload: { branch: branches.filter(b => b._id === e.target.value)[0] } })}
         renderValue={() => (<>
           {
-            (
-              (!!activeBranch) && (<>
-                <Typography variant="body1">
-                  {activeBranch.name}
-                </Typography>
-                <Typography variant="caption">
-                  {activeBranch.email}
-                </Typography>
-              </>)
+            (!!context.branch) &&
+            (<>
+              <Typography variant="body1">
+                {context.branch.name}
+              </Typography>
+              <Typography variant="caption">
+                {context.branch.email}
+              </Typography>
+            </>
             )
           }
         </>)}
@@ -75,6 +71,7 @@ export const BranchList = ({ business }: BranchListProp) => {
         <Button fullWidth ><Add /> Add Branch</Button>
       </Select>
     </FormControl>
+  </>
   );
 };
 

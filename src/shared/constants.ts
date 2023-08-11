@@ -25,3 +25,10 @@ export const ServerUrls = {
     add: "/permissions/create"
   }
 };
+
+export const MyDrawerConstants = {
+  width: {
+    min: "80px",
+    max: "240px"
+  }
+}

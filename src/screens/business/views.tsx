@@ -14,16 +14,16 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { routes } from "./router";
 import { Add, Save } from "@mui/icons-material";
 import { BranchList } from "../branch";
+import useAppContext from "../../shared/hooks/app-context";
 
 interface BusinessListProp {
   list?: Array<IBusiness>;
 }
 
 export const BusinessList = ({ list }: BusinessListProp) => {
-  const navigate = useNavigate();
-  const [activeBusiness, setActiveBusiness] = useState<IBusiness>()
+  const [context, dispatch] = useAppContext()
 
-  const handleChange = (businessId: string) => setActiveBusiness(list?.filter(b => b._id === businessId)[0])
+  const handleChange = (businessId: string) => dispatch({ action: "SET_BUSINESS", payload: { business: (list?.filter(b => b._id === businessId)[0]) } })
 
   return (
     <>
@@ -32,18 +32,18 @@ export const BusinessList = ({ list }: BusinessListProp) => {
         <Select
           labelId="business-select-label"
           id="business-select"
-          value={activeBusiness?._id}
+          value={context.business?._id}
           label="Business"
           onChange={(e) => handleChange(e.target.value)}
           renderValue={() => (<>
             {
               (
-                (!!activeBusiness) && (<>
+                (!!context.business) && (<>
                   <Typography variant="body1">
-                    {activeBusiness.name}
+                    {context.business.name}
                   </Typography>
                   <Typography variant="caption">
-                    {activeBusiness.email}
+                    {context.business.email}
                   </Typography>
                 </>)
               )
@@ -62,15 +62,14 @@ export const BusinessList = ({ list }: BusinessListProp) => {
             </Typography>
           </MenuItem>))}
           <Button fullWidth onClick={() => {
-            navigate(routes.ADD);
+            context.navigate!(routes.ADD);
           }} >
             <Add /> "Add IBusiness"
           </Button>
         </Select>
       </FormControl>
 
-      {(!!activeBusiness && <BranchList business={activeBusiness} />)}
-
+      {(context.business) && <BranchList />}
     </>
   );
 };
@@ -87,7 +86,7 @@ export const BusinessView = () => {
           <Typography variant="subtitle1">{business.email}</Typography>
           <Typography variant="subtitle1">{business.licence}</Typography>
         </Stack>
-        <BranchList business={business} />
+        <BranchList />
       </Stack>
     </>
   );
