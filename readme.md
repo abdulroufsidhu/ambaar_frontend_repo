@@ -2,7 +2,7 @@
 
 **Pre Requisites**
 
-- Setup ambaar-backend-repo
+- <a href="https://github.com/abdulroufsidhu/ambaar_backend_repo.git" target="_blank">Setup ambaar-backend-repo</a>
 
 **Quick Start**
 
