@@ -21,24 +21,24 @@ interface BusinessListProp {
 }
 
 export const BusinessList = ({ list }: BusinessListProp) => {
-  const [context, dispatch] = useAppContext()
+  const [context, dispatch] = useAppContext();
 
-  const handleChange = (businessId: string) => dispatch({ action: "SET_BUSINESS", payload: { business: (list?.filter(b => b._id === businessId)[0]) } })
+  const handleChange = (businessId: string) =>
+    dispatch({
+      action: "SET_BUSINESS",
+      payload: { business: list?.filter((b) => b._id === businessId)[0] },
+    });
   const handleAdd = () => {
     dispatch({
-      action: "SET_POPUP_CHILD", payload: {
-        popupChild: <BusinessAdd />
-      }
-    })
-    dispatch({
-      action: "SET_POPUP_STATE", payload: {
-        popupState: true
-      }
-    })
-  }
+      action: "OPEN_POPUP",
+      payload: {
+        popupChild: <BusinessAdd />,
+      },
+    });
+  };
 
   return (
-    <>
+    <Stack direction="row" flexWrap="wrap">
       <FormControl sx={{ m: 1, minWidth: 120 }} required>
         <InputLabel id="business-select-label">Business</InputLabel>
         <Select
@@ -47,40 +47,37 @@ export const BusinessList = ({ list }: BusinessListProp) => {
           value={context.business?._id}
           label="Business"
           onChange={(e) => handleChange(e.target.value)}
-          renderValue={() => (<>
-            {
-              (
-                (!!context.business) && (<>
+          renderValue={() => (
+            <>
+              {!!context.business && (
+                <>
                   <Typography variant="body1">
                     {context.business.name}
                   </Typography>
-                  <Typography variant="caption">
-                    {context.business.email}
-                  </Typography>
-                </>)
-              )
-            }
-          </>)}
+                </>
+              )}
+            </>
+          )}
         >
-          {list?.map(business => (<MenuItem sx={{ display: "flex", flexDirection: "column" }} key={`${business._id ?? ""}-menu name`} value={business._id}>
-            <Typography variant="body1">
-              {business.name}
-            </Typography>
-            <Typography variant="caption">
-              {business.contact}
-            </Typography>
-            <Typography variant="caption">
-              {business.email}
-            </Typography>
-          </MenuItem>))}
-          <Button fullWidth onClick={handleAdd} >
+          {list?.map((business) => (
+            <MenuItem
+              sx={{ display: "flex", flexDirection: "column" }}
+              key={`${business._id ?? ""}-menu name`}
+              value={business._id}
+            >
+              <Typography variant="body1">{business.name}</Typography>
+              <Typography variant="caption">{business.contact}</Typography>
+              <Typography variant="caption">{business.email}</Typography>
+            </MenuItem>
+          ))}
+          <Button fullWidth onClick={handleAdd}>
             <Add /> "Add IBusiness"
           </Button>
         </Select>
       </FormControl>
 
-      {(context.business) && <BranchList />}
-    </>
+      {context.business && <BranchList />}
+    </Stack>
   );
 };
 
@@ -112,13 +109,16 @@ const businessReducer = (state: IBusiness, action: { payload?: IBusiness }) => {
 const businessReducerInitialValue: IBusiness = {};
 
 export const BusinessAdd = () => {
+  const [context, contextDispatch] = useAppContext();
   const [business, dispatch] = React.useReducer(
     businessReducer,
     businessReducerInitialValue
   );
 
   const handleSaveButtonClick = () => {
-    Business.add(business).catch((error) => console.error(error));
+    Business.add(business)
+      .then(() => contextDispatch({ action: "CLOSE_POPUP" }))
+      .catch((error) => console.error(error));
   };
 
   return (
@@ -155,25 +155,25 @@ export const BusinessAdd = () => {
         <Typography variant="subtitle2">Founder Information</Typography>
         <TextField
           label="Founder Name"
-        // onChange={(e) => {
-        //   dispatch({
-        //     payload: {
-        //       founder: { ...business.founder, name: e.target.value },
-        //     },
-        //   });
-        // }}
-        // value={business.founder?.name}
+          // onChange={(e) => {
+          //   dispatch({
+          //     payload: {
+          //       founder: { ...business.founder, name: e.target.value },
+          //     },
+          //   });
+          // }}
+          // value={business.founder?.name}
         />
         <TextField
           label="Founder Contact"
-        // onChange={(e) => {
-        //   dispatch({
-        //     payload: {
-        //       founder: { ...business.founder, contact: e.target.value },
-        //     },
-        //   });
-        // }}
-        // value={business.founder?.contact}
+          // onChange={(e) => {
+          //   dispatch({
+          //     payload: {
+          //       founder: { ...business.founder, contact: e.target.value },
+          //     },
+          //   });
+          // }}
+          // value={business.founder?.contact}
         />
         <Button
           variant="outlined"
@@ -190,7 +190,13 @@ export const BusinessAdd = () => {
 export const BusinessMain = () => {
   return (
     <>
-      <Stack direction="row" flexWrap="wrap" justifyContent="center" alignItems="center" margin={2}>
+      <Stack
+        direction="row"
+        flexWrap="wrap"
+        justifyContent="center"
+        alignItems="center"
+        margin={2}
+      >
         <Outlet />
       </Stack>
     </>

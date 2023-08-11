@@ -1,15 +1,9 @@
 import "./index.css";
 import { ItemsRouting } from "./screens/item";
-import { ThemeProvider, styled } from "@mui/material/styles";
-import {
-  CssBaseline,
-  IconButton,
-  Popover,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { ThemeProvider } from "@mui/material/styles";
+import { Box, CssBaseline, Toolbar, Typography } from "@mui/material";
 import MyDrawer, { DrawerItem } from "./screens/drawer";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthRoutes } from "./screens/auth";
 import { BusinessRoutes } from "./screens/business/router";
 import {
@@ -18,70 +12,116 @@ import {
   SecurityOutlined,
 } from "@mui/icons-material";
 import useAppContext from "./shared/hooks/app-context";
-import { ThemeSwitch } from "./shared/components/buttons";
 import { MyAppBar } from "./shared/components/appbar";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MyPopup } from "./shared/components/my-popup";
-
-const drawerItems: Array<DrawerItem> = [
-  {
-    icon: <SecurityOutlined />,
-    path: "/",
-    text: "Auth",
-  },
-  {
-    icon: <LocalGroceryStoreOutlined />,
-    path: "/items",
-    text: "Items",
-  },
-  {
-    icon: <BusinessCenterOutlined />,
-    path: "/businesses",
-    text: "Businesses",
-  },
-];
-
+import { MyDrawerConstants } from "./shared/constants";
+import { MyProgressIndicator } from "./shared/components/progress-indicator";
+import { BusinessList } from "./screens/business";
+import { Business, IBusiness } from "./shared/models/business";
 
 function App() {
+  const [context, dispatch] = useAppContext();
+  const [businesses, setBusinesses] = useState<IBusiness[]>(() => []);
 
-  const [context, dispatch] = useAppContext()
-  useEffect(() => { (!context.popupState) && dispatch({ action: "SET_POPUP_STATE", payload: { popupState: false } }) }, [context.popupState])
+  useEffect(() => {
+    Business.list()
+      .then((list) => setBusinesses(list ?? []))
+      .catch((error) => console.error(error));
+    return () => setBusinesses([]);
+  }, [context.navigate]);
 
+  const drawerItems: Array<DrawerItem> = useMemo(() => {
+    if (!context.user?._id) {
+      return [
+        {
+          icon: <SecurityOutlined />,
+          path: "/",
+          text: "Auth",
+        },
+      ];
+    } else {
+      context.navigate && context.navigate("/items", { replace: true });
+      return [
+        {
+          icon: <LocalGroceryStoreOutlined />,
+          path: "/items",
+          text: "Items",
+        },
+        {
+          icon: <BusinessCenterOutlined />,
+          path: "/businesses",
+          text: "Businesses",
+        },
+      ];
+    }
+  }, [context.user]);
+
+  useEffect(() => {
+    !context.popupState && dispatch({ action: "CLOSE_POPUP" });
+  }, [context.popupState]);
 
   return (
     <>
       <ThemeProvider theme={context.theme!}>
         <CssBaseline />
-        <MyDrawer
-          drawerItems={drawerItems}
-        />
-        <MyAppBar open={context.drawerState}>
-          <Toolbar variant="regular">
+        <MyProgressIndicator />
+        <MyDrawer drawerItems={drawerItems} />
+        <MyAppBar color="default" open={context.drawerState}>
+          <Toolbar
+            sx={{
+              flexDirection: "row",
+              flexWrap: "wrap",
+              alignItems: "center",
+              flexGrow: 1,
+              justifyContent: "space-between",
+            }}
+            variant="regular"
+          >
             <Typography
-              variant="h6"
+              variant="h3"
               component="div"
-              sx={{ flexGrow: 1 }}
-              onClick={() => (!!context.navigate) && context.navigate("/", { replace: true })}
+              sx={{ marginLeft: 2 }}
+              onClick={() =>
+                !!context.navigate && context.navigate("/", { replace: true })
+              }
               className="unselectable"
             >
               {import.meta.env.VITE_APP_NAME}
             </Typography>
-            <ThemeSwitch
-              value={context.darkMode}
-              onChange={() => dispatch({ action: "SET_DARK_MODE", payload: { darkMode: !context.darkMode } })}
-            />
+
+            {!!context.user && <BusinessList list={businesses} />}
           </Toolbar>
         </MyAppBar>
 
-        <Routes>
-          <Route path="/*" element={<AuthRoutes />} />
-          <Route path="items/*" element={<ItemsRouting />} />
-          <Route path="businesses/*" element={<BusinessRoutes />} />
-        </Routes>
+        <Box
+          sx={{
+            marginLeft: `${
+              context.drawerState
+                ? MyDrawerConstants.width.max
+                : MyDrawerConstants.width.min
+            }`,
+            width: `calc(100% - ${
+              context.drawerState
+                ? MyDrawerConstants.width.max
+                : MyDrawerConstants.width.min
+            })`,
+          }}
+        >
+          {!context.user?._id && <Navigate to={"/"} replace />}
+          <Routes>
+            <Route path="/*" element={<AuthRoutes />} />
+            {!!context.user?._id && (
+              <>
+                <Route path="items/*" element={<ItemsRouting />} />
+                <Route path="businesses/*" element={<BusinessRoutes />} />
+              </>
+            )}
+          </Routes>
+        </Box>
 
         <MyPopup />
-
-      </ThemeProvider >
+      </ThemeProvider>
     </>
   );
 }

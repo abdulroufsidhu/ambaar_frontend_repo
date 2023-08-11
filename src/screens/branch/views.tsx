@@ -14,78 +14,77 @@ import { Add, Save } from "@mui/icons-material";
 import { useEffect, useReducer, useState } from "react";
 import useAppContext from "../../shared/hooks/app-context";
 
-
 export const BranchList = () => {
   const [branches, setBranches] = useState<Array<IBranch>>(() => []);
   const [context, dispatch] = useAppContext();
 
   useEffect(() => {
-    dispatch({ action: "CLEAR_BRANCH" })
+    dispatch({ action: "CLEAR_BRANCH" });
     Branch.list(context.business?._id ?? "")
       .then((list) => {
         setBranches(list ?? []);
       })
-      .catch((error) => { console.error(error); setBranches([]) });
+      .catch((error) => {
+        console.error(error);
+        setBranches([]);
+      });
     return () => setBranches([]);
   }, [context.business]);
 
-
   const handleAdd = () => {
     dispatch({
-      action: "SET_POPUP_CHILD", payload: {
-        popupChild: <BranchAdd />
-      }
-    })
-    dispatch({
-      action: "SET_POPUP_STATE", payload: {
-        popupState: true
-      }
-    })
-  }
+      action: "OPEN_POPUP",
+      payload: {
+        popupChild: <BranchAdd />,
+      },
+    });
+  };
 
-  return (<>
-
-    <FormControl sx={{ m: 1, minWidth: 120 }} required>
-      <InputLabel id="business-select-label">Business</InputLabel>
-      <Select
-        labelId="business-select-label"
-        id="business-select"
-        value={context.branch?._id}
-        label="Business"
-        onChange={(e) => dispatch({ action: "SET_BRANCH", payload: { branch: branches.filter(b => b._id === e.target.value)[0] } })}
-        renderValue={() => (<>
-          {
-            (!!context.branch) &&
-            (<>
-              <Typography variant="body1">
-                {context.branch.name}
-              </Typography>
-              <Typography variant="caption">
-                {context.branch.email}
-              </Typography>
-            </>
-            )
+  return (
+    <>
+      <FormControl sx={{ m: 1, minWidth: 120 }} required>
+        <InputLabel id="branch-select-label">Branch</InputLabel>
+        <Select
+          labelId="branch-select-label"
+          id="branch-select"
+          value={context.branch?._id}
+          label="Branch"
+          onChange={(e) =>
+            dispatch({
+              action: "SET_BRANCH",
+              payload: {
+                branch: branches.filter((b) => b._id === e.target.value)[0],
+              },
+            })
           }
-        </>)}
-      >
-        {branches?.map(branch => (<MenuItem sx={{ display: "flex", flexDirection: "column" }} key={`${branch._id ?? ""}-menu name`} value={branch._id}>
-          <Typography variant="body1">
-            {branch.name}
-          </Typography>
-          <Typography variant="subtitle2">
-            {branch.location}
-          </Typography>
-          <Typography variant="caption">
-            {branch.contact}
-          </Typography>
-          <Typography variant="caption">
-            {branch.email}
-          </Typography>
-        </MenuItem>))}
-        <Button fullWidth onClick={handleAdd} ><Add /> Add Branch</Button>
-      </Select>
-    </FormControl>
-  </>
+          renderValue={() => (
+            <>
+              {!!context.branch && (
+                <>
+                  <Typography variant="body1">{context.branch.name}</Typography>
+                </>
+              )}
+            </>
+          )}
+        >
+          {branches?.map((branch) => (
+            <MenuItem
+              sx={{ display: "flex", flexDirection: "column" }}
+              key={`${branch._id ?? ""}-menu name`}
+              value={branch._id}
+            >
+              <Typography variant="body1">{branch.name}</Typography>
+              <Typography variant="subtitle2">{branch.location}</Typography>
+              <Typography variant="caption">{branch.contact}</Typography>
+              <Typography variant="caption">{branch.email}</Typography>
+            </MenuItem>
+          ))}
+          <Button fullWidth onClick={handleAdd}>
+            <Add /> Add Branch
+          </Button>
+        </Select>
+      </FormControl>
+    </>
   );
 };
 
@@ -119,12 +118,9 @@ const branchReducer = (state: IBranch, action: { payload?: IBranch }) => {
 const branchReducerInitialValue: IBranch = {};
 
 export const BranchAdd = () => {
-  const [context, contextDisptach] = useAppContext()
+  const [context, contextDispatch] = useAppContext();
   if (!context.business) {
-    contextDisptach({
-      action: "SET_POPUP_STATE",
-      payload: { popupState: false }
-    })
+    contextDispatch({ action: "CLOSE_POPUP" });
   }
   const [branch, dispatch] = useReducer(
     branchReducer,
@@ -140,9 +136,10 @@ export const BranchAdd = () => {
     });
   }, []);
 
-  const handleSaveButtonClick = () => {
-    console.log(branch);
-    Branch.add(branch).catch((error) => console.error(error));
+  const handleSave = () => {
+    Branch.add(branch)
+      .then(() => contextDispatch({ action: "CLOSE_POPUP" }))
+      .catch((error) => console.error(error));
   };
 
   return (
@@ -176,11 +173,7 @@ export const BranchAdd = () => {
           }}
           value={branch.location}
         />
-        <Button
-          variant="outlined"
-          endIcon={<Save />}
-          onClick={handleSaveButtonClick}
-        >
+        <Button variant="outlined" endIcon={<Save />} onClick={handleSave}>
           Save
         </Button>
       </Stack>

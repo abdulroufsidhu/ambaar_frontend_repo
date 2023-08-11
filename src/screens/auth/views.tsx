@@ -4,21 +4,22 @@ import { routes } from "./router";
 import { useState } from "react";
 import { User } from "../../shared/models/user";
 import { Create, LoginOutlined } from "@mui/icons-material";
+import useAppContext from "../../shared/hooks/app-context";
 
 export const Login = () => {
-  const navigate = useNavigate();
+  const [context, dispatch] = useAppContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSignupButton = () => {
-    navigate(routes.SIGNUP);
+  const handleSignup = () => {
+    !!context.navigate && context.navigate(routes.SIGNUP);
   };
 
-  const handleLoginButton = () => {
+  const handleLogin = () => {
     User.login(email, password)
       .then((res) => {
-        console.log(res);
-        navigate("/items");
+        dispatch({ action: "SET_USER", payload: { user: res } });
+        !!context.navigate && context.navigate("/items");
       })
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       .catch((error) => console.error(error.request.response));
@@ -42,16 +43,12 @@ export const Login = () => {
       />
       <Button
         variant="outlined"
-        onClick={handleLoginButton}
+        onClick={handleLogin}
         startIcon={<LoginOutlined />}
       >
         Login
       </Button>
-      <Button
-        variant="text"
-        onClick={handleSignupButton}
-        startIcon={<Create />}
-      >
+      <Button variant="text" onClick={handleSignup} startIcon={<Create />}>
         Signup
       </Button>
     </>

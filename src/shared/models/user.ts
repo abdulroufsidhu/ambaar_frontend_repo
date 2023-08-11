@@ -5,7 +5,6 @@ import { ServerUrls } from "../constants";
 export interface IUser {
   _id?: string;
   person?: IPerson;
-  password?: string;
 }
 
 export class User {
@@ -35,5 +34,10 @@ export class User {
       })
       .then((respose) => (User.instance = respose.data));
 
-  static logout = () => (User.instance = undefined);
+  static logout = () =>
+    new Promise<IUser | undefined>((resolve, reject) => {
+      User.instance = undefined;
+      return resolve(undefined);
+      reject();
+    });
 }
