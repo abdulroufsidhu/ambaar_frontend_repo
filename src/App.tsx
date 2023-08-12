@@ -3,7 +3,7 @@ import { ItemsRouting } from "./screens/item";
 import { ThemeProvider } from "@mui/material/styles";
 import { Box, CssBaseline, Toolbar, Typography } from "@mui/material";
 import MyDrawer, { DrawerItem } from "./screens/drawer";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AuthRoutes } from "./screens/auth";
 import { BusinessRoutes } from "./screens/business/router";
 import {
@@ -22,6 +22,7 @@ import { Business, IBusiness } from "./shared/models/business";
 
 function App() {
   const [context, dispatch] = useAppContext();
+  const location = useLocation();
   const [businesses, setBusinesses] = useState<IBusiness[]>(() => []);
 
   useEffect(() => {
@@ -108,7 +109,9 @@ function App() {
             })`,
           }}
         >
-          {!context.user?._id && <Navigate to={"/"} replace />}
+          {(!location.pathname.match("/") ||
+            !location.pathname.match("/signup")) &&
+            !context.user?._id && <Navigate to="/" replace />}
           <Routes>
             <Route path="/*" element={<AuthRoutes />} />
             {!!context.user?._id && (
