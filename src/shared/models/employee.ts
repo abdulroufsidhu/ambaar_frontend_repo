@@ -9,10 +9,10 @@ export interface IEmployee {
   user?: IUser | string;
   branch?: IBranch | string;
   role?: string;
-  permissions?: Array<IPermission | string>
+  permissions?: Array<IPermission | string>;
 }
 
-export class Person {
+export class Employee {
   static add = (employee: IEmployee) =>
     axios<IEmployee>({
       method: "post",
@@ -32,13 +32,15 @@ export class Person {
       .catch((error) => console.error(error));
 
   static list = (employee: IEmployee) => {
-    const params: { uid?: string, branch_id?: string } = {}
-    if (typeof employee.user == "string" && !!employee.user) {
-      (params['uid'] = employee.user);
+    const params: { uid?: string; branch_id?: string } = {};
+    if (typeof employee.user == "string") {
+      params["uid"] = employee.user;
     }
-    if (typeof employee.branch == "string" && !!employee.branch) {
-      (params['branch_id'] = employee.branch);
+    if (typeof employee.branch == "string") {
+      params["branch_id"] = employee.branch;
     }
+    console.info(employee);
+    console.info(params);
     return axios<Array<IEmployee>>({
       method: "get",
       url: ServerUrls.employee.get,
@@ -46,5 +48,5 @@ export class Person {
     })
       .then((value) => value.data)
       .catch((error) => console.error(error));
-  }
+  };
 }

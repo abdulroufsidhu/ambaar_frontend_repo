@@ -1,14 +1,13 @@
 import {
   Box,
-  Container,
   Divider,
-  Fab,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { MyFab } from "../../shared/components/buttons";
 
 const items = [
   {
@@ -71,6 +70,9 @@ function ListItems() {
   const navigate = useNavigate();
 
   const navigateTo = (path: string) => navigate(path);
+  const handleAdd: () => undefined = () => {
+    console.log("clicked");
+  };
 
   return (
     <Box>
@@ -95,6 +97,7 @@ function ListItems() {
           </>
         ))}
       </List>
+      <MyFab label={"Add Item"} onClick={handleAdd}></MyFab>
     </Box>
   );
 }

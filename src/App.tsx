@@ -8,7 +8,9 @@ import { AuthRoutes } from "./screens/auth";
 import { BusinessRoutes } from "./screens/business/router";
 import {
   BusinessCenterOutlined,
+  GroupOutlined,
   LocalGroceryStoreOutlined,
+  Person2Outlined,
   SecurityOutlined,
 } from "@mui/icons-material";
 import useAppContext from "./shared/hooks/app-context";
@@ -19,6 +21,7 @@ import { MyDrawerConstants } from "./shared/constants";
 import { MyProgressIndicator } from "./shared/components/progress-indicator";
 import { BusinessList } from "./screens/business";
 import { Business, IBusiness } from "./shared/models/business";
+import { EmployeeRoutes } from "./screens/employee";
 
 function App() {
   const [context, dispatch] = useAppContext();
@@ -50,9 +53,9 @@ function App() {
           text: "Items",
         },
         {
-          icon: <BusinessCenterOutlined />,
-          path: "/businesses",
-          text: "Businesses",
+          icon: <GroupOutlined />,
+          path: "/employee",
+          text: "Employee",
         },
       ];
     }
@@ -117,7 +120,7 @@ function App() {
             {!!context.user?._id && (
               <>
                 <Route path="items/*" element={<ItemsRouting />} />
-                <Route path="businesses/*" element={<BusinessRoutes />} />
+                <Route path="employee/*" element={<EmployeeRoutes />} />
               </>
             )}
           </Routes>

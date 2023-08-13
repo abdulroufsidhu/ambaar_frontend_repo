@@ -21,9 +21,7 @@ export const MyFab = ({ label, startIcon, endIcon, onClick }: MyFabProps) => {
       }}
     >
       <Fab aria-label="add" variant="extended" onClick={onClick}>
-        {!!startIcon && startIcon}
-        {label}
-        {!!endIcon && endIcon}
+        {!!startIcon && startIcon} {label} {!!endIcon && endIcon}
       </Fab>
     </Container>
   );

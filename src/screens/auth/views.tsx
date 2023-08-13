@@ -2,7 +2,7 @@ import { Button, Stack, TextField, Typography } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 import { routes } from "./router";
 import { useState } from "react";
-import { User } from "../../shared/models/user";
+import { User, IUser } from "../../shared/models/user";
 import { Create, LoginOutlined } from "@mui/icons-material";
 import useAppContext from "../../shared/hooks/app-context";
 
@@ -55,8 +55,11 @@ export const Login = () => {
   );
 };
 
-export const Signup = () => {
-  const navigate = useNavigate();
+interface SignupProps {
+  onSuccess: (user: IUser) => undefined;
+}
+
+export const Signup = ({ onSuccess }: SignupProps) => {
   const [name, setname] = useState("");
   const [username, setusername] = useState("");
   const [contact, setcontact] = useState("");
@@ -77,10 +80,7 @@ export const Signup = () => {
         },
         password
       )
-        .then((response) => {
-          console.info("signup success: ", response);
-          navigate("/items");
-        })
+        .then(onSuccess)
         .catch((error) => console.error(error));
     }
   };

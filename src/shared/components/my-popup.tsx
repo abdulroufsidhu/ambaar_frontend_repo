@@ -1,4 +1,4 @@
-import { Popover } from "@mui/material";
+import { Popover, Container } from "@mui/material";
 
 import useAppContext from "../hooks/app-context";
 
@@ -20,7 +20,7 @@ export const MyPopup = () => {
       onClose={handlePopoverClose}
       open={context.popupState!}
     >
-      {context.popupChild}
+      <Container sx={{ padding: 4 }}>{context.popupChild}</Container>
     </Popover>
   );
 };
