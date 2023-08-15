@@ -5,12 +5,9 @@ import { Box, CssBaseline, Toolbar, Typography } from "@mui/material";
 import MyDrawer, { DrawerItem } from "./screens/drawer";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AuthRoutes } from "./screens/auth";
-import { BusinessRoutes } from "./screens/business/router";
 import {
-  BusinessCenterOutlined,
   GroupOutlined,
   LocalGroceryStoreOutlined,
-  Person2Outlined,
   SecurityOutlined,
 } from "@mui/icons-material";
 import useAppContext from "./shared/hooks/app-context";
@@ -100,16 +97,14 @@ function App() {
 
         <Box
           sx={{
-            marginLeft: `${
-              context.drawerState
-                ? MyDrawerConstants.width.max
-                : MyDrawerConstants.width.min
-            }`,
-            width: `calc(100% - ${
-              context.drawerState
-                ? MyDrawerConstants.width.max
-                : MyDrawerConstants.width.min
-            })`,
+            marginLeft: `${context.drawerState
+              ? MyDrawerConstants.width.max
+              : MyDrawerConstants.width.min
+              }`,
+            width: `calc(100% - ${context.drawerState
+              ? MyDrawerConstants.width.max
+              : MyDrawerConstants.width.min
+              })`,
           }}
         >
           {(!location.pathname.match("/") ||

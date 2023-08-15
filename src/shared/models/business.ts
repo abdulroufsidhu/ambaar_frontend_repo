@@ -8,15 +8,16 @@ export interface IBusiness {
   email?: string;
   contact?: string;
   licence?: string;
-  founder?: IPerson;
+  location?: string;
+  founder?: IPerson | string;
 }
 
 export class Business {
-  static add = (business: IBusiness) =>
+  static add = (user_id: string, business: IBusiness) =>
     axios<IBusiness>({
       method: "post",
       url: ServerUrls.business.add,
-      data: { ...business },
+      data: { user_id, ...business },
     })
       .then((value) => value.data)
       .catch((error) => console.error(error));

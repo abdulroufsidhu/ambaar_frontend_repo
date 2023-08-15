@@ -111,11 +111,15 @@ export const BusinessAdd = () => {
   const [context, contextDispatch] = useAppContext();
   const [business, dispatch] = React.useReducer(
     businessReducer,
-    businessReducerInitialValue
+    {
+      founder: context.user?.person?._id
+    }
   );
 
   const handleSaveButtonClick = () => {
-    Business.add(business)
+    dispatch({ payload: { founder: context.user?.person?._id } })
+    console.info(context.user?.person?._id)
+    Business.add(context.user?._id ?? "", business)
       .then(() => contextDispatch({ action: "CLOSE_POPUP" }))
       .catch((error) => console.error(error));
   };
@@ -123,57 +127,52 @@ export const BusinessAdd = () => {
   return (
     <>
       <Stack spacing={2} margin={2}>
-        <TextField
-          label="Name*"
-          onChange={(e) => {
-            dispatch({ payload: { name: e.target.value } });
-          }}
-          value={business.name}
-        />
-        <TextField
-          label="Contact"
-          onChange={(e) => {
-            dispatch({ payload: { contact: e.target.value } });
-          }}
-          value={business.contact}
-        />
-        <TextField
-          label="Email*"
-          onChange={(e) => {
-            dispatch({ payload: { email: e.target.value } });
-          }}
-          value={business.email}
-        />
-        <TextField
-          label="Licence"
-          onChange={(e) => {
-            dispatch({ payload: { licence: e.target.value } });
-          }}
-          value={business.licence}
-        />
-        <Typography variant="subtitle2">Founder Information</Typography>
-        <TextField
-          label="Founder Name"
-          // onChange={(e) => {
-          //   dispatch({
-          //     payload: {
-          //       founder: { ...business.founder, name: e.target.value },
-          //     },
-          //   });
-          // }}
-          // value={business.founder?.name}
-        />
-        <TextField
-          label="Founder Contact"
-          // onChange={(e) => {
-          //   dispatch({
-          //     payload: {
-          //       founder: { ...business.founder, contact: e.target.value },
-          //     },
-          //   });
-          // }}
-          // value={business.founder?.contact}
-        />
+        <FormControl required >
+          <TextField
+            label="Name*"
+            onChange={(e) => {
+              dispatch({ payload: { name: e.target.value } });
+            }}
+            value={business.name}
+          />
+        </FormControl>
+        <FormControl required>
+          <TextField
+            label="Contact"
+            onChange={(e) => {
+              dispatch({ payload: { contact: e.target.value } });
+            }}
+            value={business.contact}
+          />
+        </FormControl>
+        <FormControl required>
+          <TextField
+            type="email"
+            label="Email*"
+            onChange={(e) => {
+              dispatch({ payload: { email: e.target.value } });
+            }}
+            value={business.email}
+          />
+        </FormControl>
+        <FormControl required>
+          <TextField
+            label="Licence"
+            onChange={(e) => {
+              dispatch({ payload: { licence: e.target.value } });
+            }}
+            value={business.licence}
+          />
+        </FormControl>
+        <FormControl required>
+          <TextField
+            label="Location"
+            onChange={(e) => {
+              dispatch({ payload: { location: e.target.value } });
+            }}
+            value={business.location}
+          />
+        </FormControl>
         <Button
           variant="outlined"
           endIcon={<Save />}
