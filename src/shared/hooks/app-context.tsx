@@ -6,6 +6,7 @@ import { IBranch } from "../models/branch";
 import { IBusiness } from "../models/business";
 import { IUser } from "../models/user";
 import { Theme, createTheme } from "@mui/material";
+import { IEmployee } from "../models/employee";
 
 interface ApplicationContext {
   navigate?: NavigateFunction;
@@ -17,6 +18,7 @@ interface ApplicationContext {
   business?: IBusiness;
   theme?: Theme;
   user?: IUser;
+  jobs?: IEmployee[];
 }
 
 type ContextActions =
@@ -26,6 +28,7 @@ type ContextActions =
   | "SET_DRAWER_STATE"
   | "SET_THEME_DARK"
   | "SET_THEME_LIGHT"
+  | "SET_JOBS"
   | "TOGGLE_THEME"
   | "SET_BRANCH"
   | "CLEAR_BRANCH"
@@ -42,6 +45,8 @@ function appContextReducer(
   action: ApplicationContextAction
 ): ApplicationContext {
   switch (action.action) {
+    case "SET_JOBS":
+      return { ...state, jobs: action.payload?.jobs }
     case "SET_NAVIGATE":
       return { ...state, navigate: action.payload?.navigate };
     case "OPEN_POPUP":
@@ -118,6 +123,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
           : "light",
       },
     }),
+    jobs: []
   });
 
   axios.defaults.baseURL = ServerUrls.baseUrl;

@@ -31,16 +31,15 @@ export class Employee {
       .then((value) => value.data)
       .catch((error) => console.error(error));
 
-  static list = (employee: IEmployee) => {
+  static list = ({ user, branch }: IEmployee) => {
     const params: { uid?: string; branch_id?: string } = {};
-    if (typeof employee.user == "string") {
-      params["uid"] = employee.user;
+    if (typeof user === "string") {
+      params["uid"] = user;
     }
-    if (typeof employee.branch == "string") {
-      params["branch_id"] = employee.branch;
+    if (typeof branch === "string") {
+      params["branch_id"] = branch;
     }
-    console.info(employee);
-    console.info(params);
+    console.info(params, branch, user);
     return axios<Array<IEmployee>>({
       method: "get",
       url: ServerUrls.employee.get,

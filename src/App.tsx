@@ -17,7 +17,8 @@ import { MyPopup } from "./shared/components/my-popup";
 import { MyDrawerConstants } from "./shared/constants";
 import { MyProgressIndicator } from "./shared/components/progress-indicator";
 import { BusinessList } from "./screens/business";
-import { Business, IBusiness } from "./shared/models/business";
+import { IBusiness } from "./shared/models/business";
+import { IBranch } from "./shared/models/branch";
 import { EmployeeRoutes } from "./screens/employee";
 
 function App() {
@@ -26,11 +27,20 @@ function App() {
   const [businesses, setBusinesses] = useState<IBusiness[]>(() => []);
 
   useEffect(() => {
-    Business.list()
-      .then((list) => setBusinesses(list ?? []))
-      .catch((error) => console.error(error));
+    const b: IBusiness[] | undefined = context.jobs
+      ?.filter(job => !!job.branch)
+      .map(
+        job => (
+          (
+            !!job.branch &&
+            (job.branch as IBranch).business as IBusiness
+          ) as IBusiness
+        )
+      )
+    console.log(b)
+    setBusinesses(b ?? []);
     return () => setBusinesses([]);
-  }, [context.navigate]);
+  }, [context.jobs]);
 
   const drawerItems: Array<DrawerItem> = useMemo(() => {
     if (!context.user?._id) {

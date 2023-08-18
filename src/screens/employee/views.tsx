@@ -37,6 +37,7 @@ export const EmployeeAdd = () => {
   );
 
   const handleSignup: (user: IUser) => undefined = (user: IUser) => {
+    console.info("employee user signup", user)
     employeeDispatch({
       payload: { user: user._id, branch: context.branch?._id },
     });
@@ -44,16 +45,18 @@ export const EmployeeAdd = () => {
   };
 
   const handleAddEmployee = () => {
+    console.info(employee)
     Employee.add(employee)
-      .then(() => {
+      .then((response) => {
         dispatch({ action: "CLOSE_POPUP" });
+        !!response && dispatch({ action: "SET_JOBS", payload: { jobs: [...(context.jobs as IEmployee[]), response] } })
       })
       .catch((error) => console.error(error));
   };
 
   return (
     <>
-      <Stack>
+      <Stack spacing={2}>
         {userAdded ? (
           <>
             <FormControl required>
@@ -70,7 +73,7 @@ export const EmployeeAdd = () => {
         ) : (
           <Signup onSuccess={handleSignup} />
         )}
-      </Stack>
+      </Stack >
     </>
   );
 };
@@ -97,8 +100,8 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
           <>
             <ListItem>
               <ListItemText
-                primary={employee.role}
-                secondary={(employee.user as IUser).person?.name}
+                primary={(employee.user as IUser).person?.name}
+                secondary={employee.role}
               />
             </ListItem>
             <Divider />

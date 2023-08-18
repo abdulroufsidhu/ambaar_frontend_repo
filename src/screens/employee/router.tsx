@@ -3,6 +3,7 @@ import { EmployeeAdd, EmployeeList, EmployeeMain, EmployeeView } from ".";
 import useAppContext from "../../shared/hooks/app-context";
 import { useState, useEffect } from "react";
 import { Employee, IEmployee } from "../../shared/models/employee";
+import { User } from "../../shared/models/user";
 
 export const EmployeeRoutes = () => {
   const [context, dispatch] = useAppContext();
@@ -11,7 +12,12 @@ export const EmployeeRoutes = () => {
   useEffect(() => {
     console.info("fetching employees");
     Employee.list({ branch: context.branch?._id })
-      .then((list) => setEmployees(list ?? []))
+      .then(
+        (list) => {
+          console.info("employees", list)
+          setEmployees(list ?? [])
+        }
+      )
       .catch((error) => {
         console.error(error), setEmployees([]);
       });

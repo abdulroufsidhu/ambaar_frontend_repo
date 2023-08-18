@@ -5,6 +5,7 @@ import { useState } from "react";
 import { User, IUser } from "../../shared/models/user";
 import { Create, LoginOutlined } from "@mui/icons-material";
 import useAppContext from "../../shared/hooks/app-context";
+import { Employee } from "../../shared/models/employee";
 
 export const Login = () => {
   const [context, dispatch] = useAppContext();
@@ -19,6 +20,19 @@ export const Login = () => {
     User.login(email, password)
       .then((res) => {
         dispatch({ action: "SET_USER", payload: { user: res } });
+        Employee.list({ user: res._id })
+          .then(
+            list => {
+              console.info(list);
+              dispatch({
+                action: "SET_JOBS",
+                payload: {
+                  jobs: list ?? []
+                }
+              })
+            }
+          )
+          .catch(error => console.error(error))
         !!context.navigate && context.navigate("/items");
       })
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
