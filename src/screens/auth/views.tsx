@@ -19,7 +19,7 @@ export const Login = () => {
   const handleLogin = () => {
     User.login(email, password)
       .then((res) => {
-        !!context.navigate && context.navigate("/items");
+        !!context.navigate && context.navigate("/products");
       })
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       .catch((error) => console.error(error.request.response));
