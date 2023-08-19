@@ -1,11 +1,10 @@
 import { Button, Stack, TextField, Typography } from "@mui/material";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { routes } from "./router";
 import { useState } from "react";
 import { User, IUser } from "../../shared/models/user";
 import { Create, LoginOutlined } from "@mui/icons-material";
 import useAppContext from "../../shared/hooks/app-context";
-import { Employee } from "../../shared/models/employee";
 
 export const Login = () => {
   const [context, dispatch] = useAppContext();
