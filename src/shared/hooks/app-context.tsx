@@ -17,8 +17,6 @@ interface ApplicationContext {
   branch?: IBranch;
   business?: IBusiness;
   theme?: Theme;
-  user?: IUser;
-  jobs?: IEmployee[];
 }
 
 type ContextActions =
@@ -28,12 +26,10 @@ type ContextActions =
   | "SET_DRAWER_STATE"
   | "SET_THEME_DARK"
   | "SET_THEME_LIGHT"
-  | "SET_JOBS"
   | "TOGGLE_THEME"
   | "SET_BRANCH"
   | "CLEAR_BRANCH"
-  | "SET_BUSINESS"
-  | "SET_USER";
+  | "SET_BUSINESS";
 
 interface ApplicationContextAction {
   action?: ContextActions;
@@ -45,8 +41,6 @@ function appContextReducer(
   action: ApplicationContextAction
 ): ApplicationContext {
   switch (action.action) {
-    case "SET_JOBS":
-      return { ...state, jobs: action.payload?.jobs }
     case "SET_NAVIGATE":
       return { ...state, navigate: action.payload?.navigate };
     case "OPEN_POPUP":
@@ -89,8 +83,6 @@ function appContextReducer(
       return { ...state, branch: undefined };
     case "SET_BUSINESS":
       return { ...state, business: action.payload?.business };
-    case "SET_USER":
-      return { ...state, user: action.payload?.user };
     default:
       return state;
   }
@@ -123,7 +115,6 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
           : "light",
       },
     }),
-    jobs: []
   });
 
   axios.defaults.baseURL = ServerUrls.baseUrl;

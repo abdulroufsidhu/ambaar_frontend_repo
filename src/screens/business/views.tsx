@@ -14,6 +14,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { Add, Save } from "@mui/icons-material";
 import { BranchList } from "../branch";
 import useAppContext from "../../shared/hooks/app-context";
+import { User } from "../../shared/models/user";
 
 interface BusinessListProp {
   list?: Array<IBusiness>;
@@ -105,21 +106,16 @@ const businessReducer = (state: IBusiness, action: { payload?: IBusiness }) => {
   return state;
 };
 
-const businessReducerInitialValue: IBusiness = {};
-
 export const BusinessAdd = () => {
-  const [context, contextDispatch] = useAppContext();
-  const [business, dispatch] = React.useReducer(
-    businessReducer,
-    {
-      founder: context.user?.person?._id
-    }
-  );
+  const [_, contextDispatch] = useAppContext();
+  const user = User.getInstance();
+  const [business, dispatch] = React.useReducer(businessReducer, {
+    founder: user?.person?._id,
+  });
 
   const handleSaveButtonClick = () => {
-    dispatch({ payload: { founder: context.user?.person?._id } })
-    console.info(context.user?.person?._id)
-    Business.add(context.user?._id ?? "", business)
+    console.info(user?.person?._id);
+    Business.add(user?._id ?? "", business)
       .then(() => contextDispatch({ action: "CLOSE_POPUP" }))
       .catch((error) => console.error(error));
   };
@@ -127,7 +123,7 @@ export const BusinessAdd = () => {
   return (
     <>
       <Stack spacing={2} margin={2}>
-        <FormControl required >
+        <FormControl required>
           <TextField
             label="Name*"
             onChange={(e) => {

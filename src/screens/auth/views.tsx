@@ -19,20 +19,6 @@ export const Login = () => {
   const handleLogin = () => {
     User.login(email, password)
       .then((res) => {
-        dispatch({ action: "SET_USER", payload: { user: res } });
-        Employee.list({ user: res._id })
-          .then(
-            list => {
-              console.info(list);
-              dispatch({
-                action: "SET_JOBS",
-                payload: {
-                  jobs: list ?? []
-                }
-              })
-            }
-          )
-          .catch(error => console.error(error))
         !!context.navigate && context.navigate("/items");
       })
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

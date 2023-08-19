@@ -1,5 +1,5 @@
 import "./index.css";
-import { ItemsRouting } from "./screens/item";
+import { ItemsRouting } from "./screens/inventory";
 import { ThemeProvider } from "@mui/material/styles";
 import { Box, CssBaseline, Toolbar, Typography } from "@mui/material";
 import MyDrawer, { DrawerItem } from "./screens/drawer";
@@ -20,30 +20,30 @@ import { BusinessList } from "./screens/business";
 import { IBusiness } from "./shared/models/business";
 import { IBranch } from "./shared/models/branch";
 import { EmployeeRoutes } from "./screens/employee";
+import { User } from "./shared/models/user";
 
 function App() {
   const [context, dispatch] = useAppContext();
   const location = useLocation();
   const [businesses, setBusinesses] = useState<IBusiness[]>(() => []);
+  const user = User.getInstance();
 
   useEffect(() => {
-    const b: IBusiness[] | undefined = context.jobs
-      ?.filter(job => !!job.branch)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    const b = user?.jobs
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      ?.filter((job) => !!job.branch)
       .map(
-        job => (
-          (
-            !!job.branch &&
-            (job.branch as IBranch).business as IBusiness
-          ) as IBusiness
-        )
-      )
-    console.log(b)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        (job) => !!job.branch && ((job.branch as IBranch).business as IBusiness)
+      );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     setBusinesses(b ?? []);
     return () => setBusinesses([]);
-  }, [context.jobs]);
+  }, [user?.jobs]);
 
   const drawerItems: Array<DrawerItem> = useMemo(() => {
-    if (!context.user?._id) {
+    if (!user?._id) {
       return [
         {
           icon: <SecurityOutlined />,
@@ -56,8 +56,8 @@ function App() {
       return [
         {
           icon: <LocalGroceryStoreOutlined />,
-          path: "/items",
-          text: "Items",
+          path: "/products",
+          text: "Products",
         },
         {
           icon: <GroupOutlined />,
@@ -66,7 +66,7 @@ function App() {
         },
       ];
     }
-  }, [context.user]);
+  }, [user]);
 
   useEffect(() => {
     !context.popupState && dispatch({ action: "CLOSE_POPUP" });
@@ -101,30 +101,32 @@ function App() {
               {import.meta.env.VITE_APP_NAME}
             </Typography>
 
-            {!!context.user && <BusinessList list={businesses} />}
+            {!!user && <BusinessList list={businesses} />}
           </Toolbar>
         </MyAppBar>
 
         <Box
           sx={{
-            marginLeft: `${context.drawerState
-              ? MyDrawerConstants.width.max
-              : MyDrawerConstants.width.min
-              }`,
-            width: `calc(100% - ${context.drawerState
-              ? MyDrawerConstants.width.max
-              : MyDrawerConstants.width.min
-              })`,
+            marginLeft: `${
+              context.drawerState
+                ? MyDrawerConstants.width.max
+                : MyDrawerConstants.width.min
+            }`,
+            width: `calc(100% - ${
+              context.drawerState
+                ? MyDrawerConstants.width.max
+                : MyDrawerConstants.width.min
+            })`,
           }}
         >
           {(!location.pathname.match("/") ||
             !location.pathname.match("/signup")) &&
-            !context.user?._id && <Navigate to="/" replace />}
+            !user?._id && <Navigate to="/" replace />}
           <Routes>
             <Route path="/*" element={<AuthRoutes />} />
-            {!!context.user?._id && (
+            {!!user?._id && (
               <>
-                <Route path="items/*" element={<ItemsRouting />} />
+                <Route path="products/*" element={<ItemsRouting />} />
                 <Route path="employee/*" element={<EmployeeRoutes />} />
               </>
             )}

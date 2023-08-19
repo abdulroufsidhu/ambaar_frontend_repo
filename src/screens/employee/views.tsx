@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { IEmployee, Employee } from "../../shared/models/employee";
-import { IUser } from "../../shared/models/user";
+import { IUser, User } from "../../shared/models/user";
 import useAppContext from "../../shared/hooks/app-context";
 import { Signup } from "../auth";
 import { useReducer, useState } from "react";
@@ -37,7 +37,7 @@ export const EmployeeAdd = () => {
   );
 
   const handleSignup: (user: IUser) => undefined = (user: IUser) => {
-    console.info("employee user signup", user)
+    console.info("employee user signup", user);
     employeeDispatch({
       payload: { user: user._id, branch: context.branch?._id },
     });
@@ -45,11 +45,10 @@ export const EmployeeAdd = () => {
   };
 
   const handleAddEmployee = () => {
-    console.info(employee)
+    console.info(employee);
     Employee.add(employee)
       .then((response) => {
-        dispatch({ action: "CLOSE_POPUP" });
-        !!response && dispatch({ action: "SET_JOBS", payload: { jobs: [...(context.jobs as IEmployee[]), response] } })
+        !!response && User.getInstance()?.jobs?.push(response);
       })
       .catch((error) => console.error(error));
   };
@@ -73,7 +72,7 @@ export const EmployeeAdd = () => {
         ) : (
           <Signup onSuccess={handleSignup} />
         )}
-      </Stack >
+      </Stack>
     </>
   );
 };

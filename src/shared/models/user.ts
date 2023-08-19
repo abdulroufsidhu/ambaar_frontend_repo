@@ -1,10 +1,12 @@
 import axios from "axios";
 import { IPerson } from "./person";
 import { ServerUrls } from "../constants";
+import { Employee, IEmployee } from "./employee";
 
 export interface IUser {
   _id?: string;
   person?: IPerson;
+  jobs?: IEmployee[];
 }
 
 export class User {
@@ -24,7 +26,21 @@ export class User {
         email,
         password,
       },
-    }).then((resposne) => (User.instance = resposne.data));
+    }).then((resposne) => {
+      User.instance = resposne.data;
+      return (
+        !!User.instance &&
+        Employee.list({ user: User.instance._id })
+          .then((list) => {
+            User.instance!.jobs = list ?? [];
+            return User.instance;
+          })
+          .catch((error) => {
+            console.error(error);
+            return User.instance;
+          })
+      );
+    });
 
   static signup = (person: IPerson, password: string) =>
     axios
