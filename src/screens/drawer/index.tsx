@@ -80,6 +80,7 @@ const MyCustomDrawer = styled(Drawer, {
 
 const MyDrawer = ({ drawerItems }: DrawerProps) => {
   const [context, dispatch] = useAppContext();
+  const user = User.getInstance();
 
   const toggleDrawer = (state: boolean) =>
     dispatch({ action: "SET_DRAWER_STATE", payload: { drawerState: state } });
@@ -102,7 +103,7 @@ const MyDrawer = ({ drawerItems }: DrawerProps) => {
           {context.drawerState ? <ChevronLeftOutlined /> : <Menu />}
         </IconButton>
       </DrawerHeader>
-      <List key="drawer-list">
+      <List key="drawer.list">
         <ListItem key={`drawer-theme-button-list-item`}>
           <ThemeSwitch
             key={`drawer-theme-button-switch-list-item`}
@@ -139,7 +140,7 @@ const MyDrawer = ({ drawerItems }: DrawerProps) => {
             </ListItem>
           </>
         ))}
-        {context.user?._id && (
+        {user?._id && (
           <>
             <Divider />
             <ListItem key={`drawer-logout-button-list-item`}>
@@ -147,16 +148,16 @@ const MyDrawer = ({ drawerItems }: DrawerProps) => {
                 key={`drawer-logout-button-list-item-button`}
                 onClick={() => {
                   User.logout()
-                    .then((v) =>
-                      dispatch({ action: "SET_USER", payload: { user: v } })
-                    )
+                    .then(() => {
+                      !!context.navigate && context.navigate("/");
+                    })
                     .catch((error) => console.error(error));
                 }}
               >
                 <ListItemIcon
                   key={`drawer-logout-button-list-item-button-icon`}
                 >
-                  <LogoutOutlined />
+                  <LogoutOutlined key="drawer-logout-button-list-item-button-icon-icon" />
                 </ListItemIcon>
 
                 <ListItemText

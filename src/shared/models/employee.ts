@@ -6,8 +6,8 @@ import { IPermission } from "./permission";
 
 export interface IEmployee {
   _id?: string;
-  user?: IUser | string;
-  branch?: IBranch | string;
+  user?: IUser;
+  branch?: IBranch;
   role?: string;
   permissions?: Array<IPermission | string>;
 }
@@ -33,13 +33,12 @@ export class Employee {
 
   static list = ({ user, branch }: IEmployee) => {
     const params: { uid?: string; branch_id?: string } = {};
-    if (typeof user === "string") {
-      params["uid"] = user;
+    if (typeof user?._id === "string") {
+      params["uid"] = user?._id;
     }
-    if (typeof branch === "string") {
-      params["branch_id"] = branch;
+    if (typeof branch?._id === "string") {
+      params["branch_id"] = branch?._id;
     }
-    console.info(params, branch, user);
     return axios<Array<IEmployee>>({
       method: "get",
       url: ServerUrls.employee.get,

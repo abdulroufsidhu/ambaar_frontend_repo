@@ -12,13 +12,33 @@ export interface IUser {
 export class User {
   private static instance?: IUser;
 
-  static getInstance = () => User.instance;
+  static getInstance = () => {
+    if (!User.instance) {
+      const u = sessionStorage.getItem("user");
+      if (u) {
+        User.instance = JSON.parse(u) as IUser;
+        if (User.instance) {
+          Employee.list({ user: User.instance })
+            .then((jobs) => {
+              if (User.instance) {
+                User.instance.jobs = jobs ?? [];
+                console.log("ReSetting Session", User.instance);
+                sessionStorage.setItem("user", JSON.stringify(User.instance));
+              }
+            })
+            .catch((error) => console.error(error));
+        }
+      }
+      console.table(User.instance);
+    }
+    return User.instance;
+  };
 
   private constructor(user: IUser) {
     User.instance = user;
   }
 
-  static login = (email: string, password: string) =>
+  static login = async (email: string, password: string) =>
     axios<IUser>({
       method: "get",
       url: ServerUrls.auth.login,
@@ -30,9 +50,10 @@ export class User {
       User.instance = resposne.data;
       return (
         !!User.instance &&
-        Employee.list({ user: User.instance._id })
+        Employee.list({ user: User.instance })
           .then((list) => {
             User.instance!.jobs = list ?? [];
+            sessionStorage.setItem("user", JSON.stringify(User.instance));
             return User.instance;
           })
           .catch((error) => {
@@ -42,7 +63,7 @@ export class User {
       );
     });
 
-  static signup = (person: IPerson, password: string) =>
+  static signup = async (person: IPerson, password: string) =>
     axios
       .post<IUser>(ServerUrls.auth.signup, {
         person: person,
@@ -50,10 +71,19 @@ export class User {
       })
       .then((respose) => (User.instance = respose.data));
 
-  static logout = () =>
+  static logout = async () =>
     new Promise<IUser | undefined>((resolve, reject) => {
+      sessionStorage.removeItem("user");
       User.instance = undefined;
       return resolve(undefined);
       reject();
     });
+
+  static addJob = (job: IEmployee) => {
+    if (User.instance) {
+      const previousJobs = User.instance.jobs ?? [];
+      User.instance.jobs = [...previousJobs, job];
+      sessionStorage.setItem("user", JSON.stringify(User.instance));
+    }
+  };
 }

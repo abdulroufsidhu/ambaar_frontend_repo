@@ -8,6 +8,7 @@ import { AuthRoutes } from "./screens/auth";
 import {
   GroupOutlined,
   LocalGroceryStoreOutlined,
+  Logout,
   SecurityOutlined,
 } from "@mui/icons-material";
 import useAppContext from "./shared/hooks/app-context";
@@ -25,22 +26,7 @@ import { User } from "./shared/models/user";
 function App() {
   const [context, dispatch] = useAppContext();
   const location = useLocation();
-  const [businesses, setBusinesses] = useState<IBusiness[]>(() => []);
   const user = User.getInstance();
-
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    const b = user?.jobs
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      ?.filter((job) => !!job.branch)
-      .map(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        (job) => !!job.branch && ((job.branch as IBranch).business as IBusiness)
-      );
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    setBusinesses(b ?? []);
-    return () => setBusinesses([]);
-  }, [user?.jobs]);
 
   const drawerItems: Array<DrawerItem> = useMemo(() => {
     if (!user?._id) {
@@ -52,7 +38,7 @@ function App() {
         },
       ];
     } else {
-      context.navigate && context.navigate("/items", { replace: true });
+      context.navigate && context.navigate("/products", { replace: true });
       return [
         {
           icon: <LocalGroceryStoreOutlined />,
@@ -101,7 +87,7 @@ function App() {
               {import.meta.env.VITE_APP_NAME}
             </Typography>
 
-            {!!user && <BusinessList list={businesses} />}
+            {!!user && <BusinessList />}
           </Toolbar>
         </MyAppBar>
 

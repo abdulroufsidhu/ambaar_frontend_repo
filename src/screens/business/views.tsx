@@ -15,18 +15,25 @@ import { Add, Save } from "@mui/icons-material";
 import { BranchList } from "../branch";
 import useAppContext from "../../shared/hooks/app-context";
 import { User } from "../../shared/models/user";
+import { useMemo, useState, useEffect } from "react";
+import { IEmployee } from "../../shared/models/employee";
 
-interface BusinessListProp {
-  list?: Array<IBusiness>;
-}
-
-export const BusinessList = ({ list }: BusinessListProp) => {
+export const BusinessList = () => {
   const [context, dispatch] = useAppContext();
-
+  const user = User.getInstance();
+  const jobs = user?.jobs;
+  const [list, setList] = useState<IBusiness[]>([]);
+  useEffect(() => {
+    console.log("businessUseEffect", jobs);
+    const bus = jobs
+      ?.filter((j) => !!j.branch?.business)
+      .map((j) => j.branch!.business!);
+    setList(bus ?? []);
+  }, [jobs]);
   const handleChange = (businessId: string) =>
     dispatch({
       action: "SET_BUSINESS",
-      payload: { business: list?.filter((b) => b._id === businessId)[0] },
+      payload: { business: list?.filter((b) => b?._id === businessId)[0] },
     });
   const handleAdd = () => {
     dispatch({
@@ -62,12 +69,12 @@ export const BusinessList = ({ list }: BusinessListProp) => {
           {list?.map((business) => (
             <MenuItem
               sx={{ display: "flex", flexDirection: "column" }}
-              key={`${business._id ?? ""}-menu name`}
-              value={business._id}
+              key={`${business?._id ?? ""}-menu name`}
+              value={business?._id}
             >
-              <Typography variant="body1">{business.name}</Typography>
-              <Typography variant="caption">{business.contact}</Typography>
-              <Typography variant="caption">{business.email}</Typography>
+              <Typography variant="body1">{business?.name}</Typography>
+              <Typography variant="caption">{business?.contact}</Typography>
+              <Typography variant="caption">{business?.email}</Typography>
             </MenuItem>
           ))}
           <Button fullWidth onClick={handleAdd}>
@@ -76,7 +83,7 @@ export const BusinessList = ({ list }: BusinessListProp) => {
         </Select>
       </FormControl>
 
-      {context.business && <BranchList />}
+      <BranchList business={context.business} />
     </Stack>
   );
 };
@@ -116,7 +123,10 @@ export const BusinessAdd = () => {
   const handleSaveButtonClick = () => {
     console.info(user?.person?._id);
     Business.add(user?._id ?? "", business)
-      .then(() => contextDispatch({ action: "CLOSE_POPUP" }))
+      .then((job) => {
+        !!job && User.addJob(job);
+        contextDispatch({ action: "CLOSE_POPUP" });
+      })
       .catch((error) => console.error(error));
   };
 

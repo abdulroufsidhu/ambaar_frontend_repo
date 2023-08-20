@@ -31,5 +31,6 @@ export class Inventory {
   static add = (inventory: IInventory) =>
     axios.post(ServerUrls.inventory.add, {
       ...inventory,
+      branch: inventory.branch?._id,
     });
 }

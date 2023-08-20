@@ -11,16 +11,21 @@ import {
 import { Outlet } from "react-router-dom";
 import { Branch, IBranch } from "../../shared/models/branch";
 import { Add, Save } from "@mui/icons-material";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, useMemo } from "react";
 import useAppContext from "../../shared/hooks/app-context";
+import { IBusiness } from "../../shared/models/business";
 
-export const BranchList = () => {
+interface BranchListProps {
+  business?: IBusiness;
+}
+
+export const BranchList = ({ business }: BranchListProps) => {
   const [branches, setBranches] = useState<Array<IBranch>>(() => []);
   const [context, dispatch] = useAppContext();
 
   useEffect(() => {
     dispatch({ action: "CLEAR_BRANCH" });
-    Branch.list(context.business?._id ?? "")
+    Branch.list(business?._id ?? "")
       .then((list) => {
         setBranches(list ?? []);
       })
@@ -29,7 +34,7 @@ export const BranchList = () => {
         setBranches([]);
       });
     return () => setBranches([]);
-  }, [context.business]);
+  }, [business]);
 
   const handleAdd = () => {
     dispatch({
@@ -79,9 +84,11 @@ export const BranchList = () => {
               <Typography variant="caption">{branch.email}</Typography>
             </MenuItem>
           ))}
-          <Button fullWidth onClick={handleAdd}>
-            <Add /> Add Branch
-          </Button>
+          {!!business && (
+            <Button fullWidth onClick={handleAdd}>
+              <Add /> Add Branch
+            </Button>
+          )}
         </Select>
       </FormControl>
     </>
@@ -131,7 +138,7 @@ export const BranchAdd = () => {
     dispatch({
       payload: {
         ...branch,
-        business: context.business?._id,
+        business: context.business,
       },
     });
   }, []);

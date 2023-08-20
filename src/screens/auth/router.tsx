@@ -7,8 +7,7 @@ export const AuthRoutes = () => {
   const [context, dispatch] = useAppContext();
 
   const handleSignup: (user: IUser) => undefined = (user: IUser) => {
-    dispatch({ action: "SET_USER", payload: { user } });
-    !!context.navigate && context.navigate("/items");
+    !!context.navigate && context.navigate("login/");
   };
 
   return (

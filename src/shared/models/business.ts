@@ -1,6 +1,7 @@
 import { IPerson } from "./person";
 import axios from "axios";
 import { ServerUrls } from "../constants";
+import { IEmployee } from "./employee";
 
 export interface IBusiness {
   _id?: string;
@@ -14,7 +15,7 @@ export interface IBusiness {
 
 export class Business {
   static add = (user_id: string, business: IBusiness) =>
-    axios<IBusiness>({
+    axios<IEmployee>({
       method: "post",
       url: ServerUrls.business.add,
       data: { user_id, ...business },

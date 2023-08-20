@@ -8,7 +8,7 @@ export interface IBranch {
   contact?: string;
   email?: string;
   location?: string;
-  business?: IBusiness | string;
+  business?: IBusiness;
 }
 
 export class Branch {
@@ -16,7 +16,7 @@ export class Branch {
     axios<IBranch>({
       method: "post",
       url: ServerUrls.branch.add,
-      data: { ...branch },
+      data: { ...branch, business: branch.business?._id },
     })
       .then((value) => value.data)
       .catch((error) => console.error(error));

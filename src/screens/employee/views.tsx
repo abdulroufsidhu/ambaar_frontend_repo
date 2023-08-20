@@ -39,7 +39,7 @@ export const EmployeeAdd = () => {
   const handleSignup: (user: IUser) => undefined = (user: IUser) => {
     console.info("employee user signup", user);
     employeeDispatch({
-      payload: { user: user._id, branch: context.branch?._id },
+      payload: { user: user, branch: context.branch },
     });
     setUserAdded(true);
   };
@@ -94,12 +94,15 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
 
   return (
     <Box width="100%">
-      <List>
-        {list.map((employee) => (
+      <List key="employee.views.list">
+        {list.map((employee, index) => (
           <>
-            <ListItem>
+            <ListItem key={`employee.views.list-${employee._id ?? ""}`}>
               <ListItemText
-                primary={(employee.user as IUser).person?.name}
+                key={`employee.views.list-${employee._id ?? ""}-name${
+                  employee.user?.person?.name ?? index.toString()
+                }`}
+                primary={employee.user?.person?.name}
                 secondary={employee.role}
               />
             </ListItem>
@@ -123,17 +126,15 @@ export const EmployeeView = (employee: IEmployee) => {
     <>
       <Stack direction="row" flexWrap="wrap" spacing={2}>
         <Stack padding={4}>
-          <Typography variant="h5">
-            {(employee.user as IUser)?.person?.name}
+          <Typography variant="h5">{employee.user?.person?.name}</Typography>
+          <Typography variant="subtitle1">
+            {employee.user?.person?.contact}
           </Typography>
           <Typography variant="subtitle1">
-            {(employee.user as IUser)?.person?.contact}
+            {employee.user?.person?.email}
           </Typography>
           <Typography variant="subtitle1">
-            {(employee.user as IUser)?.person?.email}
-          </Typography>
-          <Typography variant="subtitle1">
-            {(employee.user as IUser)?.person?.nationalId}
+            {employee.user?.person?.nationalId}
           </Typography>
           <Typography variant="subtitle1">{employee.role}</Typography>
         </Stack>
