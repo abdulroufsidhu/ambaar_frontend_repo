@@ -2,6 +2,7 @@ import axios from "axios";
 import { IPerson } from "./person";
 import { ServerUrls } from "../constants";
 import { Employee, IEmployee } from "./employee";
+import { IBranch } from "./branch";
 
 export interface IUser {
   _id?: string;
@@ -11,27 +12,38 @@ export interface IUser {
 
 export class User {
   private static instance?: IUser;
+  private static calling?: boolean = false;
 
-  static getInstance = () => {
+  static getInstance: () => IUser = () => {
     if (!User.instance) {
-      const u = sessionStorage.getItem("user");
-      if (u) {
-        User.instance = JSON.parse(u) as IUser;
-        if (User.instance) {
-          Employee.list({ user: User.instance })
-            .then((jobs) => {
-              if (User.instance) {
-                User.instance.jobs = jobs ?? [];
-                console.log("ReSetting Session", User.instance);
-                sessionStorage.setItem("user", JSON.stringify(User.instance));
-              }
-            })
-            .catch((error) => console.error(error));
+      if (!User.calling) {
+        User.calling = true;
+        const u = sessionStorage.getItem("user");
+        if (u) {
+          User.instance = JSON.parse(u) as IUser;
+          if (User.instance) {
+            Employee.list({ user: User.instance })
+              .then((jobs) => {
+                if (User.instance) {
+                  User.instance.jobs = jobs ?? [];
+                  console.log("ReSetting Session", User.instance);
+                  sessionStorage.setItem("user", JSON.stringify(User.instance));
+                  User.calling = false;
+                }
+              })
+              .catch((error) => {
+                console.error(error);
+                User.calling = false;
+              });
+          }
         }
       }
-      console.table(User.instance);
     }
-    return User.instance;
+    if (!User.instance)
+      setTimeout(() => {
+        this.getInstance();
+      }, 1000);
+    return User.instance!;
   };
 
   private constructor(user: IUser) {
@@ -83,6 +95,24 @@ export class User {
     if (User.instance) {
       const previousJobs = User.instance.jobs ?? [];
       User.instance.jobs = [...previousJobs, job];
+      sessionStorage.setItem("user", JSON.stringify(User.instance));
+    }
+  };
+
+  static removeJob = (filter: (job: IEmployee) => boolean) => {
+    if (User.instance) {
+      const previousJobs = User.instance.jobs ?? [];
+      User.instance.jobs = previousJobs.filter(filter);
+      sessionStorage.setItem("user", JSON.stringify(User.instance));
+    }
+  };
+
+  static updateJob = (job: IEmployee) => {
+    if (User.instance) {
+      const previousJobs = User.instance.jobs ?? [];
+      User.instance.jobs = previousJobs.map((j) =>
+        j._id === job._id ? job : j
+      );
       sessionStorage.setItem("user", JSON.stringify(User.instance));
     }
   };

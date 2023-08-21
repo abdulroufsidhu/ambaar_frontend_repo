@@ -8,11 +8,13 @@ export const ServerUrls = {
     get: "/businesses/get",
     add: "/businesses/create",
     update: "/businesses/update",
+    remove: "/businesses/remove",
   },
   branch: {
     get: "/branches/get",
     add: "/branches/create",
     update: "/branches/update",
+    remove: "/branches/remove",
   },
   person: {
     get: "/persons/get",
@@ -26,8 +28,8 @@ export const ServerUrls = {
   },
   permissions: {
     get: "/permissions/get",
-    add: "/permissions/create",
-    update: "/permissions/update",
+    // add: "/permissions/create",
+    // update: "/permissions/update",
   },
   inventory: {
     get: "/inventory/get",

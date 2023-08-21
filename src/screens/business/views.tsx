@@ -2,6 +2,8 @@ import {
   Button,
   FormControl,
   InputLabel,
+  ListItemIcon,
+  ListItemText,
   MenuItem,
   Select,
   Stack,
@@ -11,30 +13,78 @@ import {
 import { Business, IBusiness } from "../../shared/models/business";
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Add, Save } from "@mui/icons-material";
+import { Add, EditOutlined, Save } from "@mui/icons-material";
 import { BranchList } from "../branch";
 import useAppContext from "../../shared/hooks/app-context";
 import { User } from "../../shared/models/user";
-import { useMemo, useState, useEffect } from "react";
-import { IEmployee } from "../../shared/models/employee";
+import { useState, useEffect } from "react";
 
 export const BusinessList = () => {
   const [context, dispatch] = useAppContext();
   const user = User.getInstance();
   const jobs = user?.jobs;
   const [list, setList] = useState<IBusiness[]>([]);
+
   useEffect(() => {
-    console.log("businessUseEffect", jobs);
-    const bus = jobs
-      ?.filter((j) => !!j.branch?.business)
-      .map((j) => j.branch!.business!);
-    setList(bus ?? []);
+    const bus =
+      jobs
+        ?.filter((j) => !!j.branch?.business)
+        .map((j) => j.branch!.business!) ?? [];
+
+    const uniqueData: IBusiness[] = Array.from(
+      new Set(bus.map((obj) => obj.email))
+    ).map((email) => {
+      return bus.find((obj) => obj.email === email)!;
+    });
+
+    setList(uniqueData);
   }, [jobs]);
   const handleChange = (businessId: string) =>
     dispatch({
       action: "SET_BUSINESS",
       payload: { business: list?.filter((b) => b?._id === businessId)[0] },
     });
+
+  const handleDelete = (business?: IBusiness) => {
+    const confirmation = prompt(
+      `Do You Want To Delete ${business?.name ?? ""} business?(yes/no)`,
+      "No"
+    );
+    switch (confirmation?.toLocaleLowerCase()) {
+      case "yes":
+        !!business &&
+          Business.delete(business._id ?? "")
+            .then((value) => {
+              User.removeJob((j) => j.branch?.business?._id !== value._id);
+            })
+            .catch((error) => console.error(error));
+        break;
+      default:
+        console.info("good choice");
+    }
+  };
+
+  const handleEdit = (business?: IBusiness) => {
+    dispatch({
+      action: "OPEN_POPUP",
+      payload: {
+        popupChild: (
+          <BusinessAdd business={business} onSuccess={onAddSuccess} />
+        ),
+      },
+    });
+  };
+  const onAddSuccess = (business: IBusiness) => {
+    setList((prev) => {
+      const newState = prev.map((b) => (b._id === business._id ? business : b));
+      const index = newState.indexOf(business);
+      if (index < 0) {
+        newState.push(business);
+      }
+      return newState;
+    });
+  };
+
   const handleAdd = () => {
     dispatch({
       action: "OPEN_POPUP",
@@ -54,32 +104,55 @@ export const BusinessList = () => {
           value={context.business?._id}
           label="Business"
           onChange={(e) => handleChange(e.target.value)}
-          renderValue={() => (
-            <>
-              {!!context.business && (
-                <>
-                  <Typography variant="body1">
-                    {context.business.name}
-                  </Typography>
-                </>
-              )}
-            </>
-          )}
+          renderValue={() => context.business?.name}
         >
           {list?.map((business) => (
             <MenuItem
-              sx={{ display: "flex", flexDirection: "column" }}
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                width: "100%",
+              }}
+              dense={true}
+              divider={true}
               key={`${business?._id ?? ""}-menu name`}
               value={business?._id}
             >
-              <Typography variant="body1">{business?.name}</Typography>
-              <Typography variant="caption">{business?.contact}</Typography>
-              <Typography variant="caption">{business?.email}</Typography>
+              <ListItemIcon
+                key={`${business?._id ?? ""}-menu listItemIcon`}
+                onClick={() => handleEdit(business)}
+              >
+                <EditOutlined
+                  key={`${business?._id ?? ""}-menu listItemIcon edit`}
+                  color="primary"
+                />
+              </ListItemIcon>
+              <ListItemText
+                sx={{ flexGrow: 1, whiteSpace: "pre-line" }}
+                key={`${business?._id ?? ""}-menu name-text`}
+                primary={business?.name}
+                secondary={
+                  (business.email ? business.email.concat("\n") : "") +
+                  (business.contact ? business.contact : "")
+                }
+              />
             </MenuItem>
           ))}
-          <Button fullWidth onClick={handleAdd}>
+          <MenuItem
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              width: "100%",
+            }}
+            dense={true}
+            divider={true}
+            value={context.business?._id}
+            onClick={handleAdd}
+          >
             <Add /> "Add IBusiness"
-          </Button>
+          </MenuItem>
         </Select>
       </FormControl>
 
@@ -106,6 +179,11 @@ export const BusinessView = () => {
   );
 };
 
+interface BusinessAddProps {
+  business?: IBusiness;
+  onSuccess?: (business: IBusiness) => void;
+}
+
 const businessReducer = (state: IBusiness, action: { payload?: IBusiness }) => {
   if (action.payload) {
     return { ...state, ...action.payload };
@@ -113,21 +191,45 @@ const businessReducer = (state: IBusiness, action: { payload?: IBusiness }) => {
   return state;
 };
 
-export const BusinessAdd = () => {
+export const BusinessAdd = ({ business, onSuccess }: BusinessAddProps) => {
   const [_, contextDispatch] = useAppContext();
   const user = User.getInstance();
-  const [business, dispatch] = React.useReducer(businessReducer, {
-    founder: user?.person?._id,
-  });
+  const [newBusiness, dispatch] = React.useReducer(
+    businessReducer,
+    business ?? {
+      founder: user?.person?._id,
+    }
+  );
 
   const handleSaveButtonClick = () => {
     console.info(user?.person?._id);
-    Business.add(user?._id ?? "", business)
-      .then((job) => {
-        !!job && User.addJob(job);
-        contextDispatch({ action: "CLOSE_POPUP" });
-      })
-      .catch((error) => console.error(error));
+    if (!business) {
+      Business.add(user?._id ?? "", newBusiness)
+        .then((job) => {
+          !!job && User.addJob(job);
+          contextDispatch({ action: "CLOSE_POPUP" });
+          !!job && !!onSuccess && onSuccess(job);
+        })
+        .catch((error) => console.error(error));
+    } else {
+      Business.update(newBusiness)
+        .then(() => {
+          const j = User.getInstance().jobs?.filter(
+            (paramJ) => paramJ.branch?.business?._id === newBusiness._id
+          );
+          if (j && j.length > 0) {
+            User.updateJob({
+              ...j[0],
+              branch: {
+                ...j[0].branch,
+                business: { ...newBusiness },
+              },
+            });
+          }
+          !!onSuccess && onSuccess(newBusiness);
+        })
+        .catch((error) => console.error(error));
+    }
   };
 
   return (
@@ -139,7 +241,7 @@ export const BusinessAdd = () => {
             onChange={(e) => {
               dispatch({ payload: { name: e.target.value } });
             }}
-            value={business.name}
+            value={newBusiness.name}
           />
         </FormControl>
         <FormControl required>
@@ -148,7 +250,7 @@ export const BusinessAdd = () => {
             onChange={(e) => {
               dispatch({ payload: { contact: e.target.value } });
             }}
-            value={business.contact}
+            value={newBusiness.contact}
           />
         </FormControl>
         <FormControl required>
@@ -158,7 +260,7 @@ export const BusinessAdd = () => {
             onChange={(e) => {
               dispatch({ payload: { email: e.target.value } });
             }}
-            value={business.email}
+            value={newBusiness.email}
           />
         </FormControl>
         <FormControl required>
@@ -167,7 +269,7 @@ export const BusinessAdd = () => {
             onChange={(e) => {
               dispatch({ payload: { licence: e.target.value } });
             }}
-            value={business.licence}
+            value={newBusiness.licence}
           />
         </FormControl>
         <FormControl required>
@@ -176,7 +278,7 @@ export const BusinessAdd = () => {
             onChange={(e) => {
               dispatch({ payload: { location: e.target.value } });
             }}
-            value={business.location}
+            value={newBusiness.location}
           />
         </FormControl>
         <Button

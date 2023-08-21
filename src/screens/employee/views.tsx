@@ -49,6 +49,7 @@ export const EmployeeAdd = () => {
     Employee.add(employee)
       .then((response) => {
         !!response && User.getInstance()?.jobs?.push(response);
+        dispatch({ action: "CLOSE_POPUP" });
       })
       .catch((error) => console.error(error));
   };

@@ -2,6 +2,8 @@ import {
   Button,
   FormControl,
   InputLabel,
+  ListItemIcon,
+  ListItemText,
   MenuItem,
   Select,
   Stack,
@@ -10,37 +12,74 @@ import {
 } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { Branch, IBranch } from "../../shared/models/branch";
-import { Add, Save } from "@mui/icons-material";
-import { useEffect, useReducer, useState, useMemo } from "react";
+import { Add, EditOutlined, Save } from "@mui/icons-material";
+import { useEffect, useReducer, useState } from "react";
 import useAppContext from "../../shared/hooks/app-context";
 import { IBusiness } from "../../shared/models/business";
+import { User } from "../../shared/models/user";
+import { IEmployee } from "../../shared/models/employee";
 
 interface BranchListProps {
   business?: IBusiness;
 }
 
 export const BranchList = ({ business }: BranchListProps) => {
-  const [branches, setBranches] = useState<Array<IBranch>>(() => []);
+  const [branches, setBranches] = useState<IBranch[]>(() => []);
   const [context, dispatch] = useAppContext();
+
+  const onAddSuccess = (job: IEmployee) => {
+    if (job.branch) {
+      setBranches((prev) => {
+        const newState: IBranch[] = prev.map((b) =>
+          b._id === job.branch?._id ? job.branch! : b
+        );
+        const index = newState.indexOf(job.branch!);
+        if (index < 0) {
+          job.branch && newState.push(job.branch);
+        }
+        return newState;
+      });
+    }
+    if (context.branch?._id == job.branch?._id) {
+      dispatch({ action: "SET_BRANCH", payload: { branch: job.branch } });
+    }
+  };
 
   useEffect(() => {
     dispatch({ action: "CLEAR_BRANCH" });
-    Branch.list(business?._id ?? "")
-      .then((list) => {
-        setBranches(list ?? []);
-      })
-      .catch((error) => {
-        console.error(error);
-        setBranches([]);
-      });
+    setBranches(
+      User.getInstance()
+        .jobs?.filter((j) => j.branch?.business?._id === business?._id)
+        .map((j) => {
+          console.info("branches", j);
+          return j.branch ?? {};
+        }) ?? []
+    );
+    // Branch.list(business?._id ?? "")
+    //   .then((list) => {
+    //     setBranches(list ?? []);
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //     setBranches([]);
+    //   });
     return () => setBranches([]);
   }, [business]);
+
+  const handleEdit = (branch: IBranch) => {
+    dispatch({
+      action: "OPEN_POPUP",
+      payload: {
+        popupChild: <BranchAdd branch={branch} onSuccess={onAddSuccess} />,
+      },
+    });
+  };
 
   const handleAdd = () => {
     dispatch({
       action: "OPEN_POPUP",
       payload: {
-        popupChild: <BranchAdd />,
+        popupChild: <BranchAdd onSuccess={onAddSuccess} />,
       },
     });
   };
@@ -62,32 +101,55 @@ export const BranchList = ({ business }: BranchListProps) => {
               },
             })
           }
-          renderValue={() => (
-            <>
-              {!!context.branch && (
-                <>
-                  <Typography variant="body1">{context.branch.name}</Typography>
-                </>
-              )}
-            </>
-          )}
+          renderValue={() => context.branch?.name}
         >
           {branches?.map((branch) => (
             <MenuItem
-              sx={{ display: "flex", flexDirection: "column" }}
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "nowrap",
+                width: "100%",
+              }}
               key={`${branch._id ?? ""}-menu name`}
               value={branch._id}
+              dense={true}
+              divider={true}
             >
-              <Typography variant="body1">{branch.name}</Typography>
-              <Typography variant="subtitle2">{branch.location}</Typography>
-              <Typography variant="caption">{branch.contact}</Typography>
-              <Typography variant="caption">{branch.email}</Typography>
+              <ListItemIcon
+                key={`${branch?._id ?? ""}-menu listItemIcon`}
+                onClick={() => handleEdit(branch)}
+              >
+                <EditOutlined
+                  key={`${branch?._id ?? ""}-menu listItemIcon edit`}
+                  color="primary"
+                />
+              </ListItemIcon>
+              <ListItemText
+                sx={{ whiteSpace: "pre-line" }}
+                primary={branch.name}
+                secondary={
+                  (branch.email ? branch.email.concat("\n") : "") +
+                  (branch.contact ? branch.contact : "")
+                }
+              />
             </MenuItem>
           ))}
           {!!business && (
-            <Button fullWidth onClick={handleAdd}>
+            <MenuItem
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                width: "100%",
+              }}
+              value={context.branch?._id}
+              dense={true}
+              divider={true}
+              onClick={handleAdd}
+            >
               <Add /> Add Branch
-            </Button>
+            </MenuItem>
           )}
         </Select>
       </FormControl>
@@ -115,6 +177,11 @@ export const BranchView = ({ branch }: BranchViewProps) => {
   );
 };
 
+interface BranchAddProps {
+  branch?: IBranch;
+  onSuccess?: (branch: IBranch) => void;
+}
+
 const branchReducer = (state: IBranch, action: { payload?: IBranch }) => {
   if (action.payload) {
     return { ...state, ...action.payload };
@@ -122,31 +189,45 @@ const branchReducer = (state: IBranch, action: { payload?: IBranch }) => {
   return state;
 };
 
-const branchReducerInitialValue: IBranch = {};
-
-export const BranchAdd = () => {
+export const BranchAdd = ({
+  branch: paramBranch,
+  onSuccess,
+}: BranchAddProps) => {
   const [context, contextDispatch] = useAppContext();
   if (!context.business) {
     contextDispatch({ action: "CLOSE_POPUP" });
   }
   const [branch, dispatch] = useReducer(
     branchReducer,
-    branchReducerInitialValue
+    paramBranch ?? { business: context.business }
   );
 
-  useEffect(() => {
-    dispatch({
-      payload: {
-        ...branch,
-        business: context.business,
-      },
-    });
-  }, []);
-
   const handleSave = () => {
-    Branch.add(branch)
-      .then(() => contextDispatch({ action: "CLOSE_POPUP" }))
-      .catch((error) => console.error(error));
+    if (!paramBranch) {
+      Branch.add(User.getInstance()._id ?? "", branch)
+        .then((job) => {
+          if (job) {
+            User.addJob(job);
+            !!onSuccess && onSuccess(job);
+            contextDispatch({ action: "CLOSE_POPUP" });
+          }
+        })
+        .catch((error) => console.error(error));
+    } else {
+      Branch.update(branch)
+        .then(() => {
+          const j = User.getInstance().jobs?.filter(
+            (j) => j.branch?._id === branch._id
+          );
+          if (!!j && j.length > 0) {
+            const fj = { ...j[0], branch };
+            User.updateJob(fj);
+            !!onSuccess && onSuccess(fj);
+            contextDispatch({ action: "CLOSE_POPUP" });
+          }
+        })
+        .catch((error) => console.error(error));
+    }
   };
 
   return (

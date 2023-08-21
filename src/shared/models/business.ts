@@ -14,6 +14,18 @@ export interface IBusiness {
 }
 
 export class Business {
+  static delete = (id: string) =>
+    axios
+      .delete<IBusiness>(ServerUrls.business.remove, { params: { id: id } })
+      .then((value) => value.data);
+
+  static update = (business: IBusiness) =>
+    axios
+      .patch<IBusiness>(ServerUrls.business.update, {
+        ...business,
+      })
+      .then((value) => value.data);
+
   static add = (user_id: string, business: IBusiness) =>
     axios<IEmployee>({
       method: "post",
