@@ -29,8 +29,13 @@ export class Inventory {
       .then((result) => result.data);
 
   static add = (inventory: IInventory) =>
-    axios.post(ServerUrls.inventory.add, {
+    axios.post<IInventory>(ServerUrls.inventory.add, {
       ...inventory,
       branch: inventory.branch?._id,
-    });
+    }).then(item => item.data);
+
+  static update = (Inventory: IInventory) => axios.patch(ServerUrls.inventory.update, {
+    ...Inventory,
+    branch: Inventory.branch?._id
+  })
 }

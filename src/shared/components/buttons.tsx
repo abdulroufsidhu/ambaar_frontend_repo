@@ -1,4 +1,4 @@
-import { Container, Fab, styled, Switch } from "@mui/material";
+import { Box, Fab, styled, Switch } from "@mui/material";
 import { ReactNode } from "react";
 
 interface MyFabProps {
@@ -10,7 +10,7 @@ interface MyFabProps {
 
 export const MyFab = ({ label, startIcon, endIcon, onClick }: MyFabProps) => {
   return (
-    <Container
+    <Box
       sx={{
         position: "sticky",
         bottom: "1rem",
@@ -23,7 +23,7 @@ export const MyFab = ({ label, startIcon, endIcon, onClick }: MyFabProps) => {
       <Fab aria-label="add" variant="extended" onClick={onClick}>
         {!!startIcon && startIcon} {label} {!!endIcon && endIcon}
       </Fab>
-    </Container>
+    </Box>
   );
 };
 

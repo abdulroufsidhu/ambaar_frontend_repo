@@ -3,34 +3,37 @@ import {
   FormHelperText,
   IconButton,
   InputAdornment,
-  List,
-  ListItem,
-  ListItemText,
   Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TextField,
   Typography,
 } from "@mui/material";
 import { IInventory, IProduct, Inventory } from "../../shared/models/inventory";
 import useAppContext from "../../shared/hooks/app-context";
-import { useState, useEffect, useMemo, useReducer } from "react";
+import { useState, useEffect, isValidElement, } from "react";
 import { MyFab } from "../../shared/components/buttons";
 import {
   AddShoppingCartOutlined,
-  ConstructionOutlined,
+  EditOutlined,
   ScannerOutlined,
 } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { MyBarcodeScanner } from "../../shared/components/barcode-scanner";
 import { TextResult } from "dynamsoft-javascript-barcode";
 
-export const InventoryItemAdd = () => {
-  const [product, setProduct] = useState<IProduct>({});
+interface ItemAddProp {
+  inventory?: IInventory
+  onSuccess?: (inventory: IInventory) => void
+}
+
+export const InventoryItemAdd = ({ inventory, onSuccess }: ItemAddProp) => {
+  const [product, setProduct] = useState<IProduct>(inventory?.product ?? {});
   const [scannerActive, setScannerActive] = useState<boolean>(false);
   const [context, dispatch] = useAppContext();
 
@@ -43,9 +46,15 @@ export const InventoryItemAdd = () => {
   };
 
   const handleSubmit = () => {
-    Inventory.add({ product, branch: context.branch }).catch((error) =>
-      console.error(error)
-    );
+    if (inventory) {
+      Inventory.update({ ...inventory, product }).then(() => !!onSuccess && onSuccess({ product, branch: context.branch })).catch(error =>
+        console.error(error)
+      );
+    } else {
+      Inventory.add({ product: product, branch: context.branch }).then((item) => !!onSuccess && onSuccess(item)).catch((error) =>
+        console.error(error)
+      );
+    }
     dispatch({ action: "CLOSE_POPUP" });
   };
 
@@ -163,23 +172,57 @@ export const InventoryItemAdd = () => {
 export const InventoryItemList = () => {
   const [context, dispatch] = useAppContext();
   const [list, setList] = useState<IInventory[]>([]);
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
   useEffect(() => {
     !!context.branch?._id &&
       Inventory.list(context.branch?._id)
         .then((l) => setList(l))
         .catch((error) => console.error(error));
-    console.table(list);
     return () => setList([]);
-  }, [context.branch]);
+  }, [context.branch,]);
 
   const handleAdd = () => {
     dispatch({
       action: "OPEN_POPUP",
       payload: {
-        popupChild: <InventoryItemAdd />,
+        popupChild: <InventoryItemAdd onSuccess={onAddSuccess} />,
       },
     });
     return undefined;
+  };
+
+  const onAddSuccess = (inventory: IInventory) => {
+    setList(
+      prev => {
+        const newState = prev.map(item => item.product?._id === inventory.product?._id ? inventory : item)
+        const index = newState.indexOf(inventory)
+        console.log(index, inventory)
+        if (index < 0) {
+          newState.push(inventory)
+        }
+        return newState
+      }
+    )
+  }
+
+  const handleEdit = (inventory: IInventory) => {
+    dispatch({
+      action: "OPEN_POPUP",
+      payload: {
+        popupChild: <InventoryItemAdd inventory={inventory} onSuccess={onAddSuccess} />
+      }
+    })
+  }
+
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
   };
 
   if (!context.branch)
@@ -192,8 +235,8 @@ export const InventoryItemList = () => {
   return (
     <Stack spacing={2}>
       {list.length < 1 && "No Data Found"}
-      <TableContainer>
-        <Table>
+      <TableContainer sx={{ height: "50vh" }} >
+        <Table stickyHeader={true}>
           <TableHead>
             <TableRow>
               <TableCell>Serial</TableCell>
@@ -201,77 +244,67 @@ export const InventoryItemList = () => {
               <TableCell>Colour</TableCell>
               <TableCell>Variant</TableCell>
               <TableCell>Detail</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody key="inventory.views.list.tablebody">
-            {list.map((inventoryItem, index) => (
+            {list.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((inventoryItem, index) => (
               <TableRow
-                key={`inventory.views.list.tablebody-${
-                  inventoryItem.product?._id ?? ""
-                }`}
+                key={`inventory.views.list.tablebody-${inventoryItem.product?._id ?? ""
+                  }`}
               >
                 <TableCell
-                  key={`inventory.views.list.tablebody-${
-                    inventoryItem.product?._id ?? ""
-                  }-serial${
-                    inventoryItem.product?.serialNumber ?? index.toString()
-                  }`}
+                  key={`inventory.views.list.tablebody-${inventoryItem.product?._id ?? ""
+                    }-serial${inventoryItem.product?.serialNumber ?? index.toString()
+                    }`}
                 >
                   {inventoryItem.product?.serialNumber}
                 </TableCell>
                 <TableCell
-                  key={`inventory.views.list.tablebody-${
-                    inventoryItem.product?._id ?? ""
-                  }-name${inventoryItem.product?.name ?? index.toString()}`}
+                  key={`inventory.views.list.tablebody-${inventoryItem.product?._id ?? ""
+                    }-name${inventoryItem.product?.name ?? index.toString()}`}
                 >
                   {inventoryItem.product?.name}
                 </TableCell>
                 <TableCell
-                  key={`inventory.views.list.tablebody-${
-                    inventoryItem.product?._id ?? ""
-                  }-colour${inventoryItem.product?.colour ?? index.toString()}`}
+                  key={`inventory.views.list.tablebody-${inventoryItem.product?._id ?? ""
+                    }-colour${inventoryItem.product?.colour ?? index.toString()}`}
                 >
                   {inventoryItem.product?.colour}
                 </TableCell>
                 <TableCell
-                  key={`inventory.views.list.tablebody-${
-                    inventoryItem.product?._id ?? ""
-                  }-variant${
-                    inventoryItem.product?.variant ?? index.toString()
-                  }`}
+                  key={`inventory.views.list.tablebody-${inventoryItem.product?._id ?? ""
+                    }-variant${inventoryItem.product?.variant ?? index.toString()
+                    }`}
                 >
                   {inventoryItem.product?.variant}
                 </TableCell>
                 <TableCell
-                  key={`inventory.views.list.tablebody-${
-                    inventoryItem.product?._id ?? ""
-                  }-detail${inventoryItem.product?.detail ?? index.toString()}`}
+                  key={`inventory.views.list.tablebody-${inventoryItem.product?._id ?? ""
+                    }-detail${inventoryItem.product?.detail ?? index.toString()}`}
                 >
                   {inventoryItem.product?.detail}
+                </TableCell>
+                <TableCell
+                  key={`inventory.views.list.tablebody-${inventoryItem.product?._id ?? ""
+                    }-detail${inventoryItem.product?.detail ?? index.toString()}-operations`}
+                >
+                  <IconButton color="primary" onClick={() => handleEdit(inventoryItem)} ><EditOutlined /></IconButton>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      {/* <List>
-        {list.map((InventoryItem) => (
-          <ListItem>
-            <ListItemText
-              primary={InventoryItem.product?.name}
-              secondary={
-                <>
-                  {InventoryItem.product?.colour} <br />
-                  {InventoryItem.product?.unitSellPrice}
-                  <br />
-                  {InventoryItem.product?.unitDescountPrice} <br />
-                </>
-              }
-              prefix={InventoryItem.product?.quantity?.toString() ?? ""}
-            />
-          </ListItem>
-        ))}
-      </List> */}
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25, 50, 100]}
+        component="div"
+        count={list.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
       <MyFab
         label="Add Product"
         onClick={handleAdd}
