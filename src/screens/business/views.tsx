@@ -226,6 +226,7 @@ export const BusinessAdd = ({ business, onSuccess }: BusinessAddProps) => {
               },
             });
           }
+          contextDispatch({ action: "CLOSE_POPUP" });
           !!onSuccess && onSuccess(newBusiness);
         })
         .catch((error) => console.error(error));

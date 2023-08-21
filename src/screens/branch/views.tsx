@@ -51,7 +51,6 @@ export const BranchList = ({ business }: BranchListProps) => {
       User.getInstance()
         .jobs?.filter((j) => j.branch?.business?._id === business?._id)
         .map((j) => {
-          console.info("branches", j);
           return j.branch ?? {};
         }) ?? []
     );
