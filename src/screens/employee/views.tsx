@@ -79,7 +79,7 @@ export const EmployeeAdd = () => {
 };
 
 interface EmployeeListProps {
-  list: IEmployee[];
+  list?: IEmployee[];
 }
 
 export const EmployeeList = ({ list }: EmployeeListProps) => {
@@ -92,6 +92,8 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
       payload: { popupChild: <EmployeeAdd /> },
     });
   };
+
+  if (!list) return <>Please Select a Branch</>;
 
   return (
     <Box width="100%">

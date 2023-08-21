@@ -11,13 +11,11 @@ export const EmployeeRoutes = () => {
 
   useEffect(() => {
     console.info("fetching employees");
-    Employee.list({ branch: context.branch?._id })
-      .then(
-        (list) => {
-          console.info("employees", list)
-          setEmployees(list ?? [])
-        }
-      )
+    Employee.list({ branch: context.branch })
+      .then((list) => {
+        console.info("employees", list);
+        setEmployees(list ?? []);
+      })
       .catch((error) => {
         console.error(error), setEmployees([]);
       });
@@ -26,7 +24,12 @@ export const EmployeeRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<EmployeeMain />}>
-        <Route index element={<EmployeeList list={employees} />} />
+        <Route
+          index
+          element={
+            <EmployeeList list={context.branch ? employees : undefined} />
+          }
+        />
         <Route path={routes.VIEW} element={<EmployeeView />} />
         <Route path={routes.ADD} element={<EmployeeAdd />} />
       </Route>
