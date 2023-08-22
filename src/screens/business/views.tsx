@@ -104,7 +104,7 @@ export const BusinessList = () => {
           value={context.business?._id}
           label="Business"
           onChange={(e) => handleChange(e.target.value)}
-          renderValue={() => context.business?.name}
+          renderValue={() => (<> <BusinessOutlined /> {" "}{context.business?.name}</>)}
         >
           {list?.map((business) => (
             <MenuItem
