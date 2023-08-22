@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ServerUrls } from "../constants";
+import { ServerUrls } from "../routes";
 import { IBranch } from "./branch";
 
 export interface IProduct {
@@ -29,13 +29,16 @@ export class Inventory {
       .then((result) => result.data);
 
   static add = (inventory: IInventory) =>
-    axios.post<IInventory>(ServerUrls.inventory.add, {
-      ...inventory,
-      branch: inventory.branch?._id,
-    }).then(item => item.data);
+    axios
+      .post<IInventory>(ServerUrls.inventory.add, {
+        ...inventory,
+        branch: inventory.branch?._id,
+      })
+      .then((item) => item.data);
 
-  static update = (Inventory: IInventory) => axios.patch(ServerUrls.inventory.update, {
-    ...Inventory,
-    branch: Inventory.branch?._id
-  })
+  static update = (Inventory: IInventory) =>
+    axios.patch(ServerUrls.inventory.update, {
+      ...Inventory,
+      branch: Inventory.branch?._id,
+    });
 }

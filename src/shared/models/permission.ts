@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ServerUrls } from "../constants";
+import { ServerUrls } from "../routes";
 
 export interface IPermission {
   _id?: string;
@@ -7,9 +7,9 @@ export interface IPermission {
 }
 
 export class Permission {
-  static list = () => axios
-    .get<IPermission[]>(ServerUrls.permissions.get, {})
-    .then(permissions => permissions)
-    .catch(error => console.error(error))
-
+  static list = () =>
+    axios
+      .get<IPermission[]>(ServerUrls.permissions.get, {})
+      .then((permissions) => permissions)
+      .catch((error) => console.error(error));
 }

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { IBusiness } from "./business";
-import { ServerUrls } from "../constants";
+import { ServerUrls } from "../routes";
 import { IEmployee } from "./employee";
 
 export interface IBranch {

@@ -37,10 +37,26 @@ export const ServerUrls = {
     update: "/inventory/update",
   },
 };
-
-export const MyDrawerConstants = {
-  width: {
-    min: "80px",
-    max: "240px",
+export const ClientUrls = {
+  baseUrl: "/",
+  auth: {
+    login: "login/",
+    signup: "signup/",
+  },
+  employee: {
+    base: "employee/",
+    list: "employee/list/",
+    view: "employee/view/",
+    edit: "employee/edit/",
+  },
+  business: {
+    base: "business/",
+    edit: "business/edit",
+    view: "business/view",
+  },
+  inventory: {
+    base: "inventory/",
+    view: "inventory/view/",
+    sale: "inventory/sale/",
   },
 };

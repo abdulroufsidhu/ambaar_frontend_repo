@@ -1,6 +1,6 @@
 import { styled, AppBar } from "@mui/material";
-import { MyDrawerConstants } from "../constants";
 import { AppBarProps } from "@mui/material/AppBar";
+import { MyDrawerConstants } from "../../screens/drawer";
 
 interface Props extends AppBarProps {
   open?: boolean;

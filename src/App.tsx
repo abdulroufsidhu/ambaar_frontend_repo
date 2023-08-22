@@ -2,26 +2,23 @@ import "./index.css";
 import { ItemsRouting } from "./screens/inventory";
 import { ThemeProvider } from "@mui/material/styles";
 import { Box, CssBaseline, Toolbar, Typography } from "@mui/material";
-import MyDrawer, { DrawerItem } from "./screens/drawer";
+import MyDrawer, { DrawerItem, MyDrawerConstants } from "./screens/drawer";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AuthRoutes } from "./screens/auth";
 import {
   GroupOutlined,
   LocalGroceryStoreOutlined,
-  Logout,
   SecurityOutlined,
 } from "@mui/icons-material";
 import useAppContext from "./shared/hooks/app-context";
 import { MyAppBar } from "./shared/components/appbar";
 import { useEffect, useMemo, useState } from "react";
 import { MyPopup } from "./shared/components/my-popup";
-import { MyDrawerConstants } from "./shared/constants";
 import { MyProgressIndicator } from "./shared/components/progress-indicator";
 import { BusinessList } from "./screens/business";
-import { IBusiness } from "./shared/models/business";
-import { IBranch } from "./shared/models/branch";
 import { EmployeeRoutes } from "./screens/employee";
 import { User } from "./shared/models/user";
+import { ClientUrls } from "./shared/routes";
 
 function App() {
   const [context, dispatch] = useAppContext();
@@ -33,21 +30,22 @@ function App() {
       return [
         {
           icon: <SecurityOutlined />,
-          path: "/",
-          text: "Auth",
+          path: ClientUrls.baseUrl,
+          text: ClientUrls.auth.login,
         },
       ];
     } else {
-      context.navigate && context.navigate("/products", { replace: true });
+      context.navigate &&
+        context.navigate(ClientUrls.inventory.base, { replace: true });
       return [
         {
           icon: <LocalGroceryStoreOutlined />,
-          path: "/products",
+          path: ClientUrls.inventory.base,
           text: "Products",
         },
         {
           icon: <GroupOutlined />,
-          path: "/employee",
+          path: ClientUrls.employee.base,
           text: "Employee",
         },
       ];
@@ -80,7 +78,8 @@ function App() {
               component="div"
               sx={{ marginLeft: 2 }}
               onClick={() =>
-                !!context.navigate && context.navigate("/", { replace: true })
+                !!context.navigate &&
+                context.navigate(ClientUrls.baseUrl, { replace: true })
               }
               className="unselectable"
             >
@@ -105,15 +104,21 @@ function App() {
             })`,
           }}
         >
-          {(!location.pathname.match("/") ||
+          {(!location.pathname.match(ClientUrls.baseUrl) ||
             !location.pathname.match("/signup")) &&
-            !user?._id && <Navigate to="/" replace />}
+            !user?._id && <Navigate to={ClientUrls.baseUrl} replace />}
           <Routes>
             <Route path="/*" element={<AuthRoutes />} />
             {!!user?._id && (
               <>
-                <Route path="products/*" element={<ItemsRouting />} />
-                <Route path="employee/*" element={<EmployeeRoutes />} />
+                <Route
+                  path={`${ClientUrls.inventory.base}*`}
+                  element={<ItemsRouting />}
+                />
+                <Route
+                  path={`${ClientUrls.employee.base}*`}
+                  element={<EmployeeRoutes />}
+                />
               </>
             )}
           </Routes>

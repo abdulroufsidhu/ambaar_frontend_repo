@@ -1,6 +1,6 @@
 import { IPerson } from "./person";
 import axios from "axios";
-import { ServerUrls } from "../constants";
+import { ServerUrls } from "../routes";
 import { IEmployee } from "./employee";
 
 export interface IBusiness {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ServerUrls } from "../constants";
+import { ServerUrls } from "../routes";
 
 export interface IPerson {
   _id?: string;

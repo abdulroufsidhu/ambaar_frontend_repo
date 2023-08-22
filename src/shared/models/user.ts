@@ -1,6 +1,6 @@
 import axios from "axios";
 import { IPerson } from "./person";
-import { ServerUrls } from "../constants";
+import { ServerUrls } from "../routes";
 import { Employee, IEmployee } from "./employee";
 import { IBranch } from "./branch";
 

@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { Branch, IBranch } from "../../shared/models/branch";
-import { Add, EditOutlined, Save } from "@mui/icons-material";
+import { Add, EditOutlined, Save, ThreeKOutlined } from "@mui/icons-material";
 import { useEffect, useReducer, useState } from "react";
 import useAppContext from "../../shared/hooks/app-context";
 import { IBusiness } from "../../shared/models/business";
@@ -117,12 +117,13 @@ export const BranchList = ({ business }: BranchListProps) => {
             >
               <ListItemIcon
                 key={`${branch?._id ?? ""}-menu listItemIcon`}
-                onClick={() => handleEdit(branch)}
+                // onClick={() => handleEdit(branch)}
               >
-                <EditOutlined
+                <ThreeKOutlined />
+                {/* <EditOutlined
                   key={`${branch?._id ?? ""}-menu listItemIcon edit`}
                   color="primary"
-                />
+                /> */}
               </ListItemIcon>
               <ListItemText
                 sx={{ whiteSpace: "pre-line" }}

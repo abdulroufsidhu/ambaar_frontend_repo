@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ServerUrls } from "../constants";
+import { ServerUrls } from "../routes";
 import { IBranch } from "./branch";
 import { IUser } from "./user";
 import { IPermission } from "./permission";

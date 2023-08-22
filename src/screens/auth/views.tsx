@@ -1,10 +1,10 @@
 import { Button, Stack, TextField, Typography } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import { routes } from "./router";
 import { useState } from "react";
 import { User, IUser } from "../../shared/models/user";
 import { Create, LoginOutlined } from "@mui/icons-material";
 import useAppContext from "../../shared/hooks/app-context";
+import { ClientUrls } from "../../shared/routes";
 
 export const Login = () => {
   const [context, dispatch] = useAppContext();
@@ -12,13 +12,13 @@ export const Login = () => {
   const [password, setPassword] = useState("");
 
   const handleSignup = () => {
-    !!context.navigate && context.navigate(routes.SIGNUP);
+    !!context.navigate && context.navigate(ClientUrls.auth.signup);
   };
 
   const handleLogin = () => {
     User.login(email, password)
       .then((res) => {
-        !!context.navigate && context.navigate("/products");
+        !!context.navigate && context.navigate(ClientUrls.inventory.base);
       })
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       .catch((error) => console.error(error.request.response));

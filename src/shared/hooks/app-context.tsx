@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ReactNode, createContext, useContext, useReducer } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { ServerUrls } from "../constants";
+import { ServerUrls } from "../routes";
 import { IBranch } from "../models/branch";
 import { IBusiness } from "../models/business";
 import { IUser } from "../models/user";

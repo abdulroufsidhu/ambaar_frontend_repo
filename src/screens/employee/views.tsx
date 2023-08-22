@@ -2,6 +2,7 @@ import {
   Button,
   Divider,
   FormControl,
+  IconButton,
   List,
   ListItem,
   ListItemText,
@@ -14,10 +15,13 @@ import { IEmployee, Employee } from "../../shared/models/employee";
 import { IUser, User } from "../../shared/models/user";
 import useAppContext from "../../shared/hooks/app-context";
 import { Signup } from "../auth";
-import { useReducer, useState } from "react";
+import { useReducer, useState, useEffect, ReactNode } from "react";
 import { Box } from "@mui/material";
 import { MyFab } from "../../shared/components/buttons";
-import { GroupAddOutlined } from "@mui/icons-material";
+import { GroupAddOutlined, EditOutlined } from '@mui/icons-material';
+import { MyDataTable } from "../../shared/components/my-data-table";
+import { IProduct } from "../../shared/models/inventory";
+import { IPerson } from "../../shared/models/person";
 
 const employeeReducer = (state: IEmployee, action: { payload?: IEmployee }) => {
   if (action.payload) {
@@ -82,8 +86,28 @@ interface EmployeeListProps {
   list?: IEmployee[];
 }
 
+interface IPersonActionable extends IPerson {
+  actions?: ReactNode;
+}
+
 export const EmployeeList = ({ list }: EmployeeListProps) => {
   const [context, dispatch] = useAppContext();
+  const [persons, setPersons] = useState<IPersonActionable[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  useEffect(() => {
+    setPersons(
+      list
+        ?.filter((j) => !!j.user?.person)
+        .map((j) => {
+          return { 
+            ...j.user!.person!,
+            actions: <IconButton color="primary" ><EditOutlined/></IconButton>
+          };
+        }) ?? []
+    );
+  }, [list]);
 
   const handleAdd: () => undefined = () => {
     console.log("handleAdd");
@@ -93,11 +117,31 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
     });
   };
 
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (number: number) => {
+    setRowsPerPage(number);
+    setPage(0);
+  };
+
   if (!list) return <>Please Select a Branch</>;
+
+  console.log(persons);
 
   return (
     <Box width="100%">
-      <List key="employee.views.list">
+      <MyDataTable<IPerson>
+        data={persons}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        rowsPerPageOptions={[5, 10, 25, 50, 100]}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+
+      {/* <List key="employee.views.list">
         {list.map((employee, index) => (
           <>
             <ListItem key={`employee.views.list-${employee._id ?? ""}`}>
@@ -112,7 +156,7 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
             <Divider />
           </>
         ))}
-      </List>
+      </List> */}
       {!!context.branch && (
         <MyFab
           label="Add Employee"

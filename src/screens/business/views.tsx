@@ -13,7 +13,7 @@ import {
 import { Business, IBusiness } from "../../shared/models/business";
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Add, EditOutlined, Save } from "@mui/icons-material";
+import { Add, BusinessCenterOutlined, BusinessOutlined, EditOutlined, Save } from "@mui/icons-material";
 import { BranchList } from "../branch";
 import useAppContext from "../../shared/hooks/app-context";
 import { User } from "../../shared/models/user";
@@ -121,12 +121,13 @@ export const BusinessList = () => {
             >
               <ListItemIcon
                 key={`${business?._id ?? ""}-menu listItemIcon`}
-                onClick={() => handleEdit(business)}
+                // onClick={() => handleEdit(business)}
               >
-                <EditOutlined
+                <BusinessOutlined color="primary" />
+                {/* <EditOutlined
                   key={`${business?._id ?? ""}-menu listItemIcon edit`}
                   color="primary"
-                />
+                /> */}
               </ListItemIcon>
               <ListItemText
                 sx={{ flexGrow: 1, whiteSpace: "pre-line" }}

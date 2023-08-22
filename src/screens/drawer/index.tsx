@@ -14,15 +14,22 @@ import {
 import { ReactNode } from "react";
 import useAppContext from "../../shared/hooks/app-context";
 import { ChevronLeftOutlined, LogoutOutlined, Menu } from "@mui/icons-material";
-import { MyDrawerConstants } from "../../shared/constants";
 import { ThemeSwitch } from "../../shared/components/buttons";
 import { User } from "../../shared/models/user";
+import { ClientUrls } from "../../shared/routes";
 
 export interface DrawerItem {
   path: string;
   text: string;
   icon?: ReactNode;
 }
+
+export const MyDrawerConstants = {
+  width: {
+    min: "80px",
+    max: "240px",
+  },
+};
 
 interface DrawerProps {
   drawerItems: DrawerItem[];
@@ -149,7 +156,8 @@ const MyDrawer = ({ drawerItems }: DrawerProps) => {
                 onClick={() => {
                   User.logout()
                     .then(() => {
-                      !!context.navigate && context.navigate("/");
+                      !!context.navigate &&
+                        context.navigate(ClientUrls.baseUrl);
                     })
                     .catch((error) => console.error(error));
                 }}
