@@ -48,7 +48,7 @@ export const InventoryItemAdd = ({ inventory, onSuccess }: ItemAddProp) => {
         .catch((error) => console.error(error));
     } else {
       Inventory.add({ product: product, branch: context.branch })
-        .then((item) => !!onSuccess && onSuccess(item))
+        .then((item) => !!onSuccess && item && onSuccess(item))
         .catch((error) => console.error(error));
     }
     dispatch({ action: "CLOSE_POPUP" });
@@ -178,7 +178,7 @@ export const InventoryItemList = () => {
   useEffect(() => {
     !!context.branch?._id &&
       Inventory.list(context.branch?._id)
-        .then((l) => setList(l))
+        .then((l) => l && setList(l))
         .catch((error) => console.error(error));
     return () => setList([]);
   }, [context.branch]);

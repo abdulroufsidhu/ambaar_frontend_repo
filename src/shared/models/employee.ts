@@ -3,6 +3,7 @@ import { ServerUrls } from "../routes";
 import { IBranch } from "./branch";
 import { IUser } from "./user";
 import { IPermission } from "./permission";
+import { MyApiResponse } from "../unified-response";
 
 export interface IEmployee {
   _id?: string;
@@ -14,21 +15,17 @@ export interface IEmployee {
 
 export class Employee {
   static add = (employee: IEmployee) =>
-    axios<IEmployee>({
-      method: "post",
-      url: ServerUrls.employee.add,
-      data: { ...employee },
+    axios.post<MyApiResponse<IEmployee>>(ServerUrls.employee.add, {
+      ...employee,
     })
-      .then((value) => value.data)
+      .then((value) => value.data.data)
       .catch((error) => console.error(error));
 
   static view = (employee: IEmployee) =>
-    axios<IEmployee>({
-      method: "get",
-      url: ServerUrls.employee.get,
+    axios.get<MyApiResponse<IEmployee>>(ServerUrls.employee.get, {
       params: { ...employee },
     })
-      .then((value) => value.data)
+      .then((value) => value.data.data)
       .catch((error) => console.error(error));
 
   static list = ({ user, branch }: IEmployee) => {
@@ -39,12 +36,12 @@ export class Employee {
     if (typeof branch?._id === "string") {
       params["branch_id"] = branch?._id;
     }
-    return axios<Array<IEmployee>>({
+    return axios<MyApiResponse<IEmployee[]>>({
       method: "get",
       url: ServerUrls.employee.get,
       params: params,
     })
-      .then((value) => value.data)
+      .then((value) => value.data.data)
       .catch((error) => console.error(error));
   };
 }

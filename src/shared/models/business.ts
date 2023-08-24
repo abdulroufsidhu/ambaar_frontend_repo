@@ -2,6 +2,7 @@ import { IPerson } from "./person";
 import axios from "axios";
 import { ServerUrls } from "../routes";
 import { IEmployee } from "./employee";
+import { MyApiResponse } from "../unified-response";
 
 export interface IBusiness {
   _id?: string;
@@ -27,28 +28,28 @@ export class Business {
       .then((value) => value.data);
 
   static add = (user_id: string, business: IBusiness) =>
-    axios<IEmployee>({
+    axios<MyApiResponse<IEmployee>>({
       method: "post",
       url: ServerUrls.business.add,
       data: { user_id, ...business },
     })
-      .then((value) => value.data)
+      .then((value) => value.data.data)
       .catch((error) => console.error(error));
 
   static view = (business: IBusiness) =>
-    axios<IBusiness>({
+    axios<MyApiResponse<IBusiness>>({
       method: "get",
       url: ServerUrls.business.get,
       params: { ...business },
     })
-      .then((value) => value.data)
+      .then((value) => value.data.data)
       .catch((error) => console.error(error));
 
   static list = () =>
-    axios<Array<IBusiness>>({
+    axios<MyApiResponse<IBusiness[]>>({
       method: "get",
       url: ServerUrls.business.get,
     })
-      .then((value) => value.data)
+      .then((value) => value.data.data)
       .catch((error) => console.error(error));
 }

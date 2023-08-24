@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ServerUrls } from "../routes";
 import { IBranch } from "./branch";
+import { MyApiResponse } from "../unified-response";
 
 export interface IProduct {
   _id?: string;
@@ -22,19 +23,16 @@ export interface IInventory {
 
 export class Inventory {
   static list = (branch_id: string) =>
-    axios
-      .get<IInventory[]>(ServerUrls.inventory.get, {
-        params: { branch_id },
-      })
-      .then((result) => result.data);
+    axios.get<MyApiResponse<IInventory[]>>(ServerUrls.inventory.get, {
+      params: { branch_id },
+    })
+      .then((result) => result.data.data);
 
   static add = (inventory: IInventory) =>
-    axios
-      .post<IInventory>(ServerUrls.inventory.add, {
-        ...inventory,
-        branch: inventory.branch?._id,
-      })
-      .then((item) => item.data);
+    axios.post<MyApiResponse<IInventory>>(ServerUrls.inventory.add, {
+      ...inventory,
+      branch: inventory.branch?._id,
+    }).then(item => item.data.data);
 
   static update = (Inventory: IInventory) =>
     axios.patch(ServerUrls.inventory.update, {

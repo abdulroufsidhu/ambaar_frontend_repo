@@ -1,7 +1,8 @@
 import axios from "axios";
 import { IBusiness } from "./business";
-import { ServerUrls } from "../routes";
+import { MyApiResponse } from "../unified-response";
 import { IEmployee } from "./employee";
+import { ServerUrls } from "../routes";
 
 export interface IBranch {
   _id?: string;
@@ -13,28 +14,25 @@ export interface IBranch {
 }
 
 export class Branch {
-  static add = (userId: string, branch: IBranch) =>
-    axios<IEmployee>({
-      method: "post",
-      url: ServerUrls.branch.add,
-      data: { ...branch, business: branch.business?._id, user_id: userId },
-    })
-      .then((value) => value.data)
+  static add = (branch: IBranch) =>
+    axios.post<MyApiResponse<IBranch>>(
+      ServerUrls.branch.add,
+      { ...branch, business: branch.business?._id },
+    )
+      .then((value) => value.data.data)
       .catch((error) => console.error(error));
 
   static view = (branch: IBranch) =>
-    axios<IBranch>({
-      method: "get",
-      url: ServerUrls.branch.get,
+    axios.get<MyApiResponse<IBranch>>(ServerUrls.branch.get, {
       params: { ...branch },
     })
-      .then((value) => value.data)
+      .then((value) => value.data.data)
       .catch((error) => console.error(error));
 
   static update = (branch: IBranch) =>
     axios
-      .patch<IEmployee>(ServerUrls.branch.update, { ...branch })
-      .then((value) => value.data);
+      .patch<MyApiResponse<IEmployee>>(ServerUrls.branch.update, { ...branch })
+      .then((value) => value.data.data);
 
   static remove = (id: string) =>
     axios
@@ -42,13 +40,9 @@ export class Branch {
       .then((value) => value);
 
   static list = (businessId: string) =>
-    axios<Array<IBranch>>({
-      method: "get",
-      url: ServerUrls.branch.get,
-      params: {
-        business_id: businessId,
-      },
+    axios.get<MyApiResponse<IBranch[]>>(ServerUrls.branch.get, {
+      params: { business_id: businessId, },
     })
-      .then((value) => value.data)
+      .then((value) => value.data.data)
       .catch((error) => console.error(error));
 }

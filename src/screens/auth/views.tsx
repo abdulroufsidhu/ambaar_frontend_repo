@@ -55,7 +55,7 @@ export const Login = () => {
 };
 
 interface SignupProps {
-  onSuccess: (user: IUser) => undefined;
+  onSuccess: (user: IUser | undefined) => void;
 }
 
 export const Signup = ({ onSuccess }: SignupProps) => {
@@ -79,7 +79,7 @@ export const Signup = ({ onSuccess }: SignupProps) => {
         },
         password
       )
-        .then(onSuccess)
+        .then(user => onSuccess(user))
         .catch((error) => console.error(error));
     }
   };

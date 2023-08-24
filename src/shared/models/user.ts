@@ -2,7 +2,7 @@ import axios from "axios";
 import { IPerson } from "./person";
 import { ServerUrls } from "../routes";
 import { Employee, IEmployee } from "./employee";
-import { IBranch } from "./branch";
+import { MyApiResponse } from "../unified-response";
 
 export interface IUser {
   _id?: string;
@@ -51,37 +51,36 @@ export class User {
   }
 
   static login = async (email: string, password: string) =>
-    axios<IUser>({
-      method: "get",
-      url: ServerUrls.auth.login,
+    axios.get<MyApiResponse<IUser>>(ServerUrls.auth.login, {
       params: {
         email,
         password,
       },
-    }).then((resposne) => {
-      User.instance = resposne.data;
+    }).then((res) => {
+      User.instance = res.data.data;
       return (
-        !!User.instance &&
-        Employee.list({ user: User.instance })
-          .then((list) => {
-            User.instance!.jobs = list ?? [];
-            sessionStorage.setItem("user", JSON.stringify(User.instance));
-            return User.instance;
-          })
-          .catch((error) => {
-            console.error(error);
-            return User.instance;
-          })
+        User.instance ?
+          Employee.list({ user: User.instance })
+            .then((list) => {
+              User.instance!.jobs = list ?? [];
+              sessionStorage.setItem("user", JSON.stringify(User.instance));
+              return User.instance;
+            })
+            .catch((error) => {
+              console.error(error);
+              return User.instance;
+            })
+          : undefined
       );
     });
 
   static signup = async (person: IPerson, password: string) =>
     axios
-      .post<IUser>(ServerUrls.auth.signup, {
+      .post<MyApiResponse<IUser>>(ServerUrls.auth.signup, {
         person: person,
         password: password,
       })
-      .then((respose) => (User.instance = respose.data));
+      .then((respose) => (User.instance = respose.data.data));
 
   static logout = async () =>
     new Promise<IUser | undefined>((resolve, reject) => {
