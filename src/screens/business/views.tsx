@@ -13,17 +13,20 @@ import {
 import { Business, IBusiness } from "../../shared/models/business";
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Add, BusinessCenterOutlined, BusinessOutlined, EditOutlined, Save } from "@mui/icons-material";
-import { BranchList } from "../branch";
+import { Add, BusinessOutlined, Save } from "@mui/icons-material";
+import { BranchSelector } from "../branch";
 import useAppContext from "../../shared/hooks/app-context";
 import { User } from "../../shared/models/user";
 import { useState, useEffect } from "react";
+import { IBranch } from "../../shared/models/branch";
+import { IEmployee } from "../../shared/models/employee";
 
 export const BusinessList = () => {
   const [context, dispatch] = useAppContext();
   const user = User.getInstance();
   const jobs = user?.jobs;
   const [list, setList] = useState<IBusiness[]>([]);
+  const [branches, setBranches] = useState<IBranch[]>([])
 
   useEffect(() => {
     const bus =
@@ -39,11 +42,35 @@ export const BusinessList = () => {
 
     setList(uniqueData);
   }, [jobs]);
-  const handleChange = (businessId: string) =>
+
+  useEffect(() => {
+    const b: IBranch[] | undefined = jobs?.filter(j => j.branch?.business?._id === context.business?._id).map(j => j.branch ?? {})
+    setBranches(b ?? [])
+  }, [context.business])
+
+  const onBranchAddSuccess = (job: IEmployee) => {
+    setBranches(prev => {
+      const b: IBranch[] = prev.map(branch => (branch._id === job.branch?._id) ? (job.branch ?? {}) : branch)
+      if (job.branch) {
+        const index = prev.indexOf(job.branch)
+        if (index < 0) {
+          b.push(job.branch)
+        }
+      }
+      return b;
+    })
+  }
+
+  const handleChange = (businessId: string) => {
     dispatch({
       action: "SET_BUSINESS",
       payload: { business: list?.filter((b) => b?._id === businessId)[0] },
     });
+    dispatch({
+      action: "SET_BRANCH",
+      payload: { branch: (branches.length > 0) ? (branches[0]) : (undefined) },
+    });
+  }
 
   const handleDelete = (business?: IBusiness) => {
     const confirmation = prompt(
@@ -121,7 +148,7 @@ export const BusinessList = () => {
             >
               <ListItemIcon
                 key={`${business?._id ?? ""}-menu listItemIcon`}
-                // onClick={() => handleEdit(business)}
+              // onClick={() => handleEdit(business)}
               >
                 <BusinessOutlined color="primary" />
                 {/* <EditOutlined
@@ -157,7 +184,7 @@ export const BusinessList = () => {
         </Select>
       </FormControl>
 
-      <BranchList business={context.business} />
+      {context.business && <BranchSelector branches={branches} onAddSuccess={onBranchAddSuccess} />}
     </Stack>
   );
 };
@@ -174,7 +201,6 @@ export const BusinessView = () => {
           <Typography variant="subtitle1">{business.email}</Typography>
           <Typography variant="subtitle1">{business.licence}</Typography>
         </Stack>
-        <BranchList />
       </Stack>
     </>
   );

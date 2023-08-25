@@ -1,3 +1,3 @@
-import { BranchAdd, BranchList, BranchMain, BranchView } from "./views";
+import { BranchAdd, BranchSelector, BranchMain, BranchView } from "./views";
 
-export { BranchAdd, BranchList, BranchMain, BranchView };
+export { BranchAdd, BranchSelector, BranchMain, BranchView };

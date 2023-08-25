@@ -12,64 +12,32 @@ import {
 } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { Branch, IBranch } from "../../shared/models/branch";
-import { Add, AccountTreeOutlined, Save} from "@mui/icons-material";
-import { useEffect, useReducer, useState } from "react";
+import { Add, AccountTreeOutlined, Save } from "@mui/icons-material";
+import { useReducer, } from "react";
 import useAppContext from "../../shared/hooks/app-context";
-import { IBusiness } from "../../shared/models/business";
 import { User } from "../../shared/models/user";
 import { IEmployee } from "../../shared/models/employee";
 
 interface BranchListProps {
-  business?: IBusiness;
+  branches: IBranch[];
+  onAddSuccess: (job: IEmployee) => void
 }
 
-export const BranchList = ({ business }: BranchListProps) => {
-  const [branches, setBranches] = useState<IBranch[]>(() => []);
+export const BranchSelector = ({ branches, onAddSuccess }: BranchListProps) => {
   const [context, dispatch] = useAppContext();
 
-  const onAddSuccess = (job: IEmployee) => {
-    if (job.branch) {
-      setBranches((prev) => {
-        const newState: IBranch[] = prev.map((b) =>
-          b._id === job.branch?._id ? job.branch! : b
-        );
-        const index = newState.indexOf(job.branch!);
-        if (index < 0) {
-          job.branch && newState.push(job.branch);
-        }
-        return newState;
-      });
-    }
+  const onAddSuccessLocal = (job: IEmployee) => {
+    onAddSuccess(job)
     if (context.branch?._id == job.branch?._id) {
       dispatch({ action: "SET_BRANCH", payload: { branch: job.branch } });
     }
   };
 
-  useEffect(() => {
-    dispatch({ action: "CLEAR_BRANCH" });
-    setBranches(
-      User.getInstance()
-        .jobs?.filter((j) => j.branch?.business?._id === business?._id)
-        .map((j) => {
-          return j.branch ?? {};
-        }) ?? []
-    );
-    // Branch.list(business?._id ?? "")
-    //   .then((list) => {
-    //     setBranches(list ?? []);
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //     setBranches([]);
-    //   });
-    return () => setBranches([]);
-  }, [business]);
-
   const handleEdit = (branch: IBranch) => {
     dispatch({
       action: "OPEN_POPUP",
       payload: {
-        popupChild: <BranchAdd branch={branch} onSuccess={onAddSuccess} />,
+        popupChild: <BranchAdd branch={branch} onSuccess={onAddSuccessLocal} />,
       },
     });
   };
@@ -78,7 +46,7 @@ export const BranchList = ({ business }: BranchListProps) => {
     dispatch({
       action: "OPEN_POPUP",
       payload: {
-        popupChild: <BranchAdd onSuccess={onAddSuccess} />,
+        popupChild: <BranchAdd onSuccess={onAddSuccessLocal} />,
       },
     });
   };
@@ -117,7 +85,7 @@ export const BranchList = ({ business }: BranchListProps) => {
             >
               <ListItemIcon
                 key={`${branch?._id ?? ""}-menu listItemIcon`}
-                // onClick={() => handleEdit(branch)}
+              // onClick={() => handleEdit(branch)}
               >
                 <AccountTreeOutlined />
                 {/* <EditOutlined
@@ -135,7 +103,7 @@ export const BranchList = ({ business }: BranchListProps) => {
               />
             </MenuItem>
           ))}
-          {!!business && (
+          {(
             <MenuItem
               sx={{
                 display: "flex",
@@ -204,7 +172,7 @@ export const BranchAdd = ({
 
   const handleSave = () => {
     if (!paramBranch) {
-      Branch.add(User.getInstance()._id ?? "", branch)
+      Branch.add(branch)
         .then((job) => {
           if (job) {
             User.addJob(job);

@@ -25,6 +25,7 @@ export class User {
             Employee.list({ user: User.instance })
               .then((jobs) => {
                 if (User.instance) {
+                  console.info(jobs)
                   User.instance.jobs = jobs ?? [];
                   console.log("ReSetting Session", User.instance);
                   sessionStorage.setItem("user", JSON.stringify(User.instance));
@@ -61,8 +62,9 @@ export class User {
       return (
         User.instance ?
           Employee.list({ user: User.instance })
-            .then((list) => {
-              User.instance!.jobs = list ?? [];
+            .then((jobs) => {
+              console.info(jobs)
+              User.instance!.jobs = jobs ?? [];
               sessionStorage.setItem("user", JSON.stringify(User.instance));
               return User.instance;
             })
