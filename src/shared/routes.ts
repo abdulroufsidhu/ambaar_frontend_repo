@@ -36,6 +36,11 @@ export const ServerUrls = {
     add: "/inventory/create",
     update: "/inventory/update",
   },
+  operation: {
+    base: "operation/",
+    add: "operation/create/",
+    get: "operation/get/",
+  },
 };
 export const ClientUrls = {
   baseUrl: "/",
@@ -45,18 +50,22 @@ export const ClientUrls = {
   },
   employee: {
     base: "employee/",
-    list: "employee/list/",
-    view: "employee/view/",
-    edit: "employee/edit/",
+    list: "list/",
+    view: "view/",
+    edit: "edit/",
   },
   business: {
     base: "business/",
-    edit: "business/edit",
-    view: "business/view",
+    edit: "edit/",
+    view: "view/",
   },
   inventory: {
     base: "inventory/",
-    view: "inventory/view/",
-    sale: "inventory/sale/",
+    view: "view/",
+    sale: "sale/",
+  },
+  operations: {
+    base: "operations/",
+    list: "list/",
   },
 };

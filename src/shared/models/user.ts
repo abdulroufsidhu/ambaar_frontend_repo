@@ -8,6 +8,7 @@ export interface IUser {
   _id?: string;
   person?: IPerson;
   jobs?: IEmployee[];
+  token?: string;
 }
 
 export class User {

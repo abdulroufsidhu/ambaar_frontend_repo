@@ -9,16 +9,17 @@ export interface IProduct {
   detail?: string;
   colour?: string;
   variant?: string;
+}
+
+export interface IInventory {
+  _id?: string
+  product?: IProduct;
+  branch?: IBranch;
   serialNumber?: string;
   unitBuyPrice?: number;
   unitSellPrice?: number;
   unitDescountPrice?: number;
   quantity?: number;
-}
-
-export interface IInventory {
-  product?: IProduct;
-  branch?: IBranch;
 }
 
 export class Inventory {

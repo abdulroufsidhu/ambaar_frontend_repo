@@ -15,11 +15,15 @@ import {
   AddShoppingCartOutlined,
   ScannerOutlined,
   EditOutlined,
+  LocalGroceryStoreOutlined,
+  LoyaltyOutlined,
 } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { MyBarcodeScanner } from "../../shared/components/barcode-scanner";
 import { TextResult } from "dynamsoft-javascript-barcode";
 import { MyDataTable } from "../../shared/components/my-data-table";
+import { removeObjectProperties } from '../../shared/utils/object-properties-remover';
+import { OperationAdd } from "../operation";
 
 interface ItemAddProp {
   inventory?: IInventory;
@@ -27,27 +31,46 @@ interface ItemAddProp {
 }
 
 export const InventoryItemAdd = ({ inventory, onSuccess }: ItemAddProp) => {
-  const [product, setProduct] = useState<IProduct>(inventory?.product ?? {});
   const [scannerActive, setScannerActive] = useState<boolean>(false);
   const [context, dispatch] = useAppContext();
+  const [item, setItem] = useState<IInventory>(
+    inventory ??
+      ({
+        product: {},
+        branch: context.branch,
+        serialNumber: "",
+        unitBuyPrice: 0,
+        unitSellPrice: 0,
+        unitDescountPrice: 0,
+        quantity: 1,
+      } as IInventory)
+  );
 
-  const handleInputChange = (field: keyof IProduct, value: any) => {
-    setProduct((prevInput) => ({
+  const handleInputChange = (field: keyof IInventory, value: any) => {
+    const nestedField: (keyof IInventory)[] = field.split(".");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    let actualValue = value;
+    if (nestedField.length > 1) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      actualValue = {
+        ...item[nestedField[0]],
+        [nestedField[1]]: value,
+      };
+    }
+    setItem((prevInput) => ({
       ...prevInput,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      [field]: value,
+      [nestedField[0]]: actualValue,
     }));
   };
 
   const handleSubmit = () => {
     if (inventory) {
-      Inventory.update({ ...inventory, product })
-        .then(
-          () => !!onSuccess && onSuccess({ product, branch: context.branch })
-        )
+      Inventory.update({ ...inventory, ...item })
+        .then(() => !!onSuccess && onSuccess(item))
         .catch((error) => console.error(error));
     } else {
-      Inventory.add({ product: product, branch: context.branch })
+      Inventory.add({ ...item })
         .then((item) => !!onSuccess && item && onSuccess(item))
         .catch((error) => console.error(error));
     }
@@ -73,8 +96,8 @@ export const InventoryItemAdd = ({ inventory, onSuccess }: ItemAddProp) => {
         <TextField
           label="Name"
           type="text"
-          value={product.name}
-          onChange={(e) => handleInputChange("name", e.target.value)}
+          value={item.product?.name}
+          onChange={(e) => handleInputChange("product.name", e.target.value)}
         />
       </FormControl>
       <FormControl required>
@@ -84,31 +107,31 @@ export const InventoryItemAdd = ({ inventory, onSuccess }: ItemAddProp) => {
           minRows={4}
           label="Detail"
           type="text"
-          value={product.detail}
-          onChange={(e) => handleInputChange("detail", e.target.value)}
+          value={item.product?.detail}
+          onChange={(e) => handleInputChange("product.detail", e.target.value)}
         />
       </FormControl>
       <FormControl required>
         <TextField
           label="Colour"
           type="text"
-          value={product.colour}
-          onChange={(e) => handleInputChange("colour", e.target.value)}
+          value={item.product?.colour}
+          onChange={(e) => handleInputChange("product.colour", e.target.value)}
         />
       </FormControl>
       <FormControl>
         <TextField
           label="Variant"
           type="text"
-          value={product.variant}
-          onChange={(e) => handleInputChange("variant", e.target.value)}
+          value={item.product?.variant}
+          onChange={(e) => handleInputChange("product.variant", e.target.value)}
         />
       </FormControl>
       <FormControl required>
         <TextField
           label="Unit Buy Price"
           type="number"
-          value={product.unitBuyPrice}
+          value={item.unitBuyPrice}
           onChange={(e) => handleInputChange("unitBuyPrice", e.target.value)}
         />
       </FormControl>
@@ -116,7 +139,7 @@ export const InventoryItemAdd = ({ inventory, onSuccess }: ItemAddProp) => {
         <TextField
           label="Unit Sell Price"
           type="number"
-          value={product.unitSellPrice}
+          value={item.unitSellPrice}
           onChange={(e) => handleInputChange("unitSellPrice", e.target.value)}
         />
       </FormControl>
@@ -124,7 +147,7 @@ export const InventoryItemAdd = ({ inventory, onSuccess }: ItemAddProp) => {
         <TextField
           label="Unit Descount Prince"
           type="number"
-          value={product.unitDescountPrice}
+          value={item.unitDescountPrice}
           onChange={(e) =>
             handleInputChange("unitDescountPrice", e.target.value)
           }
@@ -134,7 +157,7 @@ export const InventoryItemAdd = ({ inventory, onSuccess }: ItemAddProp) => {
         <TextField
           label="Quantity"
           type="number"
-          value={product.quantity}
+          value={item.quantity}
           onChange={(e) => handleInputChange("quantity", e.target.value)}
         />
       </FormControl>
@@ -147,7 +170,7 @@ export const InventoryItemAdd = ({ inventory, onSuccess }: ItemAddProp) => {
         <TextField
           label="Serial"
           type="text"
-          value={product.serialNumber}
+          value={item.serialNumber}
           onChange={(e) => handleInputChange("serialNumber", e.target.value)}
           InputProps={{
             endAdornment: (
@@ -160,12 +183,17 @@ export const InventoryItemAdd = ({ inventory, onSuccess }: ItemAddProp) => {
           }}
         />
       </FormControl>
-      <Button onClick={handleSubmit}>Submit</Button>
+      <Button onClick={handleSubmit}>{inventory ? "Update" : "Submit"}</Button>
     </Stack>
   );
 };
 
 interface IProductActionable extends IProduct {
+  serialNumber?: string;
+  unitBuyPrice?: number;
+  unitSellPrice?: number;
+  unitDescountPrice?: number;
+  quantity?: number;
   actions?: ReactNode;
 }
 
@@ -188,15 +216,25 @@ export const InventoryItemList = () => {
       list
         .filter((item) => !!item.product)
         .map((item) => {
-          return {
-            ...item.product!,
+          const actionableProduct : IProductActionable = {
+            ...item.product! ,
+            ...item,
             actions: (
+              <>
               <IconButton onClick={() => handleEdit(item)} color="primary">
                 {" "}
                 <EditOutlined />{" "}
               </IconButton>
+              
+              <IconButton onClick={() => handleSale(item)} color="success">
+                <LoyaltyOutlined />
+              </IconButton>
+              </>
+
             ),
-          };
+          }
+          const filteredObject = removeObjectProperties(actionableProduct, ["product", "branch"])
+          return filteredObject;
         })
     );
     return () => setProducts([]);
@@ -211,6 +249,15 @@ export const InventoryItemList = () => {
     });
     return undefined;
   };
+
+  const handleSale = (item: Inventory) => {
+    dispatch({
+      action: "OPEN_POPUP",
+      payload: {
+        popupChild: <OperationAdd inventory={item} />
+      }
+    })
+  }
 
   const onAddSuccess = (inventory: IInventory) => {
     setList((prev) => {

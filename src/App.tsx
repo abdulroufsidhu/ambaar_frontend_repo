@@ -6,6 +6,7 @@ import MyDrawer, { DrawerItem, MyDrawerConstants } from "./screens/drawer";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AuthRoutes } from "./screens/auth";
 import {
+  AssessmentOutlined,
   GroupOutlined,
   LocalGroceryStoreOutlined,
   SecurityOutlined,
@@ -18,7 +19,9 @@ import { MyProgressIndicator } from "./shared/components/progress-indicator";
 import { BusinessList } from "./screens/business";
 import { EmployeeRoutes } from "./screens/employee";
 import { User } from "./shared/models/user";
-import { ClientUrls } from "./shared/routes";
+import { ClientUrls, ServerUrls } from "./shared/routes";
+import { IPermission } from "./shared/models/permission";
+import { OperationRouting } from "./screens/operation/routes";
 
 function App() {
   const [context, dispatch] = useAppContext();
@@ -47,6 +50,11 @@ function App() {
           icon: <GroupOutlined />,
           path: ClientUrls.employee.base,
           text: "Employee",
+        },
+        {
+          icon: <AssessmentOutlined />,
+          path: ClientUrls.operations.base + ClientUrls.operations.list,
+          text: "Operations",
         },
       ];
     }
@@ -118,6 +126,10 @@ function App() {
                 <Route
                   path={`${ClientUrls.employee.base}*`}
                   element={<EmployeeRoutes />}
+                />
+                <Route
+                  path={`${ClientUrls.operations.base}*`}
+                  element={<OperationRouting />}
                 />
               </>
             )}

@@ -4,7 +4,7 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import { ServerUrls } from "../routes";
 import { IBranch } from "../models/branch";
 import { IBusiness } from "../models/business";
-import { IUser } from "../models/user";
+import { IUser, User } from "../models/user";
 import { Theme, createTheme } from "@mui/material";
 import { IEmployee } from "../models/employee";
 
@@ -119,6 +119,9 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
 
   axios.defaults.baseURL = ServerUrls.baseUrl;
   axios.defaults.headers["Content-Type"] = "application/json";
+  if (User.getInstance()) {
+    axios.defaults.headers["Authorization"] = User.getInstance().token ?? "";
+  }
 
   axios.interceptors.request.use(
     (success) => success,

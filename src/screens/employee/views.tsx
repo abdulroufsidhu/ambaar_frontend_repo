@@ -3,9 +3,12 @@ import {
   Divider,
   FormControl,
   IconButton,
+  InputLabel,
   List,
   ListItem,
   ListItemText,
+  MenuItem,
+  Select,
   Stack,
   TextField,
   Typography,
@@ -40,7 +43,16 @@ export const EmployeeAdd = () => {
     employeeReducerInitialValue
   );
 
-  const handleSignup: (user: IUser) => undefined = (user: IUser) => {
+  const handleChange = (key: keyof IEmployee, value: any) => {
+    employeeDispatch({
+      payload: {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        [key]: value
+      }
+    })
+  }
+
+  const handleSignup = (user: IUser | undefined) => {
     console.info("employee user signup", user);
     employeeDispatch({
       payload: { user: user, branch: context.branch },
@@ -67,10 +79,21 @@ export const EmployeeAdd = () => {
               <TextField
                 label="Role"
                 value={employee.role}
-                onChange={(e) =>
-                  employeeDispatch({ payload: { role: e.target.value } })
-                }
+                onChange={(e) => handleChange("role", e.target.value) }
               />
+            </FormControl>
+            <FormControl required>
+            <InputLabel id="employee-add-status-select-label">Age</InputLabel>
+              <Select
+                labelId="employee-add-status-select-label"
+                id="employee-add-status-select"
+                value={employee.status}
+                label="Status"
+                onChange={(e) => handleChange("status", e.target.value)}
+              >
+                <MenuItem value="active">Active</MenuItem>
+                <MenuItem value="inactive">Inactive</MenuItem>
+              </Select>
             </FormControl>
             <Button onClick={handleAddEmployee}>Add Employee</Button>
           </>
