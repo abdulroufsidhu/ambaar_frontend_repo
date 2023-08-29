@@ -3,12 +3,14 @@ import { IPerson } from "./person";
 import { ServerUrls } from "../routes";
 import { Employee, IEmployee } from "./employee";
 import { MyApiResponse } from "../unified-response";
+import { IBranch } from "./branch";
 
 export interface IUser {
   _id?: string;
   person?: IPerson;
   jobs?: IEmployee[];
   token?: string;
+  performingJob?: IEmployee;
 }
 
 export class User {
@@ -118,4 +120,11 @@ export class User {
       sessionStorage.setItem("user", JSON.stringify(User.instance));
     }
   };
+
+  static setPerformingJob = (branch: IBranch) => {
+    if (User.instance) {
+      User.instance.performingJob = User.instance?.jobs?.filter(j => j.branch?._id === branch._id)[0]
+    }
+  }
+
 }

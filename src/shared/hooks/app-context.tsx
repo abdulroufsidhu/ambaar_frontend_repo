@@ -78,6 +78,7 @@ function appContextReducer(
         darkMode: !state.darkMode,
       };
     case "SET_BRANCH":
+      action.payload?.branch && User.setPerformingJob(action.payload?.branch)
       return { ...state, branch: action.payload?.branch };
     case "CLEAR_BRANCH":
       return { ...state, branch: undefined };
@@ -120,7 +121,8 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   axios.defaults.baseURL = ServerUrls.baseUrl;
   axios.defaults.headers["Content-Type"] = "application/json";
   if (User.getInstance()) {
-    axios.defaults.headers["Authorization"] = User.getInstance().token ?? "";
+    axios.defaults.headers["x-auth-token"] = User.getInstance().token ?? "";
+    axios.defaults.headers["job"] = User.getInstance().performingJob?._id ?? "";
   }
 
   axios.interceptors.request.use(
