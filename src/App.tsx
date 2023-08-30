@@ -20,7 +20,6 @@ import { BusinessList } from "./screens/business";
 import { EmployeeRoutes } from "./screens/employee";
 import { User } from "./shared/models/user";
 import { ClientUrls, ServerUrls } from "./shared/routes";
-import { IPermission } from "./shared/models/permission";
 import { OperationRouting } from "./screens/operation/routes";
 
 function App() {

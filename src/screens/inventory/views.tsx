@@ -1,4 +1,5 @@
 import {
+  Chip,
   FormControl,
   FormHelperText,
   IconButton,
@@ -15,7 +16,6 @@ import {
   AddShoppingCartOutlined,
   ScannerOutlined,
   EditOutlined,
-  LocalGroceryStoreOutlined,
   LoyaltyOutlined,
 } from "@mui/icons-material";
 import { Button } from "@mui/material";
@@ -221,16 +221,13 @@ export const InventoryItemList = () => {
             ...item,
             actions: (
               <>
-              <IconButton onClick={() => handleEdit(item)} color="primary">
-                {" "}
-                <EditOutlined />{" "}
-              </IconButton>
-              
-              <IconButton onClick={() => handleSale(item)} color="success">
-                <LoyaltyOutlined />
-              </IconButton>
+                <IconButton onClick={() => handleSale(item)} color="success">
+                  <LoyaltyOutlined />
+                </IconButton>
+                <IconButton onClick={() => handleEdit(item)} color="primary">
+                  <EditOutlined />
+                </IconButton>
               </>
-
             ),
           }
           const filteredObject = removeObjectProperties(actionableProduct, ["product", "branch"])
