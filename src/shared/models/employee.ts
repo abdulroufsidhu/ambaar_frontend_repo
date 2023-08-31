@@ -11,7 +11,7 @@ export interface IEmployee {
   branch?: IBranch;
   role?: string;
   permissions?: Array<IPermission | string>;
-  status?: "active"|"inactive"
+  status?: "active" | "inactive"
 }
 
 export class Employee {

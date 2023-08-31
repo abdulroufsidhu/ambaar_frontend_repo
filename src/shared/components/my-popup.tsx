@@ -9,6 +9,9 @@ export const MyPopup = () => {
   };
   return (
     <Popover
+      sx={{
+        maxHeight: "80vh"
+      }}
       anchorOrigin={{
         vertical: "center",
         horizontal: "center",

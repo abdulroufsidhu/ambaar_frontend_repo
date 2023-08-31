@@ -4,6 +4,8 @@ import { ServerUrls } from "../routes";
 import { Employee, IEmployee } from "./employee";
 import { MyApiResponse } from "../unified-response";
 import { IBranch } from "./branch";
+import { Permission } from "./permission";
+import { SessionStorageManager } from "../utils/session-storage";
 
 export interface IUser {
   _id?: string;
@@ -21,9 +23,9 @@ export class User {
     if (!User.instance) {
       if (!User.calling) {
         User.calling = true;
-        const u = sessionStorage.getItem("user");
+        const u = SessionStorageManager.getItem<IUser>("user");
         if (u) {
-          User.instance = JSON.parse(u) as IUser;
+          User.instance = u;
           if (User.instance) {
             Employee.list({ user: User.instance })
               .then((jobs) => {
@@ -31,7 +33,7 @@ export class User {
                   console.info(jobs)
                   User.instance.jobs = jobs ?? [];
                   console.log("ReSetting Session", User.instance);
-                  sessionStorage.setItem("user", JSON.stringify(User.instance));
+                  SessionStorageManager.setItem("user", User.instance);
                   User.calling = false;
                 }
               })
@@ -60,24 +62,30 @@ export class User {
         email,
         password,
       },
-    }).then((res) => {
-      User.instance = res.data.data;
-      return (
-        User.instance ?
-          Employee.list({ user: User.instance })
-            .then((jobs) => {
-              console.info(jobs)
-              User.instance!.jobs = jobs ?? [];
-              sessionStorage.setItem("user", JSON.stringify(User.instance));
-              return User.instance;
-            })
-            .catch((error) => {
-              console.error(error);
-              return User.instance;
-            })
-          : undefined
-      );
-    });
+    }).then((res) => this.postLoginProcess(res.data.data));
+
+  private static postLoginProcess = (user?: IUser) => {
+    User.instance = user;
+    return (
+      User.instance ?
+        Employee.list({ user: User.instance })
+          .then((jobs) => {
+            console.info(jobs)
+            User.instance!.jobs = jobs ?? [];
+            SessionStorageManager.setItem("user", User.instance);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            Permission.fetchAll()
+              .then(permissions => SessionStorageManager.setItem("permissions", permissions))
+              .catch(error => console.error(error))
+            return User.instance;
+          })
+          .catch((error) => {
+            console.error(error);
+            return User.instance;
+          })
+        : undefined
+    );
+  }
 
   static signup = async (person: IPerson, password: string) =>
     axios
@@ -85,11 +93,11 @@ export class User {
         person: person,
         password: password,
       })
-      .then((respose) => (User.instance = respose.data.data));
+      .then((res) => this.postLoginProcess(res.data.data));
 
   static logout = async () =>
     new Promise<IUser | undefined>((resolve, reject) => {
-      sessionStorage.removeItem("user");
+      SessionStorageManager.removeItem("user", "permissions")
       User.instance = undefined;
       return resolve(undefined);
       reject();
@@ -99,7 +107,7 @@ export class User {
     if (User.instance) {
       const previousJobs = User.instance.jobs ?? [];
       User.instance.jobs = [...previousJobs, job];
-      sessionStorage.setItem("user", JSON.stringify(User.instance));
+      SessionStorageManager.setItem("user", User.instance);
     }
   };
 
@@ -107,7 +115,7 @@ export class User {
     if (User.instance) {
       const previousJobs = User.instance.jobs ?? [];
       User.instance.jobs = previousJobs.filter(filter);
-      sessionStorage.setItem("user", JSON.stringify(User.instance));
+      SessionStorageManager.setItem("user", User.instance);
     }
   };
 
@@ -117,13 +125,13 @@ export class User {
       User.instance.jobs = previousJobs.map((j) =>
         j._id === job._id ? job : j
       );
-      sessionStorage.setItem("user", JSON.stringify(User.instance));
+      SessionStorageManager.setItem("user", User.instance);
     }
   };
 
   static setPerformingJob = (branch: IBranch) => {
     if (User.instance) {
-      User.instance.performingJob = User.instance?.jobs?.filter(j => j.branch?._id === branch._id)[0]
+      User.instance.performingJob = User.instance?.jobs?.filter(j => j.branch?._id === branch._id)?.at(0)
     }
   }
 

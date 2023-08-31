@@ -3,6 +3,7 @@ import { IBusiness } from "./business";
 import { MyApiResponse } from "../unified-response";
 import { IEmployee } from "./employee";
 import { ServerUrls } from "../routes";
+import { Permission } from "./permission";
 
 export interface IBranch {
   _id?: string;
@@ -17,7 +18,7 @@ export class Branch {
   static add = (branch: IBranch) =>
     axios.post<MyApiResponse<IBranch>>(
       ServerUrls.branch.add,
-      { ...branch, business: branch.business?._id },
+      { ...branch, business: branch.business?._id, permissions: Permission.getAllPermissions().map(perm => perm._id) },
     )
       .then((value) => value.data.data)
       .catch((error) => console.error(error));

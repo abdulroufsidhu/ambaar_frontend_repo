@@ -2,6 +2,8 @@ import {
   Button,
   Divider,
   FormControl,
+  FormControlLabel,
+  FormGroup,
   IconButton,
   InputLabel,
   List,
@@ -10,6 +12,7 @@ import {
   MenuItem,
   Select,
   Stack,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -23,8 +26,8 @@ import { Box } from "@mui/material";
 import { MyFab } from "../../shared/components/buttons";
 import { GroupAddOutlined, EditOutlined } from '@mui/icons-material';
 import { MyDataTable } from "../../shared/components/my-data-table";
-import { IProduct } from "../../shared/models/inventory";
 import { IPerson } from "../../shared/models/person";
+import { IPermission, Permission } from "../../shared/models/permission";
 
 const employeeReducer = (state: IEmployee, action: { payload?: IEmployee }) => {
   if (action.payload) {
@@ -33,7 +36,9 @@ const employeeReducer = (state: IEmployee, action: { payload?: IEmployee }) => {
   return state;
 };
 
-const employeeReducerInitialValue: IEmployee = {};
+const employeeReducerInitialValue: IEmployee = {
+  permissions: []
+};
 
 export const EmployeeAdd = () => {
   const [context, dispatch] = useAppContext();
@@ -50,6 +55,24 @@ export const EmployeeAdd = () => {
         [key]: value
       }
     })
+  }
+
+  const togglePermission = (permission: IPermission) => {
+    const permitted = (employee.permissions?.filter(perm => perm === permission._id)?.length ?? 0) > 0
+    if (!permitted) {
+      employeeDispatch({
+        payload: {
+          permissions: [...employee.permissions! as string[], permission._id!]
+        }
+      })
+    } else {
+      const newPerm = employee.permissions?.filter(perm => perm != permission._id)
+      employeeDispatch({
+        payload: {
+          permissions: newPerm
+        }
+      })
+    }
   }
 
   const handleSignup = (user: IUser | undefined) => {
@@ -79,11 +102,11 @@ export const EmployeeAdd = () => {
               <TextField
                 label="Role"
                 value={employee.role}
-                onChange={(e) => handleChange("role", e.target.value) }
+                onChange={(e) => handleChange("role", e.target.value)}
               />
             </FormControl>
             <FormControl required>
-            <InputLabel id="employee-add-status-select-label">Age</InputLabel>
+              <InputLabel id="employee-add-status-select-label">Age</InputLabel>
               <Select
                 labelId="employee-add-status-select-label"
                 id="employee-add-status-select"
@@ -94,6 +117,29 @@ export const EmployeeAdd = () => {
                 <MenuItem value="active">Active</MenuItem>
                 <MenuItem value="inactive">Inactive</MenuItem>
               </Select>
+            </FormControl>
+            <FormControl>
+              <FormGroup>
+                {
+                  Permission.getAllPermissions().map(permission =>
+                  (<>
+                    {
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={(employee.permissions?.filter(perm => perm === permission._id)?.length ?? 0) > 0}
+                            onChange={() => togglePermission(permission)}
+                            name={permission.name?.split('/').map(perm => perm.concat(" ")) ?? ""}
+                          />
+
+                        }
+                        label={permission.name?.split('/').map(perm => perm.concat(" "))}
+                      />
+                    }
+                  </>)
+                  )
+                }
+              </FormGroup>
             </FormControl>
             <Button onClick={handleAddEmployee}>Add Employee</Button>
           </>
@@ -124,9 +170,9 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
       list
         ?.filter((j) => !!j.user?.person)
         .map((j) => {
-          return { 
+          return {
             ...j.user!.person!,
-            actions: <IconButton color="primary" ><EditOutlined/></IconButton>
+            actions: <IconButton color="primary" ><EditOutlined /></IconButton>
           };
         }) ?? []
     );

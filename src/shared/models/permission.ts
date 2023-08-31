@@ -1,6 +1,7 @@
 import axios from "axios";
 import { MyApiResponse } from "../unified-response";
 import { ServerUrls } from "../routes";
+import { SessionStorageManager } from "../utils/session-storage";
 
 export interface IPermission {
   _id?: string;
@@ -8,9 +9,26 @@ export interface IPermission {
 }
 
 export class Permission {
-  static list = () =>
-    axios
-      .get<MyApiResponse<IPermission[]>>(ServerUrls.permissions.get, {})
-      .then((permissions) => permissions.data.data)
-      .catch((error) => console.error(error));
+
+  private static allPermissions: IPermission[] = [];
+
+  static getAllPermissions = (): IPermission[] => {
+    if (Permission.allPermissions.length < 0) {
+      Permission.allPermissions = SessionStorageManager.getItem<Permission[]>("permissions") ?? []
+    }
+    return Permission.allPermissions;
+  }
+
+  static fetchAll = async () => {
+    try {
+      Permission.allPermissions = SessionStorageManager.getItem<IPermission[]>("permissions") ?? []
+      if (Permission.allPermissions.length > 0) { return Permission.allPermissions; }
+      const response = await axios
+        .get<MyApiResponse<IPermission[]>>(ServerUrls.permissions.get, {})
+      Permission.allPermissions = response.data.data ?? []
+    } catch (e) {
+      console.error(e)
+    }
+    return Permission.allPermissions;
+  }
 }
