@@ -106,7 +106,7 @@ export const EmployeeAdd = () => {
               />
             </FormControl>
             <FormControl required>
-              <InputLabel id="employee-add-status-select-label">Age</InputLabel>
+              <InputLabel id="employee-add-status-select-label">Status</InputLabel>
               <Select
                 labelId="employee-add-status-select-label"
                 id="employee-add-status-select"

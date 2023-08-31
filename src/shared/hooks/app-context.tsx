@@ -121,6 +121,7 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
   axios.defaults.baseURL = ServerUrls.baseUrl;
   axios.defaults.headers["Content-Type"] = "application/json";
   if (User.getInstance()) {
+    console.log("setting job")
     axios.defaults.headers["x-auth-token"] = User.getInstance().token ?? "";
     axios.defaults.headers["job"] = User.getInstance().performingJob?._id ?? "";
   }

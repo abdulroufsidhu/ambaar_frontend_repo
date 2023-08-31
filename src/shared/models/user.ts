@@ -130,6 +130,7 @@ export class User {
   };
 
   static setPerformingJob = (branch: IBranch) => {
+    console.log("setting permforming job")
     if (User.instance) {
       User.instance.performingJob = User.instance?.jobs?.filter(j => j.branch?._id === branch._id)?.at(0)
     }
