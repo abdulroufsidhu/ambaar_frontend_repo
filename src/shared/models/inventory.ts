@@ -30,10 +30,10 @@ export class Inventory {
       .then((result) => result.data.data);
 
   static add = (inventory: IInventory) =>
-    axios.post<MyApiResponse<IInventory>>(ServerUrls.inventory.add, {
+    axios.post<MyApiResponse<IInventory|undefinded>>(ServerUrls.inventory.add, {
       ...inventory,
       branch: inventory.branch?._id,
-    }).then(item => item.data.data);
+    }).then(item => !!item.data.data ? item.data.data : []);
 
   static update = (Inventory: IInventory) =>
     axios.patch(ServerUrls.inventory.update, {

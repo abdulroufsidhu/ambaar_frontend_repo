@@ -207,7 +207,7 @@ export const InventoryItemList = () => {
     !!context.branch?._id &&
       Inventory.list(context.branch?._id)
         .then((l) => l && setList(l))
-        .catch((error) => console.error(error));
+        .catch((error) => {console.error(error); setList([])});
     return () => setList([]);
   }, [context.branch]);
 
