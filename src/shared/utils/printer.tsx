@@ -6,7 +6,7 @@ export function printHTML(htmlContent: string) {
   printWindow?.document.write("</body></html>");
   printWindow?.document.close();
   printWindow?.print();
-  printWindow?.close();
+  // printWindow?.close();
 }
 
 export function printReciept(printable: any) {
