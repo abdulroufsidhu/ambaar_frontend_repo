@@ -129,6 +129,12 @@ export class User {
     }
   };
 
+  static clearPerformingJob = () => {
+    if (User.instance) {
+      User.instance.performingJob = undefined
+    }
+  }
+
   static setPerformingJob = (branch: IBranch) => {
     console.log("setting permforming job")
     if (User.instance) {

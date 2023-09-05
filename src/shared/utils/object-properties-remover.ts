@@ -6,3 +6,12 @@ export function removeObjectProperties<T>(object: T, propertyKeys: (keyof T)[]):
   });
   return newObject;
 }
+
+export function isJSON<T>(obj: T) {
+  try {
+    JSON.stringify(obj)
+    return true;
+  } catch (e) {
+    return false;
+  }
+}

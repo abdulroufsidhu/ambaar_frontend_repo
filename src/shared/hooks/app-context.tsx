@@ -29,7 +29,9 @@ type ContextActions =
   | "TOGGLE_THEME"
   | "SET_BRANCH"
   | "CLEAR_BRANCH"
-  | "SET_BUSINESS";
+  | "SET_BUSINESS"
+  | "CLEAR_BUSINESS"
+  ;
 
 interface ApplicationContextAction {
   action?: ContextActions;
@@ -81,9 +83,14 @@ function appContextReducer(
       action.payload?.branch && User.setPerformingJob(action.payload?.branch)
       return { ...state, branch: action.payload?.branch };
     case "CLEAR_BRANCH":
+      action.payload?.branch && User.clearPerformingJob()
       return { ...state, branch: undefined };
     case "SET_BUSINESS":
-      return { ...state, business: action.payload?.business };
+      action.payload?.branch && User.clearPerformingJob()
+      return { ...state, business: action.payload?.business, branch: undefined };
+    case "CLEAR_BUSINESS":
+      action.payload?.branch && User.clearPerformingJob()
+      return { ...state, business: undefined, branch: undefined };
     default:
       return state;
   }

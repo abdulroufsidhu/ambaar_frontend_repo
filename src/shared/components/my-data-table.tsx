@@ -18,7 +18,8 @@ import {
   TextField,
   Toolbar,
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, isValidElement } from "react";
+import { isJSON } from "../utils/object-properties-remover";
 
 interface MyDataTableProps<T> {
   data: T[];
@@ -150,7 +151,7 @@ export const MyDataTable = <T extends Record<string, any>>({
                         {columns?.map((key) => {
                           return (
                             <TableCell key={`${index}${key}`}>
-                              {item[key]}
+                              { (isJSON( item[key] ) && !isValidElement(item[key]) ) ? JSON.stringify(item[key]) : item[key]}
                             </TableCell>
                           );
                         })}

@@ -66,10 +66,10 @@ export const BusinessList = () => {
       action: "SET_BUSINESS",
       payload: { business: list?.filter((b) => b?._id === businessId)[0] },
     });
-    dispatch({
-      action: "SET_BRANCH",
-      payload: { branch: (branches.length > 0) ? (branches[0]) : (undefined) },
-    });
+    // dispatch({
+    //   action: "SET_BRANCH",
+    //   payload: { branch: (branches.length > 0) ? (branches[0]) : (undefined) },
+    // });
   }
 
   const handleDelete = (business?: IBusiness) => {

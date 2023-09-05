@@ -172,7 +172,7 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
         .map((j) => {
           return {
             ...j.user!.person!,
-            actions: <IconButton color="primary" ><EditOutlined /></IconButton>
+            actions: <IconButton color="primary"><EditOutlined /></IconButton>
           };
         }) ?? []
     );
@@ -197,11 +197,9 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
 
   if (!list) return <>Please Select a Branch</>;
 
-  console.log(persons);
-
   return (
     <Box width="100%">
-      <MyDataTable<IPerson>
+      <MyDataTable<IPersonActionable>
         data={persons}
         page={page}
         rowsPerPage={rowsPerPage}

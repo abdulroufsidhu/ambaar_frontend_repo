@@ -38,8 +38,8 @@ export const ServerUrls = {
   },
   operation: {
     base: "operation/",
-    add: "operation/create/",
-    get: "operation/get/",
+    add: "operation/create",
+    get: "operation/get",
   },
 };
 export const ClientUrls = {

@@ -158,6 +158,7 @@ const MyDrawer = ({ drawerItems }: DrawerProps) => {
                     .then(() => {
                       !!context.navigate &&
                         context.navigate(ClientUrls.baseUrl);
+                        dispatch({action: "CLEAR_BUSINESS"})
                     })
                     .catch((error) => console.error(error));
                 }}
