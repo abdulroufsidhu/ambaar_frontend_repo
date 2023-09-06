@@ -251,7 +251,7 @@ export const InventoryItemList = () => {
 
   const handleSaleSuccess = (item: IInventory, operation: IOperation) => {
     setList(prev =>
-      prev.map(inv => inv._id === item._id ? { ...item, quantity: (inv.quantity ?? 0) - (operation.quantity ?? 0) : inv })
+      prev.map(inv => inv._id === item._id ? { ...item, quantity: (inv.quantity ?? 0) - (operation.quantity ?? 0) } : inv)
     )
     printReciept(operation)
     dispatch({ action: "CLOSE_POPUP" })
