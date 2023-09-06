@@ -249,16 +249,19 @@ export const InventoryItemList = () => {
     return undefined;
   };
 
-  const handleSaleSuccess = (operation: IOperation) => {
+  const handleSaleSuccess = (item: IInventory, operation: IOperation) => {
+    setList(prev =>
+      prev.map(inv => inv._id === item._id ? { ...item, quantity: (inv.quantity ?? 0) - (operation.quantity ?? 0) : inv })
+    )
     printReciept(operation)
     dispatch({ action: "CLOSE_POPUP" })
   }
 
-  const handleSale = (item: Inventory) => {
+  const handleSale = (item: IInventory) => {
     dispatch({
       action: "OPEN_POPUP",
       payload: {
-        popupChild: <OperationAdd inventory={item} onAddSuccess={handleSaleSuccess} />
+        popupChild: <OperationAdd inventory={item} onAddSuccess={(operation) => handleSaleSuccess(item, operation)} />
       }
     })
   }
