@@ -10,8 +10,14 @@ import {
   Typography,
 } from "@mui/material";
 import { User } from "../../shared/models/user";
+import { printReciept } from "../../shared/utils/printer";
 
-export const OperationAdd = ({ inventory }: { inventory: IInventory }) => {
+interface OperationAddProps {
+  inventory: IInventory;
+  onAddSuccess: (operation: IOperation) => void
+}
+
+export const OperationAdd = ({ inventory, onAddSuccess }: OperationAddProps) => {
   const [context, contextDispatch] = useAppContext();
   const [operation, setOperation] = useState<IOperation>({
     employee: User.getInstance().jobs?.filter(
@@ -31,10 +37,11 @@ export const OperationAdd = ({ inventory }: { inventory: IInventory }) => {
     });
 
   const handleSubmit = () => {
-		console.log("operation", operation);
-    Operation.add({...operation}).then((res) =>
-      console.log("operation add response", res)
-    ).catch(error=>console.error(error));
+    console.log("operation", operation);
+    Operation.add({ ...operation }).then((res) => {
+      res.data && onAddSuccess(res.data)
+    }
+    ).catch(error => console.error(error));
     return undefined;
   };
 

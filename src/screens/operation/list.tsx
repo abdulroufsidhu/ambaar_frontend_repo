@@ -4,13 +4,12 @@ import { MyDataTable } from "../../shared/components/my-data-table";
 import { useState } from "react";
 import { removeObjectProperties } from "../../shared/utils/object-properties-remover";
 import { IconButton } from "@mui/material";
-import { printHTML, printReciept } from "../../shared/utils/printer";
+import { printReciept } from "../../shared/utils/printer";
 import useAppContext from "../../shared/hooks/app-context";
 import { PrintOutlined } from "@mui/icons-material";
 
 export const OperationList = ({ list }: { list: IOperation[] }) => {
   const [page, setPage] = useState(1);
-  const [appContext, appContextDispatch] = useAppContext();
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handlePageChange = (event: unknown, newPage: number) =>
@@ -18,8 +17,8 @@ export const OperationList = ({ list }: { list: IOperation[] }) => {
 
   const handleRowsPerPageChange = (number: number) => setRowsPerPage(number);
 
-  const handlePrint = (printable: any) => {
-    printReciept({branch:appContext.branch, ...printable})
+  const handlePrint = (printable: IOperation) => {
+    printReciept(printable)
   };
 
   const printableObject = list.map((item) => {
@@ -46,7 +45,7 @@ export const OperationList = ({ list }: { list: IOperation[] }) => {
       ...op,
       actions: (
         <>
-          <IconButton onClick={()=>handlePrint(i)} >
+          <IconButton onClick={() => handlePrint(item)} >
             <PrintOutlined color="success" />
           </IconButton>
         </>
@@ -60,8 +59,8 @@ export const OperationList = ({ list }: { list: IOperation[] }) => {
       data={printableObject}
       onPageChange={handlePageChange}
       onRowsPerPageChange={handleRowsPerPageChange}
-      page={0}
-      rowsPerPage={0}
+      page={page}
+      rowsPerPage={rowsPerPage}
       rowsPerPageOptions={[5, 10, 25, 50, 100]}
     />
   );

@@ -13,13 +13,15 @@ export interface IOperation {
   action?: "sale" | "purchase";
   quantity?: number;
   price?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export class Operation {
   static add = async (operation: IOperation) =>
     axios
       .post<MyApiResponse<IOperation>>(ServerUrls.operation.add, {
-				...operation,
+        ...operation,
         inventory: operation.inventory?._id,
         employee: operation.employee?._id,
       })

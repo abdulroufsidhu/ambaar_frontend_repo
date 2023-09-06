@@ -24,6 +24,8 @@ import { TextResult } from "dynamsoft-javascript-barcode";
 import { MyDataTable } from "../../shared/components/my-data-table";
 import { removeObjectProperties } from '../../shared/utils/object-properties-remover';
 import { OperationAdd } from "../operation";
+import { IOperation } from "../../shared/models/operation";
+import { printReciept } from "../../shared/utils/printer";
 
 interface ItemAddProp {
   inventory?: IInventory;
@@ -35,15 +37,15 @@ export const InventoryItemAdd = ({ inventory, onSuccess }: ItemAddProp) => {
   const [context, dispatch] = useAppContext();
   const [item, setItem] = useState<IInventory>(
     inventory ??
-      ({
-        product: {},
-        branch: context.branch,
-        serialNumber: "",
-        unitBuyPrice: 0,
-        unitSellPrice: 0,
-        unitDescountPrice: 0,
-        quantity: 1,
-      } as IInventory)
+    ({
+      product: {},
+      branch: context.branch,
+      serialNumber: "",
+      unitBuyPrice: 0,
+      unitSellPrice: 0,
+      unitDescountPrice: 0,
+      quantity: 1,
+    } as IInventory)
   );
 
   const handleInputChange = (field: keyof IInventory, value: any) => {
@@ -207,7 +209,7 @@ export const InventoryItemList = () => {
     !!context.branch?._id &&
       Inventory.list(context.branch?._id)
         .then((l) => l && setList(l))
-        .catch((error) => {console.error(error); setList([])});
+        .catch((error) => { console.error(error); setList([]) });
     return () => setList([]);
   }, [context.branch]);
 
@@ -216,8 +218,8 @@ export const InventoryItemList = () => {
       list
         .filter((item) => !!item.product)
         .map((item) => {
-          const actionableProduct : IProductActionable = {
-            ...item.product! ,
+          const actionableProduct: IProductActionable = {
+            ...item.product!,
             ...item,
             actions: (
               <>
@@ -247,11 +249,16 @@ export const InventoryItemList = () => {
     return undefined;
   };
 
+  const handleSaleSuccess = (operation: IOperation) => {
+    printReciept(operation)
+    dispatch({ action: "CLOSE_POPUP" })
+  }
+
   const handleSale = (item: Inventory) => {
     dispatch({
       action: "OPEN_POPUP",
       payload: {
-        popupChild: <OperationAdd inventory={item} />
+        popupChild: <OperationAdd inventory={item} onAddSuccess={handleSaleSuccess} />
       }
     })
   }

@@ -54,9 +54,9 @@ export const MyDataTable = <T extends Record<string, any>>({
   const [searchPerformed, setSearchPerformed] = useState(false);
   const [columns, setColumns] = useState<string[]>();
 
-  useEffect(()=>{
+  useEffect(() => {
     setTableData(data)
-  },[data])
+  }, [data])
 
   useEffect(() => {
     const excludedIdPatterns =
@@ -64,8 +64,8 @@ export const MyDataTable = <T extends Record<string, any>>({
     setColumns((prev) =>
       tableData.length > 0
         ? Object.keys(data[0]).filter(
-            (column) => !excludedIdPatterns.test(column)
-          )
+          (column) => !excludedIdPatterns.test(column)
+        )
         : prev
     );
   }, [tableData, data]);
@@ -92,9 +92,10 @@ export const MyDataTable = <T extends Record<string, any>>({
   return (
     <>
       <Paper sx={{ m: 2, p: 2 }}>
-        <Toolbar sx={{mb: 2}} >
-          <Stack direction="row" spacing={2}>
+        <Toolbar sx={{ mb: 2 }} >
+          <Stack direction="row" flexWrap="wrap" sx={{ transitionDuration: "500ms" }} >
             <TextField
+              sx={{ margin: 1 }}
               label="Filter"
               value={filter}
               onChange={(e) => handleFilterChange(e.target.value)}
@@ -114,10 +115,12 @@ export const MyDataTable = <T extends Record<string, any>>({
                 ),
               }}
             />
-            <FormControl>
+            <FormControl
+              sx={{ margin: 1 }}
+            >
               <InputLabel id="attrib-selector-lable">Attribute</InputLabel>
               <Select
-                sx={{minWidth: "10rem"}}
+                sx={{ minWidth: "10rem" }}
                 labelId="attrib-selector-lable"
                 label="Attribute"
                 value={filterAttrib}
@@ -151,7 +154,7 @@ export const MyDataTable = <T extends Record<string, any>>({
                         {columns?.map((key) => {
                           return (
                             <TableCell key={`${index}${key}`}>
-                              { (isJSON( item[key] ) && !isValidElement(item[key]) ) ? JSON.stringify(item[key]) : item[key]}
+                              {(isJSON(item[key]) && !isValidElement(item[key])) ? JSON.stringify(item[key]) : item[key]}
                             </TableCell>
                           );
                         })}
@@ -174,7 +177,7 @@ export const MyDataTable = <T extends Record<string, any>>({
         ) : (
           "No Data Found"
         )}
-      </Paper>
+      </Paper >
     </>
   );
 };
