@@ -67,13 +67,13 @@ export function printReciept(operation: IOperation) {
   </section>
   <section style="margin: 0.3rem">
     <h3 style="margin:0" >${printable.person ?? ""}</h3>
-    <p style="margin:0" >${printable.contact ?? ""}}</p>
-    <p style="margin:0" >${printable.nationalId ?? ""}}</p>
+    <p style="margin:0" >${printable.contact ?? ""}</p>
+    <p style="margin:0" >${printable.nationalId ?? ""}</p>
   </section>
   <section style="margin: 0.3rem; display:flex; flex-direction:row; flex-wrap:wrap; width: 100%; justify-content: space-between; align-itmes:center" >
     <h4 style="margin:0" >${printable.serialNumber ?? ""}</h4>
-    <h4 style="margin:0" >${printable.unitSellPrice ?? ""} x ${printable.quantity ?? ""} = ${(printable.unitSellPrice ?? 1) * (printable.quantity ?? 1)}</h4>
-  </section>
+    <h4 style="margin:0" >${printable.price ?? ""} x ${printable.quantity ?? ""} = ${(printable.price ?? 1) * (printable.quantity ?? 1)}</h4>
+    </section>
 	<ul style="margin: 0.3rem">
 		<p style="margin:0" >${printable.name ?? ""}</p>
 		<p style="margin:0" >${printable.detail ?? ""}</p>
