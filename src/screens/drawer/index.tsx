@@ -85,6 +85,7 @@ const MyCustomDrawer = styled(Drawer, {
   }),
 }));
 
+
 const MyDrawer = ({ drawerItems }: DrawerProps) => {
   const [context, dispatch] = useAppContext();
   const user = User.getInstance();

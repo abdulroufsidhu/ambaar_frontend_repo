@@ -55,8 +55,8 @@ export const MyDataTable = <T extends Record<string, any>>({
   const [columns, setColumns] = useState<string[]>();
 
   useEffect(() => {
-    setTableData(data)
-  }, [data])
+    setTableData(data);
+  }, [data]);
 
   useEffect(() => {
     const excludedIdPatterns =
@@ -64,8 +64,8 @@ export const MyDataTable = <T extends Record<string, any>>({
     setColumns((prev) =>
       tableData.length > 0
         ? Object.keys(data[0]).filter(
-          (column) => !excludedIdPatterns.test(column)
-        )
+            (column) => !excludedIdPatterns.test(column)
+          )
         : prev
     );
   }, [tableData, data]);
@@ -92,8 +92,12 @@ export const MyDataTable = <T extends Record<string, any>>({
   return (
     <>
       <Paper sx={{ m: 2, p: 2 }}>
-        <Toolbar sx={{ mb: 2 }} >
-          <Stack direction="row" flexWrap="wrap" sx={{ transitionDuration: "500ms" }} >
+        <Toolbar sx={{ mb: 2 }}>
+          <Stack
+            direction="row"
+            flexWrap="wrap"
+            sx={{ transitionDuration: "500ms" }}
+          >
             <TextField
               sx={{ margin: 1 }}
               label="Filter"
@@ -115,9 +119,7 @@ export const MyDataTable = <T extends Record<string, any>>({
                 ),
               }}
             />
-            <FormControl
-              sx={{ margin: 1 }}
-            >
+            <FormControl sx={{ margin: 1 }}>
               <InputLabel id="attrib-selector-lable">Attribute</InputLabel>
               <Select
                 sx={{ minWidth: "10rem" }}
@@ -141,7 +143,17 @@ export const MyDataTable = <T extends Record<string, any>>({
                 <TableHead>
                   <TableRow>
                     {columns?.map((column) => (
-                      <TableCell key={column}>
+                      <TableCell
+                        key={column}
+                        sx={{
+                          position:
+                            column.toLowerCase().trim() === "actions"
+                              ? "sticky"
+                              : "relative",
+                          right: 0,
+                          top: 0,
+                        }}
+                      >
                         {formatColumnName(column)}
                       </TableCell>
                     ))}
@@ -150,11 +162,35 @@ export const MyDataTable = <T extends Record<string, any>>({
                 <TableBody>
                   {tableData.map((item, index) => {
                     return (
-                      <TableRow key={index}>
+                      <TableRow key={index} sx={{ position: "relative" }}>
                         {columns?.map((key) => {
                           return (
-                            <TableCell key={`${index}${key}`}>
-                              {(isJSON(item[key]) && !isValidElement(item[key])) ? JSON.stringify(item[key]) : item[key]}
+                            <TableCell
+                              key={`${index}${key}`}
+                              sx={{
+                                p: 0,
+                                position: isValidElement(item[key])
+                                  ? "sticky"
+                                  : "relative",
+                                right: 0,
+                                top: 0,
+                              }}
+                            >
+                              <Paper
+                                sx={{
+                                  px: 2,
+                                  overflow: "auto",
+                                  resize: "both",
+                                  height: "5rem",
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                              >
+                                {isJSON(item[key]) && !isValidElement(item[key])
+                                  ? JSON.stringify(item[key])
+                                  : item[key]}
+                              </Paper>
                             </TableCell>
                           );
                         })}
@@ -177,7 +213,7 @@ export const MyDataTable = <T extends Record<string, any>>({
         ) : (
           "No Data Found"
         )}
-      </Paper >
+      </Paper>
     </>
   );
 };
