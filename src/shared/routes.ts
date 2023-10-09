@@ -68,4 +68,7 @@ export const ClientUrls = {
     base: "operations/",
     list: "list/",
   },
+  profile: {
+    base: "profile/",
+  },
 };

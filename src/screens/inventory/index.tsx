@@ -1,4 +1,4 @@
-import { ItemsRouting } from "./routes";
+import { ItemsRoutes } from "./routes";
 import { InventoryItemList, InventoryItemAdd } from "./views";
 
-export { ItemsRouting, InventoryItemList, InventoryItemAdd };
+export { ItemsRoutes, InventoryItemList, InventoryItemAdd };

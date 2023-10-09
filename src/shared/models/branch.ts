@@ -40,10 +40,16 @@ export class Branch {
       .delete(ServerUrls.branch.remove, { params: { id: id } })
       .then((value) => value);
 
-  static list = (businessId: string) =>
+  static list = async (businessId: string) =>
     axios.get<MyApiResponse<IBranch[]>>(ServerUrls.branch.get, {
       params: { business_id: businessId, },
     })
       .then((value) => value.data.data)
       .catch((error) => console.error(error));
+
+  private static loadedList: IBranch[] | undefined = [];
+
+  public static setLoadedList(list: IBranch[] | undefined) { Branch.loadedList = list }
+  public static getLoadedList(): IBranch[] | undefined { return Branch.loadedList }
+
 }

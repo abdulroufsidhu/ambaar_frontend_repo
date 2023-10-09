@@ -3,11 +3,11 @@ import { Operation, IOperation } from '../../shared/models/operation';
 import { ClientUrls } from "../../shared/routes";
 import { OperationList } from './list';
 import useAppContext from '../../shared/hooks/app-context';
-import { useMemo, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 
-export const OperationRouting = () => {
+export const OperationRoutes = () => {
 	const [context, dispatch] = useAppContext();
 	const branch = context.branch;
 	const [operationsList, setOperationList] = useState<IOperation[]>([])

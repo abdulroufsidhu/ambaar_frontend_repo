@@ -1,5 +1,4 @@
 import "./index.css";
-import { ItemsRouting } from "./screens/inventory";
 import { ThemeProvider } from "@mui/material/styles";
 import { Box, CssBaseline, Toolbar, Typography } from "@mui/material";
 import MyDrawer, { DrawerItem, MyDrawerConstants } from "./screens/drawer";
@@ -9,18 +8,21 @@ import {
   AssessmentOutlined,
   GroupOutlined,
   LocalGroceryStoreOutlined,
+  PeopleOutlined,
   SecurityOutlined,
 } from "@mui/icons-material";
 import useAppContext from "./shared/hooks/app-context";
 import { MyAppBar } from "./shared/components/appbar";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { MyPopup } from "./shared/components/my-popup";
 import { MyProgressIndicator } from "./shared/components/progress-indicator";
 import { BusinessList } from "./screens/business";
 import { EmployeeRoutes } from "./screens/employee";
 import { User } from "./shared/models/user";
-import { ClientUrls, ServerUrls } from "./shared/routes";
-import { OperationRouting } from "./screens/operation/routes";
+import { ClientUrls } from "./shared/routes";
+import { OperationRoutes } from "./screens/operation/";
+import { ProfileRoutes } from "./screens/profile/";
+import { ItemsRoutes } from "./screens/inventory/";
 
 function App() {
   const [context, dispatch] = useAppContext();
@@ -55,6 +57,11 @@ function App() {
           path: ClientUrls.operations.base + ClientUrls.operations.list,
           text: "Operations",
         },
+        {
+          icon: <PeopleOutlined />,
+          path: ClientUrls.profile.base,
+          text: "Profile"
+        }
       ];
     }
   }, [user]);
@@ -99,16 +106,14 @@ function App() {
 
         <Box
           sx={{
-            marginLeft: `${
-              context.drawerState
-                ? MyDrawerConstants.width.max
-                : MyDrawerConstants.width.min
-            }`,
-            width: `calc(100% - ${
-              context.drawerState
-                ? MyDrawerConstants.width.max
-                : MyDrawerConstants.width.min
-            })`,
+            marginLeft: `${context.drawerState
+              ? MyDrawerConstants.width.max
+              : MyDrawerConstants.width.min
+              }`,
+            width: `calc(100% - ${context.drawerState
+              ? MyDrawerConstants.width.max
+              : MyDrawerConstants.width.min
+              })`,
           }}
         >
           {(!location.pathname.match(ClientUrls.baseUrl) ||
@@ -120,7 +125,7 @@ function App() {
               <>
                 <Route
                   path={`${ClientUrls.inventory.base}*`}
-                  element={<ItemsRouting />}
+                  element={<ItemsRoutes />}
                 />
                 <Route
                   path={`${ClientUrls.employee.base}*`}
@@ -128,7 +133,11 @@ function App() {
                 />
                 <Route
                   path={`${ClientUrls.operations.base}*`}
-                  element={<OperationRouting />}
+                  element={<OperationRoutes />}
+                />
+                <Route
+                  path={`${ClientUrls.profile.base}*`}
+                  element={<ProfileRoutes />}
                 />
               </>
             )}

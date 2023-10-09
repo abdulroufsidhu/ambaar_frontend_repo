@@ -52,4 +52,16 @@ export class Business {
     })
       .then((value) => value.data.data)
       .catch((error) => console.error(error));
+
+  private static loadedList: IBusiness[] = [];
+
+  public static setLoadedList(list: IBusiness[]) {
+    console.log("settinBusiness.loadedList", list);
+    Business.loadedList = list
+  }
+  public static getLoadedList(): IBusiness[] {
+    console.log("Business.getLoadedList()", Business.loadedList)
+    return Business.loadedList
+  }
+
 }

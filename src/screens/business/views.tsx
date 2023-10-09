@@ -18,7 +18,7 @@ import { BranchSelector } from "../branch";
 import useAppContext from "../../shared/hooks/app-context";
 import { User } from "../../shared/models/user";
 import { useState, useEffect } from "react";
-import { IBranch } from "../../shared/models/branch";
+import { Branch, IBranch } from "../../shared/models/branch";
 import { IEmployee } from "../../shared/models/employee";
 
 export const BusinessList = () => {
@@ -41,10 +41,12 @@ export const BusinessList = () => {
     });
 
     setList(uniqueData);
+    Business.setLoadedList(uniqueData);
   }, [jobs]);
 
   useEffect(() => {
     const b: IBranch[] | undefined = jobs?.filter(j => j.branch?.business?._id === context.business?._id).map(j => j.branch ?? {})
+    Branch.setLoadedList(b);
     setBranches(b ?? [])
   }, [context.business])
 
@@ -57,6 +59,7 @@ export const BusinessList = () => {
           b.push(job.branch)
         }
       }
+      Branch.setLoadedList(b);
       return b;
     })
   }
@@ -108,6 +111,7 @@ export const BusinessList = () => {
       if (index < 0) {
         newState.push(business);
       }
+      Business.setLoadedList(newState)
       return newState;
     });
   };
