@@ -1,11 +1,18 @@
 import "./index.css";
 import { ThemeProvider } from "@mui/material/styles";
-import { Box, CssBaseline, Toolbar, Typography } from "@mui/material";
+import {
+  Box,
+  CssBaseline,
+  Toolbar,
+  Typography,
+  Container,
+} from "@mui/material";
 import MyDrawer, { DrawerItem, MyDrawerConstants } from "./screens/drawer";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AuthRoutes } from "./screens/auth";
 import {
   AssessmentOutlined,
+  BusinessCenterOutlined,
   GroupOutlined,
   LocalGroceryStoreOutlined,
   PeopleOutlined,
@@ -48,7 +55,7 @@ function App() {
           text: "Products",
         },
         {
-          icon: <GroupOutlined />,
+          icon: <BusinessCenterOutlined />,
           path: ClientUrls.employee.base,
           text: "Employee",
         },
@@ -60,8 +67,8 @@ function App() {
         {
           icon: <PeopleOutlined />,
           path: ClientUrls.profile.base,
-          text: "Profile"
-        }
+          text: "Profile",
+        },
       ];
     }
   }, [user]);
@@ -106,42 +113,46 @@ function App() {
 
         <Box
           sx={{
-            marginLeft: `${context.drawerState
-              ? MyDrawerConstants.width.max
-              : MyDrawerConstants.width.min
-              }`,
-            width: `calc(100% - ${context.drawerState
-              ? MyDrawerConstants.width.max
-              : MyDrawerConstants.width.min
-              })`,
+            marginLeft: `${
+              context.drawerState
+                ? MyDrawerConstants.width.max
+                : MyDrawerConstants.width.min
+            }`,
+            width: `calc(100% - ${
+              context.drawerState
+                ? MyDrawerConstants.width.max
+                : MyDrawerConstants.width.min
+            })`,
           }}
         >
-          {(!location.pathname.match(ClientUrls.baseUrl) ||
-            !location.pathname.match("/signup")) &&
-            !user?._id && <Navigate to={ClientUrls.baseUrl} replace />}
-          <Routes>
-            <Route path="/*" element={<AuthRoutes />} />
-            {!!user?._id && (
-              <>
-                <Route
-                  path={`${ClientUrls.inventory.base}*`}
-                  element={<ItemsRoutes />}
-                />
-                <Route
-                  path={`${ClientUrls.employee.base}*`}
-                  element={<EmployeeRoutes />}
-                />
-                <Route
-                  path={`${ClientUrls.operations.base}*`}
-                  element={<OperationRoutes />}
-                />
-                <Route
-                  path={`${ClientUrls.profile.base}*`}
-                  element={<ProfileRoutes />}
-                />
-              </>
-            )}
-          </Routes>
+          <Container>
+            {(!location.pathname.match(ClientUrls.baseUrl) ||
+              !location.pathname.match("/signup")) &&
+              !user?._id && <Navigate to={ClientUrls.baseUrl} replace />}
+            <Routes>
+              <Route path="/*" element={<AuthRoutes />} />
+              {!!user?._id && (
+                <>
+                  <Route
+                    path={`${ClientUrls.inventory.base}*`}
+                    element={<ItemsRoutes />}
+                  />
+                  <Route
+                    path={`${ClientUrls.employee.base}*`}
+                    element={<EmployeeRoutes />}
+                  />
+                  <Route
+                    path={`${ClientUrls.operations.base}*`}
+                    element={<OperationRoutes />}
+                  />
+                  <Route
+                    path={`${ClientUrls.profile.base}*`}
+                    element={<ProfileRoutes />}
+                  />
+                </>
+              )}
+            </Routes>
+          </Container>
         </Box>
 
         <MyPopup />

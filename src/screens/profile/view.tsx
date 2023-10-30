@@ -1,90 +1,127 @@
-import { Chip, Collapse, Divider, List, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemText, Stack } from '@mui/material'
-import React, { useState } from 'react'
-import { User } from '../../shared/models/user'
-import { Business, IBusiness } from '../../shared/models/business'
-import { Employee } from '../../shared/models/employee'
-import { ArrowDownwardOutlined, ArrowUpwardOutlined } from '@mui/icons-material'
-import { Branch, IBranch } from '../../shared/models/branch'
+import {
+  Chip,
+  Collapse,
+  Divider,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Stack,
+} from "@mui/material";
+import React, { useState } from "react";
+import { User } from "../../shared/models/user";
+import {
+  ChevronRightRounded,
+  CloseOutlined,
+  EditAttributesOutlined,
+  EditOutlined,
+} from "@mui/icons-material";
+import { MyDataTable } from "../../shared/components/my-data-table";
+import { IEmployee } from "../../shared/models/employee";
+import { Business } from "../../shared/models/business";
+import { useMemo } from "react";
+import { ChangePassword } from "../auth";
+
+interface IProfileJob {
+  business: string;
+  location: string;
+  active: string;
+}
 
 export const ProfileView = () => {
+  const [jobCollapseState, setJobCollapseState] = useState(false);
+  const [editPasswordVisible, setEditPasswordVisible] = useState(false);
 
-  const [businessCollapseState, setBusinessCollapseState] = useState(false)
-  const [jobCollapseState, setJobCollapseState] = useState(false)
-  const [branches, setBranches] = useState<IBranch[] | undefined>([])
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleBusinessCollapsableClick = () => {
-    setBusinessCollapseState(prev => !prev)
-  }
+  const profileJobs = useMemo(() => {
+    return User.getInstance().jobs?.map((job) => {
+      const retAble: IProfileJob = {
+        business: job.branch?.business?.name ?? "unknown",
+        location: job.branch?.location ?? "unknown",
+        active: job.status ?? "inactive",
+      };
+      return retAble;
+    });
+  }, [User.getInstance()]);
+
   const handleJobCollapsableClick = () => {
-    setJobCollapseState(prev => !prev)
-  }
+    setJobCollapseState((prev) => !prev);
+  };
 
-  const handleBusinessClick = (business: IBusiness | undefined) => {
-    if (!business || !business._id) { return }
-    Branch.list(business._id ?? "").then(l => {
-      if (l) {
-        setBranches(l)
-      }
-    }).catch(e => console.error(e))
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (number: number) => {
+    setRowsPerPage(number);
+    setPage(0);
+  };
+
+  const handleEditPasswordClick = () => {
+    setEditPasswordVisible((prev) => !prev);
+  };
+
+  const handlePasswordSubmit = (old: string, newPassword: string, confNewPassword: string) => {
+    return 
   }
 
   return (
-    <Stack direction="column" >
+    <Stack direction="column">
       <List>
         <ListItem>
           <ListItemText
             primary={`Name: ${User.getInstance().person?.name ?? "Un Named"}`}
-            secondary={`eMail: ${User.getInstance().person?.email ?? "Un Known"}`}
+            secondary={`eMail: ${
+              User.getInstance().person?.email ?? "Un Known"
+            }`}
           />
         </ListItem>
-        {/* <ListItemButton onClick={handleBusinessCollapsableClick} >
+        <ListItem>
+          <ListItemButton onClick={handleEditPasswordClick}>
+            <ListItemIcon>
+              {editPasswordVisible ? <CloseOutlined color="error" /> : <EditOutlined color="primary" />}
+            </ListItemIcon>
+            <ListItemText primary="Password" />
+          </ListItemButton>
+        </ListItem>
+        {
+          editPasswordVisible && <ChangePassword onSubmit={handlePasswordSubmit} />
+        }
+        <ListItemButton onClick={handleJobCollapsableClick}>
           <ListItemIcon>
-            {businessCollapseState ? <ArrowUpwardOutlined /> : <ArrowDownwardOutlined />}
+            <ChevronRightRounded
+              sx={{
+                transform: `rotate(${jobCollapseState ? "90deg" : "0deg"})`,
+              }}
+            />
           </ListItemIcon>
-          <ListItemText primary={<> Total Business <Chip label={Business.getLoadedList().length} /> </>} />
-        </ListItemButton>
-        < Collapse in={businessCollapseState} unmountOnExit>
-          <List component="div" disablePadding>
-            {
-              Business.getLoadedList()?.map(business => (<>
-                <ListItemButton sx={{ pl: 4 }} onClick={() => handleBusinessClick(business)} >
-                  <ListItemText
-                    primary={`${business?.name ?? "Un Named"}`}
-                    secondary={`${business?.location ?? "Un Known"}\n${business?.email ?? "Un Known"}`} />
-                </ListItemButton>
-              </>))
+          <ListItemText
+            primary={
+              <>
+                {" "}
+                Total Jobs <Chip
+                  label={User.getInstance().jobs?.length ?? 0}
+                />{" "}
+              </>
             }
-          </List>
-        </Collapse> */}
-        <ListItemButton onClick={handleJobCollapsableClick} >
-          <ListItemIcon>
-            {businessCollapseState ? <ArrowUpwardOutlined /> : <ArrowDownwardOutlined />}
-          </ListItemIcon>
-          <ListItemText primary={<> Total Jobs <Chip label={User.getInstance().jobs?.length ?? 0} /> </>} />
+          />
         </ListItemButton>
-        < Collapse in={jobCollapseState} unmountOnExit>
-          <List component="div" disablePadding>
-            {
-              User.getInstance().jobs?.map(job => (<>
-                <ListItemButton sx={{ pl: 4 }} onClick={() => handleBusinessClick(job)} >
-                  <ListItemText
-                    primary={`${job?.role ?? "Un Named"}`}
-                    secondary={(
-                      <pre>{`
-                        ${job?.branch?.location ?? "Un Known"}
-                        \n${job?.branch?.business?.name ?? "Un Known"}
-                        \n${job?.status ?? "active"}
-                        `.trim()}
-                      </pre>)} />
-                </ListItemButton>
-                <div style={{ display: "flex", width: "100%", justifyContent: "center", alignItems: "center" }} >
-                  <Divider sx={{ width: "60%" }} />
-                </div>
-              </>))
-            }
-          </List>
+        <Collapse in={jobCollapseState} unmountOnExit>
+          {profileJobs && (
+            <MyDataTable<IProfileJob>
+              data={profileJobs}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              rowsPerPageOptions={[5, 10, 25, 50, 100]}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          )}
         </Collapse>
       </List>
     </Stack>
-  )
-}
+  );
+};

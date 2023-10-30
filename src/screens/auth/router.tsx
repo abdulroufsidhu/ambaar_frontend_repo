@@ -7,7 +7,7 @@ import { ClientUrls } from "../../shared/routes";
 export const AuthRoutes = () => {
   const [context, dispatch] = useAppContext();
 
-  const handleSignup: (user: IUser) => undefined = (user: IUser) => {
+  const handleSignup: (user: IUser | undefined) => undefined = (user: IUser | undefined) => {
     !!context.navigate && context.navigate(ClientUrls.auth.login);
   };
 

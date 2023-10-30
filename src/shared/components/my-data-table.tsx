@@ -4,7 +4,6 @@ import {
   IconButton,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   Paper,
   Select,
   Stack,
@@ -40,6 +39,18 @@ const formatColumnName = (columnName: string): string => {
     .join(" ");
 };
 
+function splitArray<T>(arr: T[], chunkSize: number): T[][] {
+  const result: T[][] = [];
+
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    const chunk = arr.slice(i, i + chunkSize);
+    result.push(chunk);
+  }
+
+  return result;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const MyDataTable = <T extends Record<string, any>>({
   data,
   page,
@@ -129,7 +140,7 @@ export const MyDataTable = <T extends Record<string, any>>({
                 defaultValue={columns?.at(0)}
                 onChange={(e) => handleFilterAttribChange(e.target.value)}
               >
-                {columns?.map((name, index) => (
+                {columns?.map((name) => (
                   <MenuItem value={name}>{formatColumnName(name)}</MenuItem>
                 ))}
               </Select>
@@ -160,43 +171,50 @@ export const MyDataTable = <T extends Record<string, any>>({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {tableData.map((item, index) => {
-                    return (
-                      <TableRow key={index} sx={{ position: "relative" }}>
-                        {columns?.map((key) => {
-                          return (
-                            <TableCell
-                              key={`${index}${key}`}
-                              sx={{
-                                p: 0,
-                                position: isValidElement(item[key])
-                                  ? "sticky"
-                                  : "relative",
-                                right: 0,
-                                top: 0,
-                              }}
-                            >
-                              <Paper
-                                sx={{
-                                  px: 2,
-                                  overflow: "auto",
-                                  resize: "both",
-                                  height: "5rem",
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                }}
-                              >
-                                {isJSON(item[key]) && !isValidElement(item[key])
-                                  ? JSON.stringify(item[key])
-                                  : item[key]}
-                              </Paper>
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })}
+                  {tableData &&
+                    splitArray(tableData, rowsPerPage)[page]?.map(
+                      (item, index) => {
+                        return (
+                          <TableRow key={index} sx={{ position: "relative" }}>
+                            {columns?.map((key) => {
+                              return (
+                                <TableCell
+                                  key={`${index}${key}`}
+                                  sx={{
+                                    p: 0,
+                                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                                    position: isValidElement(item[key])
+                                      ? "sticky"
+                                      : "relative",
+                                    right: 0,
+                                    top: 0,
+                                  }}
+                                >
+                                  <Paper
+                                    sx={{
+                                      px: 2,
+                                      overflow: "auto",
+                                      resize: "both",
+                                      height: "5rem",
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {
+                                      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                                      isJSON(item[key]) && !isValidElement(item[key])
+                                        ? JSON.stringify(item[key])
+                                        : item[key]
+                                    }
+                                  </Paper>
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                        );
+                      }
+                    )}
                 </TableBody>
               </Table>
             </TableContainer>
