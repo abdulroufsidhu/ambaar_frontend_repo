@@ -64,9 +64,13 @@ export const ProfileView = () => {
     setEditPasswordVisible((prev) => !prev);
   };
 
-  const handlePasswordSubmit = (old: string, newPassword: string, confNewPassword: string) => {
-    return 
-  }
+  const handlePasswordSubmit = (
+    old: string,
+    newPassword: string,
+    confNewPassword: string
+  ) => {
+    User.changePassword(old, newPassword);
+  };
 
   return (
     <Stack direction="column">
@@ -82,14 +86,18 @@ export const ProfileView = () => {
         <ListItem>
           <ListItemButton onClick={handleEditPasswordClick}>
             <ListItemIcon>
-              {editPasswordVisible ? <CloseOutlined color="error" /> : <EditOutlined color="primary" />}
+              {editPasswordVisible ? (
+                <CloseOutlined color="error" />
+              ) : (
+                <EditOutlined color="primary" />
+              )}
             </ListItemIcon>
             <ListItemText primary="Password" />
           </ListItemButton>
         </ListItem>
-        {
-          editPasswordVisible && <ChangePassword onSubmit={handlePasswordSubmit} />
-        }
+        {editPasswordVisible && (
+          <ChangePassword onSubmit={handlePasswordSubmit} />
+        )}
         <ListItemButton onClick={handleJobCollapsableClick}>
           <ListItemIcon>
             <ChevronRightRounded

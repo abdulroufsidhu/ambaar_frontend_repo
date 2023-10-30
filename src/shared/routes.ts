@@ -1,3 +1,4 @@
+import { ChangePassword } from '../screens/auth/change-password-view';
 export const ServerUrls = {
   baseUrl: "http://localhost:1337",
   auth: {
@@ -70,5 +71,6 @@ export const ClientUrls = {
   },
   profile: {
     base: "profile/",
+    ChangePassword: "change-password/"
   },
 };

@@ -6,6 +6,7 @@ import { MyApiResponse } from "../unified-response";
 import { IBranch } from "./branch";
 import { Permission } from "./permission";
 import { SessionStorageManager } from "../utils/session-storage";
+import { ChangePassword } from '../../screens/auth/change-password-view';
 
 export interface IUser {
   _id?: string;
@@ -140,6 +141,10 @@ export class User {
     if (User.instance) {
       User.instance.performingJob = User.instance?.jobs?.filter(j => j.branch?._id === branch._id)?.at(0)
     }
+  }
+
+  static changePassword = (old: string, changed: string) => {
+    // call change password api with endpoint /change-password 
   }
 
 }
