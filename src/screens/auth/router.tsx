@@ -18,7 +18,7 @@ export const AuthRoutes = () => {
         <Route path={ClientUrls.auth.login} element={<Login />} />
         <Route
           path={ClientUrls.auth.signup}
-          element={<Signup onSuccess={handleSignup} />}
+          element={<Signup autoLogin={true} onSuccess={handleSignup} />}
         />
       </Route>
     </Routes>

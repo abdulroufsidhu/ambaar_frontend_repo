@@ -2,7 +2,7 @@ import { LoginOutlined, Create } from "@mui/icons-material";
 import { TextField, Button } from "@mui/material";
 import { useState } from "react";
 import useAppContext from "../../shared/hooks/app-context";
-import { User } from "../../shared/models/user";
+import {User} from "../../shared/models/user";
 import { ClientUrls } from "../../shared/routes";
 
 

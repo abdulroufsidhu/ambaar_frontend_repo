@@ -11,7 +11,7 @@ import { Business, IBusiness } from "../../shared/models/business";
 import { Add, BusinessOutlined } from "@mui/icons-material";
 import { BranchSelector } from "../branch";
 import useAppContext from "../../shared/hooks/app-context";
-import { User } from "../../shared/models/user";
+import {User} from "../../shared/models/user";
 import { useState, useEffect } from "react";
 import { Branch, IBranch } from "../../shared/models/branch";
 import { IEmployee } from "../../shared/models/employee";
@@ -23,7 +23,7 @@ export const BusinessSelector = () => {
   const user = User.getInstance();
   const jobs = user?.jobs;
   const [list, setList] = useState<IBusiness[]>([]);
-  const [branches, setBranches] = useState<IBranch[]>([])
+  const [jobsUnderBusiness, setJobsUnderBusiness] = useState<IEmployee[]>([])
 
   useEffect(() => {
     const bus =
@@ -38,26 +38,18 @@ export const BusinessSelector = () => {
     });
 
     setList(uniqueData);
-    Business.setLoadedList(uniqueData);
   }, [jobs]);
 
   useEffect(() => {
-    const b: IBranch[] | undefined = jobs?.filter(j => j.branch?.business?._id === context.business?._id).map(j => j.branch ?? {})
-    Branch.setLoadedList(b);
-    setBranches(b ?? [])
+    const j: IEmployee[] | undefined = jobs?.filter(j => j.branch?.business?._id === context.business?._id)
+    setJobsUnderBusiness(j ?? [])
   }, [context.business])
 
   const onBranchAddSuccess = (job: IEmployee) => {
-    setBranches(prev => {
-      const b: IBranch[] = prev.map(branch => (branch._id === job.branch?._id) ? (job.branch ?? {}) : branch)
-      if (job.branch) {
-        const index = prev.indexOf(job.branch)
-        if (index < 0) {
-          b.push(job.branch)
-        }
-      }
-      Branch.setLoadedList(b);
-      return b;
+    setJobsUnderBusiness(prev => {
+      const j: IEmployee[] = [...prev, job]
+      Branch.setLoadedList(j);
+      return j;
     })
   }
 
@@ -185,7 +177,7 @@ export const BusinessSelector = () => {
         </Select>
       </FormControl>
 
-      {context.business && <BranchSelector branches={branches} onAddSuccess={onBranchAddSuccess} />}
+      {context.business && <BranchSelector jobs={jobsUnderBusiness} onAddSuccess={onBranchAddSuccess} />}
     </Stack>
   );
 };

@@ -6,7 +6,6 @@ import { MyApiResponse } from "../unified-response";
 import { IBranch } from "./branch";
 import { Permission } from "./permission";
 import { SessionStorageManager } from "../utils/session-storage";
-import { ChangePassword } from '../../screens/auth/change-password-view';
 
 export interface IUser {
   _id?: string;
@@ -26,23 +25,7 @@ export class User {
         User.calling = true;
         const u = SessionStorageManager.getItem<IUser>("user");
         if (u) {
-          User.instance = u;
-          if (User.instance) {
-            Employee.list({ user: User.instance })
-              .then((jobs) => {
-                if (User.instance) {
-                  console.info(jobs)
-                  User.instance.jobs = jobs ?? [];
-                  console.log("ReSetting Session", User.instance);
-                  SessionStorageManager.setItem("user", User.instance);
-                  User.calling = false;
-                }
-              })
-              .catch((error) => {
-                console.error(error);
-                User.calling = false;
-              });
-          }
+          User.postLoginProcess(u)?.then().catch(err=>console.error("User getInstance", err));
         }
       }
     }
@@ -68,7 +51,7 @@ export class User {
   private static postLoginProcess = (user?: IUser) => {
     User.instance = user;
     return (
-      User.instance ?
+      (!!User.instance && !User.instance.jobs) ?
         Employee.list({ user: User.instance })
           .then((jobs) => {
             console.info(jobs)
@@ -78,23 +61,25 @@ export class User {
             Permission.fetchAll()
               .then(permissions => SessionStorageManager.setItem("permissions", permissions))
               .catch(error => console.error(error))
+              User.calling = false;
             return User.instance;
           })
           .catch((error) => {
             console.error(error);
+            User.calling = false;
             return User.instance;
           })
         : undefined
     );
   }
 
-  static signup = async (person: IPerson, password: string) =>
+  static signup = async (person: IPerson, password: string, autoLogin = false) =>
     axios
       .post<MyApiResponse<IUser>>(ServerUrls.auth.signup, {
         person: person,
         password: password,
       })
-      .then((res) => this.postLoginProcess(res.data.data));
+      .then((res) => autoLogin ? this.postLoginProcess(res.data.data) : new Promise<IUser | undefined>((resolve,rej)=>{resolve(res.data.data)}));
 
   static logout = async () =>
     new Promise<IUser | undefined>((resolve, reject) => {
@@ -137,14 +122,21 @@ export class User {
   }
 
   static setPerformingJob = (branch: IBranch) => {
-    console.log("setting permforming job")
     if (User.instance) {
       User.instance.performingJob = User.instance?.jobs?.filter(j => j.branch?._id === branch._id)?.at(0)
+      console.log("setting permforming job", User.instance.performingJob)
     }
   }
 
   static changePassword = (old: string, changed: string) => {
-    // call change password api with endpoint /change-password 
-  }
+    axios
+      .patch(ServerUrls.auth.ChangePassword, {
+        old_password: old,
+        new_password: changed,
+      })
+      .then((d) => console.info("password changed", d))
+      .catch((e) => console.error(e));
+    // call change password api with endpoint /change-password
+  };
 
 }

@@ -25,7 +25,7 @@ import { MyPopup } from "./shared/components/my-popup";
 import { MyProgressIndicator } from "./shared/components/progress-indicator";
 import { BusinessList } from "./screens/business";
 import { EmployeeRoutes } from "./screens/employee";
-import { User } from "./shared/models/user";
+import {User} from "./shared/models/user";
 import { ClientUrls } from "./shared/routes";
 import { OperationRoutes } from "./screens/operation/";
 import { ProfileRoutes } from "./screens/profile/";

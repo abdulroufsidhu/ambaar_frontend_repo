@@ -1,13 +1,17 @@
-import { Create } from "@mui/icons-material";
-import { TextField, Button } from "@mui/material";
+import { Save } from "@mui/icons-material";
+import { TextField, Button, Container, Stack } from "@mui/material";
 import { useState } from "react";
-import { IUser, User } from "../../shared/models/user";
+import {User,  IUser } from "../../shared/models/user";
+import MyFullScreenDialog from '../../shared/components/my-popup';
 
 interface SignupProps {
+  openState?: boolean;
+  handleCloseState?: ()=>void;
   onSuccess: (user: IUser | undefined) => void;
+  autoLogin: boolean
 }
 
-export const Signup = ({ onSuccess }: SignupProps) => {
+export const Signup = ({ autoLogin, openState, handleCloseState, onSuccess }: SignupProps) => {
   const [name, setname] = useState("");
   const [username, setusername] = useState("");
   const [contact, setcontact] = useState("");
@@ -26,7 +30,8 @@ export const Signup = ({ onSuccess }: SignupProps) => {
           username: username,
           name: name,
         },
-        password
+        password,
+        autoLogin
       )
         .then(user => onSuccess(user))
         .catch((error) => console.error(error));
@@ -34,63 +39,74 @@ export const Signup = ({ onSuccess }: SignupProps) => {
   };
 
   return (
-    <>
-      <TextField
-        value={name}
-        variant="outlined"
-        label="Name*"
-        type="text"
-        onChange={(e) => setname(e.target.value)}
-      />
-      <TextField
-        value={username}
-        variant="outlined"
-        label="username*"
-        type="text"
-        onChange={(e) => setusername(e.target.value)}
-      />
-      <TextField
-        value={contact}
-        variant="outlined"
-        label="Contact*"
-        type="text"
-        onChange={(e) => setcontact(e.target.value)}
-      />
-      <TextField
-        value={nationalId}
-        variant="outlined"
-        label="National id*"
-        type="text"
-        onChange={(e) => setnationalId(e.target.value)}
-      />
-      <TextField
-        value={email}
-        variant="outlined"
-        label="Email*"
-        type="email"
-        onChange={(e) => setemail(e.target.value)}
-      />
-      <TextField
-        value={password}
-        variant="outlined"
-        label="Password*"
-        type="password"
-        onChange={(e) => setpassword(e.target.value)}
-      />
-      <TextField
-        value={confirmPassword}
-        variant="outlined"
-        label="Confirm Password*"
-        type="password"
-        onChange={(e) => setconfirmPassword(e.target.value)}
-      />
-      <Button
-        variant="outlined"
-        onClick={handleSignupButton}
-        startIcon={<Create></Create>}
-      >
-        Signup
-      </Button>
-    </>
+    <MyFullScreenDialog
+      open={openState ?? true}
+      handleClose={handleCloseState}
+      title="Sign Up"
+      actions={[
+        <Button
+          autoFocus
+          color="inherit"
+          onClick={handleSignupButton}
+          startIcon={<Save/>}
+        >
+          Sign Up
+        </Button>,
+      ]}
+    >
+      <Container>
+        <Stack sx={{ m: 2 }} spacing={2}>
+          <TextField
+            value={name}
+            variant="outlined"
+            label="Name*"
+            type="text"
+            onChange={(e) => setname(e.target.value)}
+          />
+          <TextField
+            value={username}
+            variant="outlined"
+            label="username*"
+            type="text"
+            onChange={(e) => setusername(e.target.value)}
+          />
+          <TextField
+            value={contact}
+            variant="outlined"
+            label="Contact*"
+            type="text"
+            onChange={(e) => setcontact(e.target.value)}
+          />
+          <TextField
+            value={nationalId}
+            variant="outlined"
+            label="National id*"
+            type="text"
+            onChange={(e) => setnationalId(e.target.value)}
+          />
+          <TextField
+            value={email}
+            variant="outlined"
+            label="Email*"
+            type="email"
+            onChange={(e) => setemail(e.target.value)}
+          />
+          <TextField
+            value={password}
+            variant="outlined"
+            label="Password*"
+            type="password"
+            onChange={(e) => setpassword(e.target.value)}
+          />
+          <TextField
+            value={confirmPassword}
+            variant="outlined"
+            label="Confirm Password*"
+            type="password"
+            onChange={(e) => setconfirmPassword(e.target.value)}
+          />
+        </Stack>
+      </Container>
+    </MyFullScreenDialog>
   );
 };

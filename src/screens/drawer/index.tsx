@@ -15,7 +15,7 @@ import { ReactNode } from "react";
 import useAppContext from "../../shared/hooks/app-context";
 import { ChevronLeftOutlined, LogoutOutlined, Menu } from "@mui/icons-material";
 import { ThemeSwitch } from "../../shared/components/buttons";
-import { User } from "../../shared/models/user";
+import {User} from "../../shared/models/user";
 import { ClientUrls } from "../../shared/routes";
 
 export interface DrawerItem {

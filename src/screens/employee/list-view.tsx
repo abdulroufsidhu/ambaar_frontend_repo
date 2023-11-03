@@ -7,6 +7,7 @@ import { MyDataTable } from "../../shared/components/my-data-table";
 import useAppContext from "../../shared/hooks/app-context";
 import { IEmployee } from "../../shared/models/employee";
 import { IPerson } from "../../shared/models/person";
+import MyFullScreenDialog from "../../shared/components/my-popup";
 
 interface EmployeeListProps {
   list?: IEmployee[];
@@ -21,6 +22,9 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
   const [persons, setPersons] = useState<IPersonActionable[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [addDialogOpened, setAddDialogOpened] = useState(false);
+  const handleAddDialogClose = () => setAddDialogOpened(false)
 
   useEffect(() => {
     setPersons(
@@ -40,11 +44,12 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
   }, [list]);
 
   const handleAdd: () => undefined = () => {
-    console.log("handleAdd");
-    dispatch({
-      action: "OPEN_POPUP",
-      payload: { popupChild: <EmployeeAdd /> },
-    });
+    setAddDialogOpened(true);
+    // console.log("handleAdd");
+    // dispatch({
+    //   action: "OPEN_POPUP",
+    //   payload: { popupChild: <EmployeeAdd /> },
+    // });
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -92,6 +97,7 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
           onClick={handleAdd}
         />
       )}
+      <EmployeeAdd open={addDialogOpened} handleClose={handleAddDialogClose} />
     </Box>
   );
 };

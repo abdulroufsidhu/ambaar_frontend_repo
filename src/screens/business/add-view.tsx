@@ -8,7 +8,7 @@ import { Business, IBusiness } from "../../shared/models/business";
 import React from "react";
 import { Save } from "@mui/icons-material";
 import useAppContext from "../../shared/hooks/app-context";
-import { User } from "../../shared/models/user";
+import {User} from "../../shared/models/user";
 interface BusinessAddProps {
   business?: IBusiness;
   onSuccess?: (business: IBusiness) => void;

@@ -1,7 +1,6 @@
 import {
   Chip,
   Collapse,
-  Divider,
   List,
   ListItem,
   ListItemButton,
@@ -9,17 +8,14 @@ import {
   ListItemText,
   Stack,
 } from "@mui/material";
-import React, { useState } from "react";
-import { User } from "../../shared/models/user";
+import { useState } from "react";
+import {User} from "../../shared/models/user";
 import {
   ChevronRightRounded,
   CloseOutlined,
-  EditAttributesOutlined,
   EditOutlined,
 } from "@mui/icons-material";
 import { MyDataTable } from "../../shared/components/my-data-table";
-import { IEmployee } from "../../shared/models/employee";
-import { Business } from "../../shared/models/business";
 import { useMemo } from "react";
 import { ChangePassword } from "../auth";
 
@@ -37,7 +33,8 @@ export const ProfileView = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const profileJobs = useMemo(() => {
-    return User.getInstance().jobs?.map((job) => {
+    console.info("user", User.getInstance());
+    return User.getInstance()?.jobs?.map((job) => {
       const retAble: IProfileJob = {
         business: job.branch?.business?.name ?? "unknown",
         location: job.branch?.location ?? "unknown",
@@ -67,7 +64,8 @@ export const ProfileView = () => {
   const handlePasswordSubmit = (
     old: string,
     newPassword: string,
-    confNewPassword: string
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _confNewPassword: string
   ) => {
     User.changePassword(old, newPassword);
   };
@@ -77,9 +75,9 @@ export const ProfileView = () => {
       <List>
         <ListItem>
           <ListItemText
-            primary={`Name: ${User.getInstance().person?.name ?? "Un Named"}`}
+            primary={`Name: ${User.getInstance()?.person?.name ?? "Un Named"}`}
             secondary={`eMail: ${
-              User.getInstance().person?.email ?? "Un Known"
+              User.getInstance()?.person?.email ?? "Un Known"
             }`}
           />
         </ListItem>
@@ -111,7 +109,7 @@ export const ProfileView = () => {
               <>
                 {" "}
                 Total Jobs <Chip
-                  label={User.getInstance().jobs?.length ?? 0}
+                  label={User.getInstance()?.jobs?.length ?? 0}
                 />{" "}
               </>
             }

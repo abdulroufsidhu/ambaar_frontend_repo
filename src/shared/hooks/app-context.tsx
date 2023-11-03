@@ -4,9 +4,9 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import { ServerUrls } from "../routes";
 import { IBranch } from "../models/branch";
 import { IBusiness } from "../models/business";
-import { IUser, User } from "../models/user";
 import { Theme, createTheme } from "@mui/material";
 import { IEmployee } from "../models/employee";
+import {User} from '../models/user';
 
 interface ApplicationContext {
   navigate?: NavigateFunction;
@@ -125,12 +125,13 @@ export function AppContextProvider({ children }: { children: ReactNode }) {
     }),
   });
 
+  // setting axios headers
   axios.defaults.baseURL = ServerUrls.baseUrl;
   axios.defaults.headers["Content-Type"] = "application/json";
   if (User.getInstance()) {
-    console.log("setting job")
-    axios.defaults.headers["x-auth-token"] = User.getInstance().token ?? "";
-    axios.defaults.headers["job"] = User.getInstance().performingJob?._id ?? "";
+    console.log("setting job to axios headers", User.getInstance() )
+    axios.defaults.headers["x-auth-token"] = User.getInstance()?.token ?? "";
+    axios.defaults.headers["job"] = User.getInstance()?.performingJob?._id ?? "";
   }
 
   axios.interceptors.request.use(

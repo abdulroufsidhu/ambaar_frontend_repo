@@ -9,7 +9,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { User } from "../../shared/models/user";
+import {User} from "../../shared/models/user";
 import { printReciept } from "../../shared/utils/printer";
 
 interface OperationAddProps {

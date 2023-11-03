@@ -3,7 +3,7 @@ import { Stack, TextField, Button } from "@mui/material";
 import { useReducer } from "react";
 import useAppContext from "../../shared/hooks/app-context";
 import { IBranch, Branch } from "../../shared/models/branch";
-import { User } from "../../shared/models/user";
+import {User} from "../../shared/models/user";
 
 interface BranchAddProps {
   branch?: IBranch;
@@ -44,7 +44,7 @@ export const BranchAdd = ({
     } else {
       Branch.update(branch)
         .then(() => {
-          const j = User.getInstance().jobs?.filter(
+          const j = User.getInstance()?.jobs?.filter(
             (j) => j.branch?._id === branch._id
           );
           if (!!j && j.length > 0) {

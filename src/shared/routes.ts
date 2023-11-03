@@ -4,6 +4,7 @@ export const ServerUrls = {
   auth: {
     login: "/users/get",
     signup: "/users/create",
+    ChangePassword: "/users/change-password/"
   },
   business: {
     get: "/businesses/get",
@@ -71,6 +72,5 @@ export const ClientUrls = {
   },
   profile: {
     base: "profile/",
-    ChangePassword: "change-password/"
   },
 };

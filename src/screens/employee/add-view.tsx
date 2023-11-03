@@ -1,10 +1,23 @@
-import { Stack, FormControl, TextField, InputLabel, Select, MenuItem, FormGroup, FormControlLabel, Switch, Button } from "@mui/material";
-import { useState, useReducer } from "react";
+import {
+  Stack,
+  FormControl,
+  TextField,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormGroup,
+  FormControlLabel,
+  Switch,
+  Button,
+  Container,
+} from "@mui/material";
+import { useState, useReducer, useEffect } from "react";
 import useAppContext from "../../shared/hooks/app-context";
 import { IEmployee, Employee } from "../../shared/models/employee";
 import { IPermission, Permission } from "../../shared/models/permission";
 import { IUser, User } from "../../shared/models/user";
 import { Signup } from "../auth";
+import MyFullScreenDialog from "../../shared/components/my-popup";
 
 const employeeReducer = (state: IEmployee, action: { payload?: IEmployee }) => {
   if (action.payload) {
@@ -17,13 +30,45 @@ const employeeReducerInitialValue: IEmployee = {
   permissions: [],
 };
 
-export const EmployeeAdd = () => {
+interface EmployeeAddProps {
+  open: boolean;
+  handleClose: () => void;
+}
+
+export const EmployeeAdd = ({ open, handleClose }: EmployeeAddProps) => {
   const [context, dispatch] = useAppContext();
   const [userAdded, setUserAdded] = useState(false);
   const [employee, employeeDispatch] = useReducer(
     employeeReducer,
     employeeReducerInitialValue
   );
+
+  const [allPermissionsToggled, setAllPermissionsToggled] = useState(false);
+
+  // Function to toggle all permission switches
+  const toggleAllPermissions = () => {
+    setAllPermissionsToggled(!allPermissionsToggled);
+    const permissions: string[] = Permission.getAllPermissions()
+      .filter((permission) => !!permission && !!permission._id)
+      .map((permission) => permission._id as string);
+
+    if (!allPermissionsToggled) {
+      // If "Toggle All" is on, set all permissions to "on"
+      employeeDispatch({ payload: { permissions } });
+    } else {
+      // If "Toggle All" is off, clear all permissions
+      employeeDispatch({ payload: { permissions: [] } });
+    }
+  };
+
+  // Use useEffect to check if all individual permission switches are turned on,
+  // and set the "Toggle All" switch accordingly
+  useEffect(() => {
+    const allSwitchesToggled = Permission.getAllPermissions().every(
+      (permission) => employee.permissions?.includes(permission._id ?? "")
+    );
+    setAllPermissionsToggled(allSwitchesToggled);
+  }, [employee.permissions]);
 
   const handleChange = (key: keyof IEmployee, value: any) => {
     employeeDispatch({
@@ -68,80 +113,109 @@ export const EmployeeAdd = () => {
   };
 
   const handleAddEmployee = () => {
-    console.info(employee);
+    console.info("employee role assignment", employee);
     Employee.add(employee)
       .then((response) => {
-        !!response && User.getInstance()?.jobs?.push(response);
-        dispatch({ action: "CLOSE_POPUP" });
+        if (response?.user?._id === User.getInstance()._id) {
+          User.getInstance()?.jobs?.push(response!);
+        }
+        setUserAdded(false);
+        handleClose();
       })
       .catch((error) => console.error(error));
   };
 
   return (
     <>
-      <Stack spacing={2}>
-        {userAdded ? (
-          <>
-            <FormControl required>
-              <TextField
-                label="Role"
-                value={employee.role}
-                onChange={(e) => handleChange("role", e.target.value)}
-              />
-            </FormControl>
-            <FormControl required>
-              <InputLabel id="employee-add-status-select-label">
-                Status
-              </InputLabel>
-              <Select
-                labelId="employee-add-status-select-label"
-                id="employee-add-status-select"
-                value={employee.status}
-                label="Status"
-                onChange={(e) => handleChange("status", e.target.value)}
-              >
-                <MenuItem value="active">Active</MenuItem>
-                <MenuItem value="inactive">Inactive</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl>
-              <FormGroup>
-                {Permission.getAllPermissions().map((permission) => (
-                  <>
-                    {
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            checked={
-                              (employee.permissions?.filter(
-                                (perm) => perm === permission._id
-                              )?.length ?? 0) > 0
-                            }
-                            onChange={() => togglePermission(permission)}
-                            name={
-                              permission.name
-                                ?.split("/")
-                                .map((perm) => perm.concat(" "))
-                                ?.at(permission.name?.split("/").length - 1) ??
-                              ""
-                            }
-                          />
-                        }
-                        label={permission.name
-                          ?.split("/")
-                          .map((perm) => perm.concat(" "))}
+      {!userAdded ? (
+        <Signup
+          autoLogin={false}
+          openState={open}
+          handleCloseState={handleClose}
+          onSuccess={handleSignup}
+        />
+      ) : (
+        <MyFullScreenDialog
+          open={open}
+          handleClose={handleClose}
+          title={userAdded ? "AddUser" : "Assign Role"}
+          actions={[
+            <Button autoFocus color="inherit" onClick={handleAddEmployee}>
+              Assign
+            </Button>,
+          ]}
+        >
+          <Container>
+            <Stack spacing={2} sx={{ m: 2 }}>
+              <FormControl required>
+                <TextField
+                  label="Role"
+                  value={employee.role}
+                  onChange={(e) => handleChange("role", e.target.value)}
+                />
+              </FormControl>
+              <FormControl required>
+                <InputLabel id="employee-add-status-select-label">
+                  Status
+                </InputLabel>
+                <Select
+                  labelId="employee-add-status-select-label"
+                  id="employee-add-status-select"
+                  value={employee.status}
+                  label="Status"
+                  onChange={(e) => handleChange("status", e.target.value)}
+                >
+                  <MenuItem value="active">Active</MenuItem>
+                  <MenuItem value="inactive">Inactive</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={allPermissionsToggled}
+                        onChange={toggleAllPermissions}
+                        name="toggleAllPermissions"
                       />
                     }
-                  </>
-                ))}
-              </FormGroup>
-            </FormControl>
-            <Button onClick={handleAddEmployee}>Add Employee</Button>
-          </>
-        ) : (
-          <Signup onSuccess={handleSignup} />
-        )}
-      </Stack>
+                    label="Toggle All"
+                  />
+                  {Permission.getAllPermissions().map((permission) => (
+                    <>
+                      {
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={
+                                (employee.permissions?.filter(
+                                  (perm) => perm === permission._id
+                                )?.length ?? 0) > 0
+                              }
+                              onChange={() => togglePermission(permission)}
+                              name={
+                                permission.name
+                                  ?.split("/")
+                                  .map((perm) => perm.concat(" "))
+                                  ?.at(
+                                    permission.name?.split("/").length - 1
+                                  ) ?? ""
+                              }
+                            />
+                          }
+                          label={permission.name
+                            ?.split("/")
+                            .map((perm) => perm.concat(" "))}
+                        />
+                      }
+                    </>
+                  ))}
+                </FormGroup>
+              </FormControl>
+            </Stack>
+          </Container>
+        </MyFullScreenDialog>
+      )}
     </>
   );
 };
