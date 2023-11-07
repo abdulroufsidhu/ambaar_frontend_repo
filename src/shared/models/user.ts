@@ -25,7 +25,9 @@ export class User {
         User.calling = true;
         const u = SessionStorageManager.getItem<IUser>("user");
         if (u) {
-          User.postLoginProcess(u)?.then().catch(err=>console.error("User getInstance", err));
+          User.postLoginProcess(u)
+            ?.then()
+            .catch((err) => console.error("User getInstance", err));
         }
       }
     }
@@ -41,27 +43,31 @@ export class User {
   }
 
   static login = async (email: string, password: string) =>
-    axios.get<MyApiResponse<IUser>>(ServerUrls.auth.login, {
-      params: {
-        email,
-        password,
-      },
-    }).then((res) => this.postLoginProcess(res.data.data));
+    axios
+      .get<MyApiResponse<IUser>>(ServerUrls.auth.login, {
+        params: {
+          email,
+          password,
+        },
+      })
+      .then((res) => this.postLoginProcess(res.data.data));
 
   private static postLoginProcess = (user?: IUser) => {
     User.instance = user;
-    return (
-      (!!User.instance && !User.instance.jobs) ?
-        Employee.list({ user: User.instance })
+    console.info("signed up user", user);
+    return !!User.instance && !User.instance.jobs
+      ? Employee.list({ user: User.instance })
           .then((jobs) => {
-            console.info(jobs)
+            console.info(jobs);
             User.instance!.jobs = jobs ?? [];
             SessionStorageManager.setItem("user", User.instance);
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             Permission.fetchAll()
-              .then(permissions => SessionStorageManager.setItem("permissions", permissions))
-              .catch(error => console.error(error))
-              User.calling = false;
+              .then((permissions) =>
+                SessionStorageManager.setItem("permissions", permissions)
+              )
+              .catch((error) => console.error(error));
+            User.calling = false;
             return User.instance;
           })
           .catch((error) => {
@@ -69,21 +75,30 @@ export class User {
             User.calling = false;
             return User.instance;
           })
-        : undefined
-    );
-  }
+      : undefined;
+  };
 
-  static signup = async (person: IPerson, password: string, autoLogin = false) =>
+  static signup = async (
+    person: IPerson,
+    password: string,
+    autoLogin = false
+  ) =>
     axios
       .post<MyApiResponse<IUser>>(ServerUrls.auth.signup, {
         person: person,
         password: password,
       })
-      .then((res) => autoLogin ? this.postLoginProcess(res.data.data) : new Promise<IUser | undefined>((resolve,rej)=>{resolve(res.data.data)}));
+      .then((res) =>
+        autoLogin
+          ? this.postLoginProcess(res.data.data)
+          : new Promise<IUser | undefined>((resolve, rej) => {
+              resolve(res.data.data);
+            })
+      );
 
   static logout = async () =>
     new Promise<IUser | undefined>((resolve, reject) => {
-      SessionStorageManager.removeItem("user", "permissions")
+      SessionStorageManager.removeItem("user", "permissions");
       User.instance = undefined;
       return resolve(undefined);
       reject();
@@ -117,16 +132,18 @@ export class User {
 
   static clearPerformingJob = () => {
     if (User.instance) {
-      User.instance.performingJob = undefined
+      User.instance.performingJob = undefined;
     }
-  }
+  };
 
   static setPerformingJob = (branch: IBranch) => {
     if (User.instance) {
-      User.instance.performingJob = User.instance?.jobs?.filter(j => j.branch?._id === branch._id)?.at(0)
-      console.log("setting permforming job", User.instance.performingJob)
+      User.instance.performingJob = User.instance?.jobs
+        ?.filter((j) => j.branch?._id === branch._id)
+        ?.at(0);
+      console.log("setting permforming job", User.instance.performingJob);
     }
-  }
+  };
 
   static changePassword = (old: string, changed: string) => {
     axios
@@ -138,5 +155,4 @@ export class User {
       .catch((e) => console.error(e));
     // call change password api with endpoint /change-password
   };
-
 }
