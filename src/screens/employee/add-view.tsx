@@ -31,13 +31,22 @@ const employeeReducerInitialValue: IEmployee = {
 };
 
 interface EmployeeAddProps {
+  employeeToEdit?: IEmployee;
   open: boolean;
   handleClose: () => void;
+  onSuccess?: (employee: IEmployee | undefined) => void;
 }
 
-export const EmployeeAdd = ({ open, handleClose }: EmployeeAddProps) => {
+export const EmployeeAdd = ({
+  employeeToEdit,
+  open,
+  handleClose,
+  onSuccess,
+}: EmployeeAddProps) => {
   const [context, dispatch] = useAppContext();
-  const [userAdded, setUserAdded] = useState(false);
+  const [userAdded, setUserAdded] = useState<boolean>(
+    employeeToEdit !== null && employeeToEdit !== undefined
+  );
   const [employee, employeeDispatch] = useReducer(
     employeeReducer,
     employeeReducerInitialValue
@@ -63,6 +72,19 @@ export const EmployeeAdd = ({ open, handleClose }: EmployeeAddProps) => {
 
   // Use useEffect to check if all individual permission switches are turned on,
   // and set the "Toggle All" switch accordingly
+
+  useEffect(() => {
+    employeeDispatch({
+      payload: {
+        ...employeeToEdit,
+        permissions: employeeToEdit?.permissions?.map((e) => e._id) ?? [],
+      },
+    });
+    setUserAdded(!!employeeToEdit);
+    console.log("employeeToEdit", employeeToEdit);
+    console.log("employee", employee);
+  }, [employeeToEdit]);
+
   useEffect(() => {
     const allSwitchesToggled = Permission.getAllPermissions().every(
       (permission) => employee.permissions?.includes(permission._id ?? "")
@@ -107,24 +129,33 @@ export const EmployeeAdd = ({ open, handleClose }: EmployeeAddProps) => {
   const handleSignup = (user: IUser | undefined) => {
     console.info("employee user signup", user);
     employeeDispatch({
-      payload: { user: user, branch: context.branch },
+      payload: {
+        _id: undefined,
+        user: user,
+        branch: context.branch,
+        role: "",
+        status: "active",
+      },
     });
     setUserAdded(true);
   };
 
   const handleAddEmployee = () => {
     console.info("employee role assignment", employee);
-    Employee.add(employee)
+    const toInvoke = employeeToEdit
+      ? Employee.update(employee)
+      : Employee.add(employee);
+    toInvoke
       .then((response) => {
         if (response?.user?._id === User.getInstance()._id) {
           User.getInstance()?.jobs?.push(response!);
         }
         setUserAdded(false);
+        !!onSuccess && !!response && onSuccess(response)
         handleClose();
       })
       .catch((error) => console.error(error));
   };
-
   return (
     <>
       {!userAdded ? (

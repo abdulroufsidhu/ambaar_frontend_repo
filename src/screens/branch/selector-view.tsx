@@ -47,7 +47,7 @@ export const BranchSelector = ({ jobs, onAddSuccess }: BranchListProps) => {
 
   return (
     <>
-      <FormControl sx={{ m: 1, minWidth: 120 }} required>
+      <FormControl sx={{ m: 1, minWidth: 120 }} size="small" required>
         <InputLabel id="branch-select-label">Branch</InputLabel>
         <Select
           labelId="branch-select-label"
@@ -64,12 +64,8 @@ export const BranchSelector = ({ jobs, onAddSuccess }: BranchListProps) => {
               },
             });
           }}
-          renderValue={() => (
-            <>
-              {" "}
-              <AccountTreeOutlined /> {context.branch?.name}
-            </>
-          )}
+          startAdornment={<AccountTreeOutlined />}
+          renderValue={() => context.branch?.name}
         >
           {jobs?.map((job) => (
             <MenuItem

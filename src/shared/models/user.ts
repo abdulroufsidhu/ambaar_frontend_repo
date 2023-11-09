@@ -56,7 +56,7 @@ export class User {
     User.instance = user;
     console.info("signed up user", user);
     return !!User.instance && !User.instance.jobs
-      ? Employee.list({ user: User.instance })
+      ? Employee.self({ user: User.instance })
           .then((jobs) => {
             console.info(jobs);
             User.instance!.jobs = jobs ?? [];

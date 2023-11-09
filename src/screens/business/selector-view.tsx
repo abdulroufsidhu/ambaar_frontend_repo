@@ -11,19 +11,19 @@ import { Business, IBusiness } from "../../shared/models/business";
 import { Add, BusinessOutlined } from "@mui/icons-material";
 import { BranchSelector } from "../branch";
 import useAppContext from "../../shared/hooks/app-context";
-import {User} from "../../shared/models/user";
+import { User } from "../../shared/models/user";
 import { useState, useEffect } from "react";
 import { Branch, IBranch } from "../../shared/models/branch";
 import { IEmployee } from "../../shared/models/employee";
 import { BusinessAdd } from ".";
-
+import { Typography } from "@mui/material";
 
 export const BusinessSelector = () => {
   const [context, dispatch] = useAppContext();
   const user = User.getInstance();
   const jobs = user?.jobs;
   const [list, setList] = useState<IBusiness[]>([]);
-  const [jobsUnderBusiness, setJobsUnderBusiness] = useState<IEmployee[]>([])
+  const [jobsUnderBusiness, setJobsUnderBusiness] = useState<IEmployee[]>([]);
 
   useEffect(() => {
     const bus =
@@ -41,17 +41,19 @@ export const BusinessSelector = () => {
   }, [jobs]);
 
   useEffect(() => {
-    const j: IEmployee[] | undefined = jobs?.filter(j => j.branch?.business?._id === context.business?._id)
-    setJobsUnderBusiness(j ?? [])
-  }, [context.business])
+    const j: IEmployee[] | undefined = jobs?.filter(
+      (j) => j.branch?.business?._id === context.business?._id
+    );
+    setJobsUnderBusiness(j ?? []);
+  }, [context.business]);
 
   const onBranchAddSuccess = (job: IEmployee) => {
-    setJobsUnderBusiness(prev => {
-      const j: IEmployee[] = [...prev, job]
+    setJobsUnderBusiness((prev) => {
+      const j: IEmployee[] = [...prev, job];
       Branch.setLoadedList(j);
       return j;
-    })
-  }
+    });
+  };
 
   const handleChange = (businessId: string) => {
     dispatch({
@@ -62,7 +64,7 @@ export const BusinessSelector = () => {
     //   action: "SET_BRANCH",
     //   payload: { branch: (branches.length > 0) ? (branches[0]) : (undefined) },
     // });
-  }
+  };
 
   const handleDelete = (business?: IBusiness) => {
     const confirmation = prompt(
@@ -100,7 +102,7 @@ export const BusinessSelector = () => {
       if (index < 0) {
         newState.push(business);
       }
-      Business.setLoadedList(newState)
+      Business.setLoadedList(newState);
       return newState;
     });
   };
@@ -115,16 +117,22 @@ export const BusinessSelector = () => {
   };
 
   return (
-    <Stack direction="row" flexWrap="wrap">
-      <FormControl sx={{ m: 1, minWidth: 120 }} required>
+    <Stack
+      direction="row"
+      flexWrap="wrap"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <FormControl sx={{ m: 1, minWidth: 120 }} size="small" required>
         <InputLabel id="business-select-label">Business</InputLabel>
         <Select
           labelId="business-select-label"
           id="business-select"
           value={context.business?._id}
-          label="Business"
+          label={"Business"}
           onChange={(e) => handleChange(e.target.value)}
-          renderValue={() => (<> <BusinessOutlined /> {" "}{context.business?.name}</>)}
+          startAdornment={<BusinessOutlined />}
+          renderValue={() => context.business?.name}
         >
           {list?.map((business) => (
             <MenuItem
@@ -141,7 +149,7 @@ export const BusinessSelector = () => {
             >
               <ListItemIcon
                 key={`${business?._id ?? ""}-menu listItemIcon`}
-              // onClick={() => handleEdit(business)}
+                // onClick={() => handleEdit(business)}
               >
                 <BusinessOutlined color="primary" />
                 {/* <EditOutlined
@@ -177,7 +185,12 @@ export const BusinessSelector = () => {
         </Select>
       </FormControl>
 
-      {context.business && <BranchSelector jobs={jobsUnderBusiness} onAddSuccess={onBranchAddSuccess} />}
+      {context.business && (
+        <BranchSelector
+          jobs={jobsUnderBusiness}
+          onAddSuccess={onBranchAddSuccess}
+        />
+      )}
     </Stack>
   );
 };

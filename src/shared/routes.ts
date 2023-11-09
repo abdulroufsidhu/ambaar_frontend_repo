@@ -24,6 +24,7 @@ export const ServerUrls = {
     update: "/persons/update",
   },
   employee: {
+    self: "employees/employees/",
     get: "/employees/get",
     add: "/employees/create",
     update: "/employees/update",

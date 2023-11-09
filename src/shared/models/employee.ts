@@ -11,21 +11,43 @@ export interface IEmployee {
   branch?: IBranch;
   role?: string;
   permissions?: Array<IPermission | string>;
-  status?: "active" | "inactive"
+  status?: "active" | "inactive";
 }
 
 export class Employee {
-  static add = (employee: IEmployee) =>
-    axios.post<MyApiResponse<IEmployee>>(ServerUrls.employee.add, {
-      ...employee,
+  static self = ({user}: IEmployee) => {
+    const params: { uid?: string } = {};
+    if (typeof user?._id === "string") {
+      params["uid"] = user?._id;
+    }
+
+    return axios<MyApiResponse<IEmployee[]>>({
+      method: "get",
+      url: ServerUrls.employee.self,
+      params: params,
     })
+      .then((value) => value.data.data)
+      .catch((error) => console.error(error));
+  }
+  static add = (employee: IEmployee) =>
+    axios
+      .post<MyApiResponse<IEmployee>>(ServerUrls.employee.add, {
+        ...employee,
+      })
+      .then((value) => value.data.data)
+      .catch((error) => console.error(error));
+
+  static update = (employee: IEmployee) =>
+    axios
+      .patch<MyApiResponse<IEmployee>>(ServerUrls.employee.update, { ...employee })
       .then((value) => value.data.data)
       .catch((error) => console.error(error));
 
   static view = (employee: IEmployee) =>
-    axios.get<MyApiResponse<IEmployee>>(ServerUrls.employee.get, {
-      params: { ...employee },
-    })
+    axios
+      .get<MyApiResponse<IEmployee>>(ServerUrls.employee.get, {
+        params: { ...employee },
+      })
       .then((value) => value.data.data)
       .catch((error) => console.error(error));
 

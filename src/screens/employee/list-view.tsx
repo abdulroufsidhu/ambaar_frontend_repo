@@ -5,9 +5,8 @@ import { EmployeeAdd } from ".";
 import { MyFab } from "../../shared/components/buttons";
 import { MyDataTable } from "../../shared/components/my-data-table";
 import useAppContext from "../../shared/hooks/app-context";
-import { IEmployee } from "../../shared/models/employee";
+import { IEmployee, Employee } from '../../shared/models/employee';
 import { IPerson } from "../../shared/models/person";
-import MyFullScreenDialog from "../../shared/components/my-popup";
 
 interface EmployeeListProps {
   list?: IEmployee[];
@@ -15,33 +14,75 @@ interface EmployeeListProps {
 
 interface IPersonActionable extends IPerson {
   actions?: ReactNode;
+  role?: string;
+  status?: string;
 }
 
 export const EmployeeList = ({ list }: EmployeeListProps) => {
   const [context, dispatch] = useAppContext();
+  const [listState, setListState] = useState(list);
   const [persons, setPersons] = useState<IPersonActionable[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
+  const [employeeToEdit, setEmployeeToEdit] = useState<IEmployee | undefined>(
+    undefined
+  );
   const [addDialogOpened, setAddDialogOpened] = useState(false);
-  const handleAddDialogClose = () => setAddDialogOpened(false)
+
+  const handleAddDialogClose = () => {
+    setAddDialogOpened(false);
+    setEmployeeToEdit(undefined);
+  };
+
+  const handleEditEmployee = (employee: IEmployee) => {
+    setEmployeeToEdit(employee);
+    setAddDialogOpened(true);
+  };
+
+  const onEmployeeAddOrEditSuccess = (employee?: IEmployee) => {
+    setListState((prev) => {
+      try {
+        const found = prev?.filter((emp) => emp._id === employee?._id)?.at(0);
+        if (!found){
+          const t = prev && employee && [...prev, employee]
+          const f = employee && [employee]
+          const returnable = prev && employee ? t : f
+          return returnable
+        }
+        const returnable = prev?.map(job=>job._id===employee?._id && employee ? employee : job)
+        return returnable
+      } catch (error) {
+        console.error("error updating employee list on the ui",error);
+        return prev
+      }
+    });
+  };
 
   useEffect(() => {
+    setListState(list);
+  }, [list]);
+
+  useEffect(() => {
+    console.info("employees list", listState);
     setPersons(
-      list
+      listState
         ?.filter((j) => !!j.user?.person)
         .map((j) => {
           return {
+            role: j.role,
             ...j.user!.person!,
+            status: j.status,
             actions: (
-              <IconButton color="primary">
+              <IconButton color="primary" onClick={() => handleEditEmployee(j)}>
                 <EditOutlined />
               </IconButton>
             ),
           };
         }) ?? []
     );
-  }, [list]);
+  }, [listState]);
+
+  useEffect(()=>{console.info("employeed persons",persons)},[persons])
 
   const handleAdd: () => undefined = () => {
     setAddDialogOpened(true);
@@ -73,23 +114,6 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
-
-      {/* <List key="employee.views.list">
-        {list.map((employee, index) => (
-          <>
-            <ListItem key={`employee.views.list-${employee._id ?? ""}`}>
-              <ListItemText
-                key={`employee.views.list-${employee._id ?? ""}-name${
-                  employee.user?.person?.name ?? index.toString()
-                }`}
-                primary={employee.user?.person?.name}
-                secondary={employee.role}
-              />
-            </ListItem>
-            <Divider />
-          </>
-        ))}
-      </List> */}
       {!!context.branch && (
         <MyFab
           label="Add Employee"
@@ -97,7 +121,12 @@ export const EmployeeList = ({ list }: EmployeeListProps) => {
           onClick={handleAdd}
         />
       )}
-      <EmployeeAdd open={addDialogOpened} handleClose={handleAddDialogClose} />
+      <EmployeeAdd
+        employeeToEdit={employeeToEdit}
+        open={addDialogOpened}
+        handleClose={handleAddDialogClose}
+        onSuccess={onEmployeeAddOrEditSuccess}
+      />
     </Box>
   );
 };

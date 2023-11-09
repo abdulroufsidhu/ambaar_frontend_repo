@@ -9,7 +9,7 @@ export function removeObjectProperties<T>(object: T, propertyKeys: (keyof T)[]):
 
 export function isJSON<T>(obj: T) {
   try {
-    JSON.stringify(obj)
+    JSON.parse(obj)
     return true;
   } catch (e) {
     return false;
