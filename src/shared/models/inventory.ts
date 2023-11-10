@@ -12,7 +12,7 @@ export interface IProduct {
 }
 
 export interface IInventory {
-  _id?: string
+  _id?: string;
   product?: IProduct;
   branch?: IBranch;
   serialNumber?: string;
@@ -23,17 +23,27 @@ export interface IInventory {
 }
 
 export class Inventory {
-  static list = (branch_id: string) =>
-    axios.get<MyApiResponse<IInventory[]>>(ServerUrls.inventory.get, {
-      params: { branch_id },
-    })
-      .then((result) => result.data.data);
+  private static list?: IInventory[] = [];
+
+  static getList = Inventory.list;
+
+  static fetch = (branch_id: string) =>
+    axios
+      .get<MyApiResponse<IInventory[]>>(ServerUrls.inventory.get, {
+        params: { branch_id },
+      })
+      .then((result) => {
+        Inventory.list = result.data.data;
+        return result.data.data;
+      });
 
   static add = (inventory: IInventory) =>
-    axios.post<MyApiResponse<IInventory|undefinded>>(ServerUrls.inventory.add, {
-      ...inventory,
-      branch: inventory.branch?._id,
-    }).then(item => !!item.data.data ? item.data.data : []);
+    axios
+      .post<MyApiResponse<IInventory | undefined>>(ServerUrls.inventory.add, {
+        ...inventory,
+        branch: inventory.branch?._id,
+      })
+      .then((item) => (item.data.data ? item.data.data : []));
 
   static update = (Inventory: IInventory) =>
     axios.patch(ServerUrls.inventory.update, {

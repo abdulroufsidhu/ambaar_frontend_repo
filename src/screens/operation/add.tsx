@@ -47,7 +47,7 @@ export const OperationAdd = ({ inventory, onAddSuccess }: OperationAddProps) => 
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h3">Sale</Typography>
+      <Typography variant="h3">Customer Info</Typography>
       <FormControl required>
         <TextField
           label="Name"

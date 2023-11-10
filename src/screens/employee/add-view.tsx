@@ -18,6 +18,7 @@ import { IPermission, Permission } from "../../shared/models/permission";
 import { IUser, User } from "../../shared/models/user";
 import { Signup } from "../auth";
 import MyFullScreenDialog from "../../shared/components/my-popup";
+import { IBranch } from "../../shared/models/branch";
 
 const employeeReducer = (state: IEmployee, action: { payload?: IEmployee }) => {
   if (action.payload) {
@@ -43,7 +44,7 @@ export const EmployeeAdd = ({
   handleClose,
   onSuccess,
 }: EmployeeAddProps) => {
-  const [context, dispatch] = useAppContext();
+  const [context] = useAppContext();
   const [userAdded, setUserAdded] = useState<boolean>(
     employeeToEdit !== null && employeeToEdit !== undefined
   );
@@ -77,12 +78,16 @@ export const EmployeeAdd = ({
     employeeDispatch({
       payload: {
         ...employeeToEdit,
-        permissions: employeeToEdit?.permissions?.map((e) => e._id) ?? [],
+        /**
+         * converts the IPermission[] into string[] of IPermission._id
+         * while doing so it checks wheather each object is IPermission type and _id is not invalid i.e, null or undefined
+         * and return based on that check
+         * @return String[]
+         */
+        permissions: employeeToEdit?.permissions?.map((e) => (Permission.isIPermission(e) && e._id) ? e._id : e ) ?? [] ,
       },
     });
     setUserAdded(!!employeeToEdit);
-    console.log("employeeToEdit", employeeToEdit);
-    console.log("employee", employee);
   }, [employeeToEdit]);
 
   useEffect(() => {
@@ -92,7 +97,7 @@ export const EmployeeAdd = ({
     setAllPermissionsToggled(allSwitchesToggled);
   }, [employee.permissions]);
 
-  const handleChange = (key: keyof IEmployee, value: any) => {
+  const handleChange = (key: keyof IEmployee, value: string|IUser|IBranch|string[]) => {
     employeeDispatch({
       payload: {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

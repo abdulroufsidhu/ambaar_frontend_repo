@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import { InventoryItemList } from "./views";
+import { InventoryItemList } from "./list";
 
 export const ItemsRoutes = () => (
   <Routes>

@@ -11,6 +11,11 @@ export interface IPermission {
 export class Permission {
   private static allPermissions: IPermission[] = [];
 
+  // Type guard function
+  static isIPermission(value: any): value is IPermission {
+    return typeof value === 'object' && '_id' in value;
+  }
+
   static getAllPermissions = (): IPermission[] => {
     if (Permission.allPermissions.length <= 0) {
       console.info("reading permissions");
