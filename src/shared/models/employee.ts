@@ -20,7 +20,7 @@ export class Employee {
     if (typeof user?._id === "string") {
       params["uid"] = user?._id;
     }
-
+    axios.defaults.headers["x-auth-token"] = user?.token ?? ""
     return axios<MyApiResponse<IEmployee[]>>({
       method: "get",
       url: ServerUrls.employee.self,
