@@ -1,41 +1,97 @@
-# Person.md
+# Person Class Documentation
+The `Person` class provides a set of static methods for interacting with a server-side API to manage person-related data. It leverages the Axios library for making HTTP requests and assumes the existence of specific server endpoints defined in the `ServerUrls` module. The responses from the server are expected to adhere to the structure defined in the `MyApiResponse` interface.
 
-## Overview
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Add a Person](#add-a-person)
+  - [View a Person](#view-a-person)
+  - [List Persons](#list-persons)
+- [Error Handling](#error-handling)
+- [Examples](#examples)
+## Installation
+Before using the `Person` class, ensure that you have Axios installed in your project. You can install it using:
+```
+npm install axios
+```
 
-The `Person` class, defined in the provided TypeScript file, serves as a crucial component within a broader system for managing business-related data. Leveraging the Axios library, it facilitates communication with a server through various endpoints specified in the `ServerUrls` module. The functionalities within this class are centered around the manipulation and retrieval of individual person records, encapsulated by the `IPerson` interface.
+## Usage
+### Add a Person
+```typescript
+/**
+ * Adds a new person to the system.
+ *
+ * @param {IPerson} person - The person object to be added.
+ * @returns {Promise<IPerson>} A Promise that resolves with the added person's data.
+ */
+Person.add(person: IPerson): Promise<IPerson>
+```
 
-### IPerson Interface
-
-The `IPerson` interface outlines the structure of a person object, encompassing key attributes such as `_id`, `name`, `username`, `nationalId`, `contact`, and `email`. This interface acts as a blueprint for creating and interacting with person entities within the system.
+### View a Person
+```typescript
+Copy code
+/**
+ * Retrieves information about a specific person.
+ *
+ * @param {IPerson} person - The person object with identification information.
+ * @returns {Promise<IPerson>} A Promise that resolves with the retrieved person's data.
+ */
+Person.view(person: IPerson): Promise<IPerson>
+```
+### List Persons
 
 ```typescript
-export interface IPerson {
-  _id?: string;
-  name?: string;
-  username?: string;
-  nationalId?: string;
-  contact?: string;
-  email?: string;
-}
+Copy code
+/**
+ * Retrieves a list of persons associated with a specific business.
+ *
+ * @param {string} businessId - The unique identifier of the business.
+ * @returns {Promise<IPerson[]>} A Promise that resolves with an array of persons associated with the business.
+ */
+Person.list(businessId: string): Promise<IPerson[]>
+```
+
+## Error Handling
+The methods in the `Person` class return Promises that may be rejected if an error occurs during the HTTP request. Error handling is done by logging the error to the console using `console.error`. It is recommended to implement additional error handling based on your application's requirements.
+
+## Examples
+### Adding a Person
+```typescript
+const newPerson: IPerson = {
+  name: "John Doe",
+  username: "johndoe",
+  contact: "+1234567890",
+  email: "john.doe@example.com",
+};
+
+Person.add(newPerson)
+  .then((addedPerson) => {
+    console.log("Person added successfully:", addedPerson);
+  })
+  .catch((error) => {
+    console.error("Error adding person:", error);
+  });
+```
+### Viewing a Person
+```typescript
+Person.view(personToView : {_id: String})
+  .then((viewedPerson) => {
+    console.log("Person details:", viewedPerson);
+  })
+  .catch((error) => {
+    console.error("Error viewing person:", error);
+  });
+```
+
+### Listing Persons
+```typescript
+Person.list(businessId)
+  .then((persons) => {
+    console.log("Persons associated with the business:", persons);
+  })
+  .catch((error) => {
+    console.error("Error listing persons:", error);
+  });
 ```
 
 
-### Class Methods
-
-#### 1. `add`
-
-The `add` method enables the addition of a new person to the system by making a POST request to the server's designated endpoint (`ServerUrls.person.add`). Upon success, the method returns the added person's data wrapped in a custom response structure (`MyApiResponse`).
-
-#### 2. `view`
-
-The `view` method facilitates the retrieval of a specific person's information by making a GET request to the server's endpoint (`ServerUrls.person.get`). It takes a `Person` object as a parameter, and upon successful execution, it returns the retrieved person's data in the specified response structure.
-
-#### 3. `list`
-
-The `list` method retrieves a list of persons associated with a particular business. It accepts a `businessId` as a parameter and makes a GET request to the server's endpoint (`ServerUrls.person.get`). The method returns an array of person objects associated with the specified business, encapsulated within the `MyApiResponse` structure.
-
-### Error Handling
-
-All methods within the `Person` class incorporate error handling through promises, logging any encountered errors to the console using `console.error`. This ensures that potential issues during network requests are captured and can be addressed effectively.
-
-By leveraging the functionalities provided by the `Person` class, developers can seamlessly integrate person management capabilities into their broader business applications.
