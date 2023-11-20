@@ -2,15 +2,15 @@
 The Employee class provides static methods for interacting with a server-side API to manage employee-related data. It utilizes Axios for making HTTP requests and expects specific server endpoints defined in the ServerUrls module. The responses from the server are assumed to adhere to the structure defined in the MyApiResponse interface.
 
 ## Table of Contents
- - [Installation]
- - [Usage]
-    - [Get Self Employee]
-    - [Add an Employee]
-    - [Update an Employee]
-    - [View an Employee]
-    - [List Employees]
- - [Error Handling]
- - [Examples]
+ - [Installation](#installation)
+ - [Usage](#usage)
+    - [Get Self Employee](#get-self-employee)
+    - [Add an Employee](#add-an-employee)
+    - [Update an Employee](#update-an-employee)
+    - [View an Employee](#view-an-employee)
+    - [List Employees](#list-employees)
+ - [Error Handling](#error-handling)
+ - [Examples](#error-handling)
 ## Installation
 Ensure that you have Axios installed in your project before using the Employee class:
 
