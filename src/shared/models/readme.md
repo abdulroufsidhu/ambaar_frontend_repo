@@ -1,13 +1,13 @@
 # Models
 Models are the classes of typescript to typeguard teh data of several types whole system consists of following modal classes
- 1) [Person](./person.ts) 
- 2) [User](./user.ts)
- 3) [Branch](./branch.ts)
- 4) [Business](./business.ts)
- 5) [Employee](./employee.ts)
- 6) [Inventory](./inventory.ts)
- 7) [Operation](./operation.ts)
- 8) [Permission](./permission.ts)
+ 1) Person [Source](./person.ts) - [Documentation](./person.md) 
+ 2) User [Source](./user.ts) - [Documentation](./user.md)
+ 3) Branch [Source](./branch.ts) - [Documentation](./branch.md)
+ 4) Business [Source](./business.ts) - [Documentation](./business.md)
+ 5) Employee [Source](./employee.ts) - [Documentation](./employee.md)
+ 6) Inventory [Source](./inventory.ts) - [Documentation](./inventory.md)
+ 7) Operation [Source](./operation.ts) - [Documentation](./operation.md)
+ 8) Permission [Source](./permission.ts) - [Documentation](./permission.md)
 
 
 Below diagram explains the classes and their relationship

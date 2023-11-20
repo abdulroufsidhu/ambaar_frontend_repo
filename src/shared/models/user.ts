@@ -57,24 +57,24 @@ export class User {
     console.info("signed up user", user);
     return !!User.instance && !User.instance.jobs
       ? Employee.self({ user: User.instance })
-          .then((jobs) => {
-            console.info(jobs);
-            User.instance!.jobs = jobs ?? [];
-            SessionStorageManager.setItem("user", User.instance);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            Permission.fetchAll()
-              .then((permissions) =>
-                SessionStorageManager.setItem("permissions", permissions)
-              )
-              .catch((error) => console.error(error));
-            User.calling = false;
-            return User.instance;
-          })
-          .catch((error) => {
-            console.error(error);
-            User.calling = false;
-            return User.instance;
-          })
+        .then((jobs) => {
+          console.info(jobs);
+          User.instance!.jobs = jobs ?? [];
+          SessionStorageManager.setItem("user", User.instance);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          Permission.fetchAll()
+            .then((permissions) =>
+              SessionStorageManager.setItem("permissions", permissions)
+            )
+            .catch((error) => console.error(error));
+          User.calling = false;
+          return User.instance;
+        })
+        .catch((error) => {
+          console.error(error);
+          User.calling = false;
+          return User.instance;
+        })
       : undefined;
   };
 
@@ -92,8 +92,8 @@ export class User {
         autoLogin
           ? this.postLoginProcess(res.data.data)
           : new Promise<IUser | undefined>((resolve, rej) => {
-              resolve(res.data.data);
-            })
+            resolve(res.data.data);
+          })
       );
 
   static logout = async () =>
@@ -145,14 +145,12 @@ export class User {
     }
   };
 
-  static changePassword = (old: string, changed: string) => {
+  static changePassword = (old: string, changed: string) =>
     axios
       .patch(ServerUrls.auth.ChangePassword, {
         old_password: old,
         new_password: changed,
       })
-      .then((d) => console.info("password changed", d))
-      .catch((e) => console.error(e));
-    // call change password api with endpoint /change-password
-  };
+      .then((d) => { console.info("password changed", d); return d })
+
 }
