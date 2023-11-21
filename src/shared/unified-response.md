@@ -34,7 +34,7 @@ export interface MyApiResponse<T> {
  - **Type**: Optional string.
  - **Usage**: It may contain additional information or details about the response, especially in the case of an error.
 
-**`data?: `[T](./models/inventory.md)**
+**`data?: `[T](./models/readme.md)**
  - **Description**: The actual data returned by the API.
  - **Type**: Generic, allowing for flexibility in defining the type of data (T).
  - **Usage**: This property holds the specific payload or resource returned by the API. The type T allows for a dynamic definition of the data structure based on the specific endpoint or use case.
