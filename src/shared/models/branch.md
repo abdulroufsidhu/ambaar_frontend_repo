@@ -1,5 +1,5 @@
 # Branch Class Documentation
-The Branch class provides static methods for interacting with a server-side API to manage branch-related data. It utilizes Axios for making HTTP requests and assumes the existence of specific server endpoints defined in the ServerUrls module. The responses from the server are expected to adhere to the structure defined in the MyApiResponse interface. Additionally, the class has a method for managing the loaded list of branches.
+The Branch class provides static methods for interacting with a server-side API to manage branch-related data. It utilizes Axios for making HTTP requests and assumes the existence of specific server endpoints defined in the ServerUrls module. The responses from the server are expected to adhere to the structure defined in the [MyApiResponse](./../unified-response.md) interface. Additionally, the class has a method for managing the loaded list of branches.
 
 ## Table of Contents
  - [Installation](#installation)
