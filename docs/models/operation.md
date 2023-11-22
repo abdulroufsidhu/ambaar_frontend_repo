@@ -9,7 +9,7 @@ The Operation class provides static methods for interacting with a server-side A
  - [Error Handling](#error-handling)
  - [Examples](#examples)
     - [Adding an Operation](#adding-an-operation)
-    - [Getting Operations](#getting-operationss)
+    - [Getting Operations](#getting-operations)
 ## Installation
 Ensure that you have Axios installed in your project before using the Operation class:
 
