@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "Durzn.brackethighlighter",
+        "dsznajder.es7-react-js-snippets",
+        "GitHub.vscode-pull-request-github",
+        "wix.vscode-import-cost",
+        "bierner.markdown-mermaid",
+        "christian-kohler.npm-intellisense",
+        "esbenp.prettier-vscode",
+        "Gruntfuggly.rename-actions",
+        "Gruntfuggly.todo-tree",
+        "christian-kohler.path-intellisense",
+    ]
+}
