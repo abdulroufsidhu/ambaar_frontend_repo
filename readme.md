@@ -12,7 +12,7 @@
 - run `npm i && npm run dev`
 
 ### Project Architecture
-> Embracing a growth mindset, there's always room for improvement in any architecture. Your openness to collaboration and refinement is a strength. Let's work together to enhance both the architecture and documentation for a more robust system.
+> Your commitment to continuous improvement in architecture and documentation is commendable. Let's work together to refine and enhance the system.
 
 [Link To Documentation](./src/shared/models/readme.md)
 
