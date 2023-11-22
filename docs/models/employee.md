@@ -1,5 +1,5 @@
 # Employee Class Documentation
-The Employee class provides static methods for interacting with a server-side API to manage employee-related data. It utilizes Axios for making HTTP requests and expects specific server endpoints defined in the ServerUrls module. The responses from the server are assumed to adhere to the structure defined in the [MyApiResponse](./../unified-response.md) interface.
+The Employee class provides static methods for interacting with a server-side API to manage employee-related data. It utilizes Axios for making HTTP requests and expects specific server endpoints defined in the ServerUrls module. The responses from the server are assumed to adhere to the structure defined in the [MyApiResponse](./unified-response.md) interface.
 
 ## Table of Contents
  - [Installation](#installation)

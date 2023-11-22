@@ -1,5 +1,5 @@
 # Person Class Documentation
-The `Person` class provides a set of static methods for interacting with a server-side API to manage person-related data. It leverages the Axios library for making HTTP requests and assumes the existence of specific server endpoints defined in the `ServerUrls` module. The responses from the server are expected to adhere to the structure defined in the `[MyApiResponse](./../unified-response.md)` interface.
+The `Person` class provides a set of static methods for interacting with a server-side API to manage person-related data. It leverages the Axios library for making HTTP requests and assumes the existence of specific server endpoints defined in the `ServerUrls` module. The responses from the server are expected to adhere to the structure defined in the `[MyApiResponse](./unified-response.md)` interface.
 
 ## Table of Contents
 - [Installation](#installation)

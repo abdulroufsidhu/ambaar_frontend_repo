@@ -1,5 +1,5 @@
 # Business Class Documentation
-The `Business` class encapsulates static methods for interacting with a server-side API to manage business-related data. This class relies on Axios for making HTTP requests and expects specific server endpoints defined in the `ServerUrls` module. The responses from the server are assumed to conform to the structure specified in the [MyApiResponse](./../unified-response.md) interface.
+The `Business` class encapsulates static methods for interacting with a server-side API to manage business-related data. This class relies on Axios for making HTTP requests and expects specific server endpoints defined in the `ServerUrls` module. The responses from the server are assumed to conform to the structure specified in the [MyApiResponse](./unified-response.md) interface.
 
 ## Table of Contents
  - [Installation](#installation)

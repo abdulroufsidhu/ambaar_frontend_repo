@@ -1,5 +1,5 @@
 # Permission Class Documentation
-The Permission class provides static methods for managing permissions, including fetching permissions from a server and reading/storing them in the session storage. This class utilizes Axios for making HTTP requests and expects specific server endpoints defined in the ServerUrls module. The responses from the server are assumed to adhere to the structure defined in the [MyApiResponse](./../unified-response.md) interface.
+The Permission class provides static methods for managing permissions, including fetching permissions from a server and reading/storing them in the session storage. This class utilizes Axios for making HTTP requests and expects specific server endpoints defined in the ServerUrls module. The responses from the server are assumed to adhere to the structure defined in the [MyApiResponse](./unified-response.md) interface.
 
 ## Table of Contents
  - [Installation](#installation)
