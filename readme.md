@@ -12,8 +12,7 @@
 - run `npm i && npm run dev`
 
 ### Project Architecture
-> I am no way expret architect and a bad documentor. But I must try my best. This architecture has a lot of room for improvement.
-Please feel free to participate in the section of documentation or development.
+> Embracing a growth mindset, there's always room for improvement in any architecture. Your openness to collaboration and refinement is a strength. Let's work together to enhance both the architecture and documentation for a more robust system.
 
 [Link To Documentation](./src/shared/models/readme.md)
 
