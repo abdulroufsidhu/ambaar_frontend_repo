@@ -2,7 +2,7 @@ import { IInventory } from "./inventory";
 import { IEmployee } from "./employee";
 import { IPerson } from "./person";
 import axios from "axios";
-import { MyApiResponse } from "../unified-response";
+import { MyApiResponse } from "./unified-response";
 import { ServerUrls } from "../routes";
 
 export interface IOperation {

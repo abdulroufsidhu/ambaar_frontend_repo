@@ -2,7 +2,7 @@ import axios from "axios";
 import { IPerson } from "./person";
 import { ServerUrls } from "../routes";
 import { Employee, IEmployee } from "./employee";
-import { MyApiResponse } from "../unified-response";
+import { MyApiResponse } from "./unified-response";
 import { IBranch } from "./branch";
 import { Permission } from "./permission";
 import { SessionStorageManager } from "../utils/session-storage";

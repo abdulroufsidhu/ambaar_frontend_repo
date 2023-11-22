@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ServerUrls } from "../routes";
-import { MyApiResponse } from "../unified-response";
+import { MyApiResponse } from "./unified-response";
 
 export interface IPerson {
   _id?: string;

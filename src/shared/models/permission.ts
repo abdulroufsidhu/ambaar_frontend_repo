@@ -1,5 +1,5 @@
 import axios from "axios";
-import { MyApiResponse } from "../unified-response";
+import { MyApiResponse } from "./unified-response";
 import { ServerUrls } from "../routes";
 import { SessionStorageManager } from "../utils/session-storage";
 

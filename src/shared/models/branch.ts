@@ -1,6 +1,6 @@
 import axios from "axios";
 import { IBusiness } from "./business";
-import { MyApiResponse } from "../unified-response";
+import { MyApiResponse } from "./unified-response";
 import { IEmployee } from "./employee";
 import { ServerUrls } from "../routes";
 import { Permission } from "./permission";

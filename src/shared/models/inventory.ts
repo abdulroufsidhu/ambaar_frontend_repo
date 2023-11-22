@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ServerUrls } from "../routes";
 import { IBranch } from "./branch";
-import { MyApiResponse } from "../unified-response";
+import { MyApiResponse } from "./unified-response";
 
 export interface IProduct {
   _id?: string;

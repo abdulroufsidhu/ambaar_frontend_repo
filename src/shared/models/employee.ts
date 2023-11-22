@@ -3,7 +3,7 @@ import { ServerUrls } from "../routes";
 import { IBranch } from "./branch";
 import { IUser } from "./user";
 import { IPermission } from "./permission";
-import { MyApiResponse } from "../unified-response";
+import { MyApiResponse } from "./unified-response";
 
 export interface IEmployee {
   _id?: string;
@@ -15,7 +15,7 @@ export interface IEmployee {
 }
 
 export class Employee {
-  static self = ({user}: IEmployee) => {
+  static self = ({ user }: IEmployee) => {
     const params: { uid?: string } = {};
     if (typeof user?._id === "string") {
       params["uid"] = user?._id;

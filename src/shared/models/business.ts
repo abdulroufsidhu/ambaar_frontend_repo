@@ -2,7 +2,7 @@ import { IPerson } from "./person";
 import axios from "axios";
 import { ServerUrls } from "../routes";
 import { IEmployee } from "./employee";
-import { MyApiResponse } from "../unified-response";
+import { MyApiResponse } from "./unified-response";
 
 export interface IBusiness {
   _id?: string;
