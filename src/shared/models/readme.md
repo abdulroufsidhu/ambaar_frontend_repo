@@ -14,7 +14,7 @@ Below diagram explains the classes and their relationship
 
 ```mermaid
 ---
-title: Ambar Architecture
+title: Ambar Architecture Class Diagram
 ---
 classDiagram 
 
@@ -138,8 +138,22 @@ classDiagram
   Branch --|> Business
   Product --|> Inventory
   Inventory --|> Branch
-  Business --|> Employee
 
   note for Business "A User can have multiple employeementship\n hence multiple business."
 
+```
+
+```mermaid
+---
+title: Ambar Architecture ER Diagram
+---
+erDiagram
+  Person ||--|| User : contains
+  User ||--o{ Employee : performs
+  Employee }|--|{ Branch : hiredBy
+  Branch }|--|| Business : ownedBy
+  Product ||--|| Inventory : connects
+  Inventory }o..|| Branch : availableAtStore
+  Operation }|--|| Inventory : records
+  Operation }|..|| Employee : recordsPerformee
 ```
