@@ -29,7 +29,6 @@ Person.add(person: IPerson): Promise<IPerson>
 
 ### View a Person
 ```typescript
-Copy code
 /**
  * Retrieves information about a specific person.
  *
@@ -41,7 +40,6 @@ Person.view(person: IPerson): Promise<IPerson>
 ### List Persons
 
 ```typescript
-Copy code
 /**
  * Retrieves a list of persons associated with a specific business.
  *

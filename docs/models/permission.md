@@ -58,7 +58,6 @@ const allPermissions = Permission.getAllPermissions();
 console.log("All Permissions:", allPermissions);
 Fetching All Permissions
 typescript
-Copy code
 Permission.fetchAll()
   .then((permissions) => {
     console.log("Fetched Permissions:", permissions);
